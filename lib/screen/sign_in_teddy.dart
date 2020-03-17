@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SignInTeddyScreen(title: 'Flutter Demo Home Page'),
+      home: SignInTeddyScreen(title: 'Flutter Demo Hobby Base Page'),
 //      routes: <String, WidgetBuilder>{
 //        '/HomeScreen': (BuildContext context) => new HomeScreen()
 //      },
