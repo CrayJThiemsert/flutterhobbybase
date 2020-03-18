@@ -10,10 +10,11 @@ typedef void TextChanged(String text);
 // Helper widget to track caret position.
 class TrackingTextInput extends StatefulWidget {
   TrackingTextInput(
-      {Key key, this.onCaretMoved, this.onTextChanged, this.hint, this.label, this.isObscured = false})
+      {Key key, this.onCaretMoved, this.onTextChanged, this.keyboardType, this.hint, this.label, this.isObscured = false})
       : super(key: key);
   final CaretMoved onCaretMoved;
   final TextChanged onTextChanged;
+  final TextInputType keyboardType;
   final String hint;
   final String label;
   final bool isObscured;
@@ -59,6 +60,7 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
             hintText: widget.hint,
             labelText: widget.label,
           ),
+          keyboardType: widget.keyboardType,
           key: _fieldKey,
           controller: _textController,
 		  obscureText: widget.isObscured,

@@ -108,7 +108,9 @@ class _SignInTeddyScreenState extends State<SignInTeddyScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: <Widget>[
                                         TrackingTextInput(
+
                                             label: "Email",
+
                                             hint: "What's your email address?",
                                             onCaretMoved: (Offset caret) {
                                               _teddyController.lookAt(caret);
