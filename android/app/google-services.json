@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "258838862792-a25n2j0umhg3neka5joakusro10kf6if.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cray.hobbybase",
+            "certificate_hash": "1d4eed7a740eea48ec15960d5be2f2319f14e58d"
+          }
+        },
+        {
           "client_id": "258838862792-55ehp89vpq8r400b23u469smmvigb967.apps.googleusercontent.com",
           "client_type": 3
         }
