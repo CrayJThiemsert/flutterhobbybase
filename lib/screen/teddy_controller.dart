@@ -7,6 +7,9 @@ import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_dart/math/vec2d.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import 'homescreen.dart';
 
 class TeddyController extends FlareControls {
   // Store a reference to our face control node (the "ctrl_look" node in Flare)
@@ -164,5 +167,37 @@ class TeddyController extends FlareControls {
       result = false;
     }
     return result;
+  }
+
+  void navigationPage(BuildContext context) {
+//    Navigator.of(context).pushNamed('/HomeScreen');
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => HomeScreen() ));
+  }
+
+  Future<FirebaseUser> signUpWithEmailAndPassword(BuildContext context) async {
+    bool result = false;
+    final FirebaseUser user = (await _auth.createUserWithEmailAndPassword(
+      email: _email,
+      password: _password,
+    )).user;
+
+    if (user != null) {
+      debugPrint("success!!");
+      play("success!!");
+      result = true;
+//      navigationPage(context);
+//      setState(() {
+//        _success = true;
+//        _userEmail = user.email;
+//      });
+    } else {
+      debugPrint("failed!!");
+      play("fail");
+      result = false;
+    }
+    return user;
   }
 }

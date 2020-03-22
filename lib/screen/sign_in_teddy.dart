@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/rendering.dart';
@@ -34,8 +38,17 @@ class SignInTeddyScreen extends StatefulWidget {
   _SignInTeddyScreenState createState() => _SignInTeddyScreenState();
 }
 
-class _SignInTeddyScreenState extends State<SignInTeddyScreen> {
+enum WidgetMarker {
+  signin_by_email, signup_by_email, signin_by_phone, signup_by_phone, forgot
+}
+
+class _SignInTeddyScreenState extends State<SignInTeddyScreen> with SingleTickerProviderStateMixin<SignInTeddyScreen> {
   TeddyController _teddyController;
+
+  AnimationController _controller;
+  Animation _animation;
+
+  WidgetMarker selectedWidgetMarker = WidgetMarker.signin_by_email;
 
   void navigationPage() {
 //    Navigator.of(context).pushNamed('/HomeScreen');
@@ -45,10 +58,257 @@ class _SignInTeddyScreenState extends State<SignInTeddyScreen> {
             builder: (context) => HomeScreen() ));
   }
 
+  Widget _showSelectedContainer() {
+    switch(selectedWidgetMarker) {
+      case WidgetMarker.signin_by_email:
+        return _showSignInByEmailPanel();
+      case WidgetMarker.signup_by_email:
+        return _showSignUpByEmailPanel();
+      case WidgetMarker.signin_by_phone:
+        return _showSignInByEmailPanel();
+      case WidgetMarker.signup_by_phone:
+        return _showSignUpByEmailPanel();
+      case WidgetMarker.forgot:
+        return _showSignUpByEmailPanel();
+    }
+    return _showSignInByEmailPanel();
+  }
+
+  Widget _showSignInByEmailPanel() {
+    return FadeTransition(
+        opacity: _animation,
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius:
+              BorderRadius.all(Radius.circular(25.0))),
+          child: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Form(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    TrackingTextInput(
+                      keyboardType: TextInputType.emailAddress,
+                      label: "Email",
+                      hint: "What's your email address?",
+                      onCaretMoved: (Offset caret) {
+                        _teddyController.lookAt(caret);
+                      },
+                      onTextChanged: (String value) {
+                        _teddyController.setEmail(value);
+                      },
+                    ),
+                    TrackingTextInput(
+                      label: "Password",
+                      hint: "Try 'bears'...",
+                      isObscured: true,
+                      onCaretMoved: (Offset caret) {
+                        _teddyController.coverEyes(caret != null);
+                        _teddyController.lookAt(null);
+                      },
+                      onTextChanged: (String value) {
+                        _teddyController.setPassword(value);
+                      },
+                    ),
+                    SigninButton(
+                        child: Text("Sign In",
+                            style: TextStyle(
+                                fontFamily: "RobotoMedium",
+                                fontSize: 16,
+                                color: Colors.white)),
+                        onPressed: () {
+  //                                              if(_teddyController.submitPassword()) {
+                          if(_teddyController.signInWithEmailAndPassword() != null) {
+                            navigationPage();
+                          }
+                        }),
+                    GestureDetector(
+                      onTap: () {
+                        print('tap Sign up with email');
+                        setState(() {
+                          selectedWidgetMarker = WidgetMarker.signup_by_email;
+                        });
+
+                      },
+                      child:
+                        Container(
+                          height: 30,
+                          alignment: Alignment.center,
+                          child:
+                          Text.rich(TextSpan(
+                              text: 'Sign Up',
+                              style: TextStyle( fontWeight: FontWeight.normal),
+                              children: <TextSpan> [
+                                TextSpan(
+                                  text: ' with ',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                                TextSpan(
+                                  text: 'Email',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.deepOrange,
+                                  ),
+
+                                ),
+                              ]
+
+                          )
+                          ),
+                        ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        print('tap Sign up with phone');
+                        setState(() {
+                          selectedWidgetMarker = WidgetMarker.signup_by_phone;
+                        });
+
+                      },
+                      child:
+                        Container(
+                          height: 30,
+                          alignment: Alignment.center,
+                          child:
+                          Text.rich(TextSpan(
+                              text: 'Sign Up',
+                              style: TextStyle( fontWeight: FontWeight.normal),
+                              children: <TextSpan> [
+                                TextSpan(
+                                  text: ' with ',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                                TextSpan(
+                                  text: 'Phone number',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blueAccent
+                                  ),
+                                ),
+                              ]
+
+                          )
+                          ),
+                        ),
+                    ),
+                  ],
+                )),
+          ))
+    );
+
+  }
+
+  Widget _showSignUpByEmailPanel() {
+    return FadeTransition(
+        opacity: _animation,
+        child:
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                BorderRadius.all(Radius.circular(25.0))),
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Form(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      TrackingTextInput(
+                        keyboardType: TextInputType.emailAddress,
+                        label: "Email",
+                        hint: "What's your email address?",
+                        onCaretMoved: (Offset caret) {
+                          _teddyController.lookAt(caret);
+                        },
+                        onTextChanged: (String value) {
+                          _teddyController.setEmail(value);
+                        },
+                      ),
+                      TrackingTextInput(
+                        label: "Password",
+                        hint: "Try 'bears'...",
+                        isObscured: true,
+                        onCaretMoved: (Offset caret) {
+                          _teddyController.coverEyes(caret != null);
+                          _teddyController.lookAt(null);
+                        },
+                        onTextChanged: (String value) {
+                          _teddyController.setPassword(value);
+                        },
+                      ),
+                      SigninButton(
+                          child: Text("Sign Up",
+                              style: TextStyle(
+                                  fontFamily: "RobotoMedium",
+                                  fontSize: 16,
+                                  color: Colors.white)),
+                          onPressed: () {
+                            _teddyController.signUpWithEmailAndPassword(context).then((FirebaseUser user) =>  
+                              navigationPage() ).catchError((error) =>
+                              {
+                                AwesomeDialog(
+                                  context: context,
+                                  dialogType: DialogType.ERROR,
+                                  animType: AnimType.TOPSLIDE,
+                                  tittle: "Sign Up Failed",
+                                  desc: "The email address is already in use by another account.",
+                                  btnCancelText: 'Close',
+                                  btnCancelIcon: Icons.close,
+                                ).show()
+                              }
+                            );
+                            
+                          }),
+                      GestureDetector(
+                        onTap: () {
+                          print('tap Sign in by email');
+                          setState(() {
+                            selectedWidgetMarker = WidgetMarker.signin_by_email;
+                          });
+                        },
+                        child:
+                          Container(
+                              height: 30,
+                              alignment: Alignment.center,
+                              child:
+                              Text.rich(TextSpan(
+                                  text: 'Already have an account, ',
+                                  style: TextStyle( fontStyle: FontStyle.italic ),
+                                  children: <TextSpan> [
+                                    TextSpan(
+                                      text: ' Sign In',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blueAccent,
+                                      ),
+                                    ),
+                                  ]
+                              )
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
+            ))
+    );
+  }
+
   @override
   initState() {
     _teddyController = TeddyController();
     super.initState();
+
+    _controller = AnimationController(vsync: this, duration: Duration(microseconds: 2000));
+    _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
   }
 
   @override
@@ -95,61 +355,22 @@ class _SignInTeddyScreenState extends State<SignInTeddyScreen> {
                                 fit: BoxFit.contain,
                                 controller: _teddyController,
                               )),
-                          Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(25.0))),
-                              child: Padding(
-                                padding: const EdgeInsets.all(30.0),
-                                child: Form(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        TrackingTextInput(
+                          FutureBuilder(
+                            future: _playAnimation(),
+                            builder: (BuildContext context, AsyncSnapshot snapshot) {
+                              return _showSelectedContainer();
+                            },
+                          ),
 
-                                            label: "Email",
-
-                                            hint: "What's your email address?",
-                                            onCaretMoved: (Offset caret) {
-                                              _teddyController.lookAt(caret);
-                                            },
-                                            onTextChanged: (String value) {
-                                              _teddyController.setEmail(value);
-                                            },
-                                            ),
-                                        TrackingTextInput(
-                                          label: "Password",
-                                          hint: "Try 'bears'...",
-                                          isObscured: true,
-                                          onCaretMoved: (Offset caret) {
-                                            _teddyController.coverEyes(caret != null);
-                                            _teddyController.lookAt(null);
-                                          },
-                                          onTextChanged: (String value) {
-                                            _teddyController.setPassword(value);
-                                          },
-                                        ),
-                                        SigninButton(
-                                            child: Text("Sign In",
-                                                style: TextStyle(
-                                                    fontFamily: "RobotoMedium",
-                                                    fontSize: 16,
-                                                    color: Colors.white)),
-                                            onPressed: () {
-//                                              if(_teddyController.submitPassword()) {
-                                              if(_teddyController.signInWithEmailAndPassword() != null) {
-                                                navigationPage();
-                                              }
-                                            })
-                                      ],
-                                    )),
-                              )),
                         ])),
               ),
             ],
           )),
     );
+  }
+
+  _playAnimation() {
+    _controller.reset();
+    _controller.forward();
   }
 }
