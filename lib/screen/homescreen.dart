@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -107,8 +108,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.initState();
   }
 
+  Future<void> getUsersData() async {
+    Firestore.instance
+        .collection('users')
+        .snapshots()
+        .listen((data) =>
+          data.documents.forEach((doc) => print(doc["uid"])));
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("Test get cloud firectore data: ");
+    // Test get cloud firestore data
+    getUsersData();
+
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
