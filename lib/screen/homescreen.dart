@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 //  }
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+  final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
+
   final FixedExtentScrollController _controller = FixedExtentScrollController();
 
   //Uses a Ticker Mixin for Animations
@@ -32,12 +35,23 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   String _imagePathToShow = "assets/dq/dq01.png";
   String _imageToShowTag = "demoTag";
 
+  int _currentFabIndex = 1;
+
   int _currentIndex = 0;
   final List<Widget> _children = [
     PlaceholderWidget(Colors.amberAccent),
     PlaceholderWidget(Colors.lime),
     PlaceholderWidget(Colors.brown),
 //    PlaceholderWidget(Colors.greenAccent)
+  ];
+
+  final List<IconData> _fabIcons = [
+    Icons.menu,
+    Icons.airplanemode_active,
+    Icons.audiotrack,
+    Icons.wb_sunny,
+    Icons.wb_cloudy,
+    Icons.visibility,
   ];
 
   Future<bool> _onWillPop() {
@@ -69,6 +83,27 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       if(_currentIndex == 2) {
         debugPrint("Do logoff");
         signOut();
+      }
+    });
+  }
+
+  IconData displayFabOpenIcon() {
+    setState(() {
+      switch(_currentFabIndex) {
+        case 0:
+          return Icons.airplanemode_active;
+        case 1:
+          return Icons.audiotrack;
+        case 2:
+          return Icons.wb_sunny;
+        case 3:
+          return Icons.wb_cloudy;
+        case 4:
+          return Icons.visibility;
+        case 5:
+          return Icons.video_call;
+        default :
+          return Icons.menu;
       }
     });
   }
@@ -118,9 +153,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).primaryColor;
+
     print("Test get cloud firectore data: ");
     // Test get cloud firestore data
     getUsersData();
+
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -129,6 +167,137 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //      appBar: AppBar(
 //        title: Text('First Routex'),
 //      ),
+        floatingActionButton: Builder(
+          builder: (context) =>
+//              Container(
+//                padding: EdgeInsets.only(top: 32.0, left: 8.0),
+//                child:
+          FabCircularMenu(
+            key: fabKey,
+            // Cannot be `Alignment.center`
+            alignment: Alignment.topLeft,
+            ringColor: Colors.white.withAlpha(25),
+            ringDiameter: 400.0,
+            ringWidth: 80.0,
+            fabSize: 64.0,
+            fabElevation: 8.0,
+
+
+            // Also can use specific color based on weather
+            // the menu is open or not:
+            // fabOpenColor: Colors.white
+            // fabCloseColor: Colors.white
+            // These properties take precedence over fabColor
+            fabColor: Colors.white,
+
+            fabOpenIcon: Icon(_fabIcons[_currentFabIndex], color: primaryColor),
+            fabCloseIcon: Icon(Icons.close, color: primaryColor),
+            fabMargin: const EdgeInsets.only(top: 96.0, left: 16.0),
+            animationDuration: const Duration(milliseconds: 900),
+//                  animationCurve: Curves.easeInOutCirc,
+            animationCurve: Curves.elasticInOut,
+            onDisplayChange: (isOpen) {
+              //              _showSnackBar(context, "The menu is ${isOpen ? "open" : "closed"}");
+            },
+            children: <Widget>[
+              RaisedButton(
+                onPressed: () {
+                  //                  _showSnackBar(context, "You pressed 1");
+                  setState(() {
+                    _currentFabIndex = 0;
+                  });
+                  fabKey.currentState.close();
+                },
+                shape: CircleBorder(),
+//                      padding: const EdgeInsets.all(24.0),
+                child: Text('SD'),
+//                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
+              ),
+//                    RaisedButton(
+//                      onPressed: () {
+//                        //                  _showSnackBar(context, "You pressed 1");
+//                      },
+//                      shape: CircleBorder(),
+////                      padding: const EdgeInsets.all(24.0),
+//                      child: Text('SDEX'),
+////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
+//                    ),
+//                    RaisedButton(
+//                      onPressed: () {
+//                        //                  _showSnackBar(context, "You pressed 1");
+//                      },
+//                      shape: CircleBorder(),
+////                      padding: const EdgeInsets.all(24.0),
+//                      child: Text('SDCS'),
+////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
+//                    ),
+              RaisedButton(
+                onPressed: () {
+                  //                  _showSnackBar(context, "You pressed 2");
+                  setState(() {
+                    _currentFabIndex = 1;
+                  });
+                  fabKey.currentState.close();
+                },
+                shape: CircleBorder(),
+//                      padding: const EdgeInsets.all(24.0),
+                child: Text('HG'),
+//                      child: Icon(Icons.looks_two, color: Colors.white, size: 48,),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  //                  _showSnackBar(context, "You pressed 1");
+                  setState(() {
+                    _currentFabIndex = 2;
+                  });
+                  fabKey.currentState.close();
+                },
+                shape: CircleBorder(),
+//                      padding: const EdgeInsets.all(24.0),
+                child: Text('RE'),
+//                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  //                  _showSnackBar(context, "You pressed 3");
+                  setState(() {
+                    _currentFabIndex = 3;
+                  });
+                  fabKey.currentState.close();
+                },
+                shape: CircleBorder(),
+//                      padding: const EdgeInsets.all(24.0),
+                child: Text('RG'),
+//                      child: Icon(Icons.looks_3, color: Colors.white, size: 48,),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  //                  _showSnackBar(context, "You pressed 4. This one closes the menu on tap");
+                  setState(() {
+                    _currentFabIndex = 4;
+                  });
+                  fabKey.currentState.close();
+                },
+                shape: CircleBorder(),
+//                      padding: const EdgeInsets.all(24.0),
+                child: Text('MG'),
+//                      child: Icon(Icons.looks_4, color: Colors.white, size: 48,),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  //                  _showSnackBar(context, "You pressed 5");
+                  setState(() {
+                    _currentFabIndex = 5;
+                  });
+                  fabKey.currentState.close();
+                },
+                shape: CircleBorder(),
+//                      padding: const EdgeInsets.all(24.0),
+                child: Text('PG'),
+              ),
+            ],
+          ),
+        ),
         body: LayoutBuilder(
 
           builder: (context, constraints) {
