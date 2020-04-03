@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:imagebutton/imagebutton.dart';
 import 'placeholder_widget.dart';
 import 'package:hobbybase/transition/scale_transition.dart';
 import 'package:hobbybase/transition/slide_right_transition.dart';
@@ -36,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   String _imageToShowTag = "demoTag";
 
   int _currentFabIndex = 1;
+  bool _wheelListVisibility = false;
 
   int _currentIndex = 0;
   final List<Widget> _children = [
@@ -46,12 +48,29 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   ];
 
   final List<IconData> _fabIcons = [
+//    IconData(AssetImage("assets/gunpla_grade/ic_sd_96.png")),
+//    ImageIcon(AssetImage("assets/gunpla_grade/ic_highgrade_96.png")),
+//    ImageIcon(AssetImage("assets/gunpla_grade/ic_re100_96.png")),
+//    ImageIcon(AssetImage("assets/gunpla_grade/ic_realgrade_96.png")),
+//    ImageIcon(AssetImage("assets/gunpla_grade/ic_mastergrade_96.png")),
+//    ImageIcon(AssetImage("assets/gunpla_grade/ic_perfectgrade_96.png")),
     Icons.menu,
     Icons.airplanemode_active,
     Icons.audiotrack,
     Icons.wb_sunny,
     Icons.wb_cloudy,
     Icons.visibility,
+    Icons.mood,
+  ];
+
+  final List<Image> _fabImages = [
+    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
+    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
+    Image.asset("assets/gunpla_grade/ic_highgrade_96.png"),
+    Image.asset("assets/gunpla_grade/ic_re100_96.png"),
+    Image.asset("assets/gunpla_grade/ic_realgrade_96.png"),
+    Image.asset("assets/gunpla_grade/ic_mastergrade_96.png"),
+    Image.asset("assets/gunpla_grade/ic_perfectgrade_96.png"),
   ];
 
   Future<bool> _onWillPop() {
@@ -117,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     // TODO: implement initState
+    _wheelListVisibility = true;
     _imageToShow = AssetImage("assets/dq/dq01.png");
     _imagePathToShow = "assets/dq/dq01.png";
     _imageToShowTag = "dq01";
@@ -173,14 +193,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //                padding: EdgeInsets.only(top: 32.0, left: 8.0),
 //                child:
           FabCircularMenu(
+
             key: fabKey,
             // Cannot be `Alignment.center`
             alignment: Alignment.topLeft,
             ringColor: Colors.white.withAlpha(25),
-            ringDiameter: 400.0,
-            ringWidth: 80.0,
+            ringDiameter: 450.0,
+            ringWidth: 70.0,
             fabSize: 64.0,
-            fabElevation: 8.0,
+            fabElevation: 1.0,
 
 
             // Also can use specific color based on weather
@@ -192,8 +213,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
             fabOpenIcon: Icon(_fabIcons[_currentFabIndex], color: primaryColor),
             fabCloseIcon: Icon(Icons.close, color: primaryColor),
-            fabMargin: const EdgeInsets.only(top: 96.0, left: 16.0),
-            animationDuration: const Duration(milliseconds: 900),
+            fabMargin: const EdgeInsets.only(top: 16.0, left: 0.0),
+            animationDuration: const Duration(milliseconds: 800),
 //                  animationCurve: Curves.easeInOutCirc,
             animationCurve: Curves.elasticInOut,
             onDisplayChange: (isOpen) {
@@ -206,38 +227,38 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   setState(() {
                     _currentFabIndex = 0;
                   });
+                  _wheelListVisibility = true;
                   fabKey.currentState.close();
+                },
+                shape: CircleBorder(),
+//                      padding: const EdgeInsets.all(24.0),
+                child: Text('XX'),
+//                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  //                  _showSnackBar(context, "You pressed 1");
+                  setState(() {
+                    _currentFabIndex = 1;
+                    _wheelListVisibility = true;
+                    fabKey.currentState.close();
+                  });
+
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
                 child: Text('SD'),
 //                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
               ),
-//                    RaisedButton(
-//                      onPressed: () {
-//                        //                  _showSnackBar(context, "You pressed 1");
-//                      },
-//                      shape: CircleBorder(),
-////                      padding: const EdgeInsets.all(24.0),
-//                      child: Text('SDEX'),
-////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
-//                    ),
-//                    RaisedButton(
-//                      onPressed: () {
-//                        //                  _showSnackBar(context, "You pressed 1");
-//                      },
-//                      shape: CircleBorder(),
-////                      padding: const EdgeInsets.all(24.0),
-//                      child: Text('SDCS'),
-////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
-//                    ),
               RaisedButton(
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 2");
                   setState(() {
-                    _currentFabIndex = 1;
+                    _currentFabIndex = 2;
+                    _wheelListVisibility = true;
+                    fabKey.currentState.close();
                   });
-                  fabKey.currentState.close();
+
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -248,9 +269,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 1");
                   setState(() {
-                    _currentFabIndex = 2;
+                    _currentFabIndex = 3;
+                    _wheelListVisibility = true;
+                    fabKey.currentState.close();
                   });
-                  fabKey.currentState.close();
+
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -261,9 +284,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 3");
                   setState(() {
-                    _currentFabIndex = 3;
+                    _currentFabIndex = 4;
+                    _wheelListVisibility = true;
+                    fabKey.currentState.close();
                   });
-                  fabKey.currentState.close();
+
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -274,9 +299,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 4. This one closes the menu on tap");
                   setState(() {
-                    _currentFabIndex = 4;
+                    _currentFabIndex = 5;
+                    _wheelListVisibility = true;
+                    fabKey.currentState.close();
                   });
-                  fabKey.currentState.close();
+
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -287,9 +314,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 5");
                   setState(() {
-                    _currentFabIndex = 5;
+                    _currentFabIndex = 6;
+                    _wheelListVisibility = true;
+                    fabKey.currentState.close();
                   });
-                  fabKey.currentState.close();
+
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -350,11 +379,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       right: _isEnabled,
       minimum: const EdgeInsets.all(2.0),
 
-
       child: Column(
 
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
+          // Top area for Hero & Wheel List
           Container(
 
             decoration: new BoxDecoration(
@@ -374,16 +403,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             child: Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 6.0),
               child: Stack(
-                alignment: AlignmentDirectional.centerStart,
+//                alignment: AlignmentDirectional.centerStart,
 
                 children: <Widget>[
-
+                  // Wheel list
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
 
                     children: <Widget>[
-
-                      Container(
+                      Visibility(
+                        visible: true, //_wheelListVisibility,
+                        child:
+                        Container(
                         decoration: new BoxDecoration(
                           color: Colors.indigo,
                           gradient: new LinearGradient(
@@ -401,36 +432,43 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         height: MediaQuery.of(context).size.height / 2,
                         width: 225, //MediaQuery.of(context).size.width - 120,
                         child: ListWheelScrollView(
-                          onSelectedItemChanged: (index) {
-                            print('hello monster ${(index+1).toString().padLeft(2, '0')}');
-                            setState(() {
-                              _imageToShow = new AssetImage("assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png");
-                              _imagePathToShow = "assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png";
-                              _imageToShowTag = "dq${(index+1).toString().padLeft(2, '0')}";
-                              //                      _animationController
-                              //                          .forward(); // tapping the button, starts the animation.
-                            });
-                          },
-                          controller: _controller,
-                          diameterRatio: 2.5,
-                          offAxisFraction: -1.5,
-                          itemExtent: 80,
-                          //              magnification: 1.0,
-                          squeeze: 1.0,
-                          //              useMagnifier: true,
-                          physics:  FixedExtentScrollPhysics(), // BouncingScrollPhysics()
-                          children: ListTile.divideTiles(
-                            context: context,
-                            tiles: _homeListWheel(context), //List of widgets,
-                          ).toList(),
+                            onSelectedItemChanged: (index) {
+                              print('hello monster ${(index+1).toString().padLeft(2, '0')}');
+                              setState(() {
+                                _imageToShow = new AssetImage("assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png");
+                                _imagePathToShow = "assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png";
+                                _imageToShowTag = "dq${(index+1).toString().padLeft(2, '0')}";
+                                //                      _animationController
+                                //                          .forward(); // tapping the button, starts the animation.
+                              });
+                            },
+                            controller: _controller,
+                            diameterRatio: 2.5,
+                            offAxisFraction: -1.5,
+                            itemExtent: 80,
+                            //              magnification: 1.0,
+                            squeeze: 1.0,
+                            //              useMagnifier: true,
+                            physics:  FixedExtentScrollPhysics(), // BouncingScrollPhysics()
+                            children: ListTile.divideTiles(
+                              context: context,
+                              tiles: _homeListWheel(context), //List of widgets,
+                            ).toList(),
+
                         ),
+                      ),
                       ),
                     ],
                   ),
+
+                  // Hero Image
                   Container(
-                    //            alignment: Alignment.centerLeft,
+//                    color: Colors.greenAccent,
+//                                alignment: Alignment.bottomLeft,
                     //            height: MediaQuery.of(context).size.height / 2,
-                    //            width: MediaQuery.of(context).size.width,
+//                                width: MediaQuery.of(context).size.width,
+                  width: 200,
+                    margin: EdgeInsets.only(top: 50),
 
                     child: SizedBox(
                       child: GestureDetector(
@@ -456,10 +494,45 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                   ),
 
+                  // Grade Image
+                  Container(
+                    margin: EdgeInsets.only(top: 8.0, left: 8.0),
+                    child:
+                    Card(
+                      elevation: 15.0,
+                      child:
+                        GestureDetector(
+                          child: SizedBox(
+                            child:
+                              FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.fill,
+                                child:  _fabImages[_currentFabIndex],
+                              ),
+                            width: 60,
+                            height: 36,
+                          ),
+                          onTap: () {
+                            print('Pressed!!');
+                            setState(() {
+                              _wheelListVisibility = false;
+                            });
+
+                            _currentFabIndex = _currentFabIndex;
+                            if(fabKey.currentState.isOpen) {
+                              fabKey.currentState.close();
+                            } else {
+                              fabKey.currentState.open();
+                            }
+                          },
+                        ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
+          // Body area for contents
           Expanded(
             child: Container(
 //            height: 200,

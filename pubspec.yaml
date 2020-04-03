@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^0.1.2
 
   awesome_dialog: ^0.1.3
+  imagebutton: ^0.0.6
 
 dependency_overrides:
   firebase_core: 0.4.4
@@ -144,6 +145,13 @@ flutter:
     - assets/dq/dq80.png
     - assets/dq/dq81.png
     - assets/dq/dq82.png
+    - assets/gunpla_grade/ic_highgrade_96.png
+    - assets/gunpla_grade/ic_mastergrade_96.png
+    - assets/gunpla_grade/ic_megasize_96.png
+    - assets/gunpla_grade/ic_perfectgrade_96.png
+    - assets/gunpla_grade/ic_re100_96.png
+    - assets/gunpla_grade/ic_realgrade_96.png
+    - assets/gunpla_grade/ic_sd_96.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
