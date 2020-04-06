@@ -3,10 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ObjectBase {
   final String uid;
   final String name;
-  final Timestamp createdWhen;
-  final String createdBy;
-  final Timestamp updatedWhen;
-  final String updatedBy;
+  final Timestamp created_when;
+  final String created_by;
+  final Timestamp updated_when;
+  final String updated_by;
   final bool active;
   final DocumentReference reference;
 
@@ -21,10 +21,10 @@ class ObjectBase {
         assert(map['reference'] != null),
         uid = map['uid'],
         name = map['name'],
-        createdWhen = map['createdWhen'],
-        createdBy = map['createdBy'],
-        updatedWhen = map['updatedWhen'],
-        updatedBy = map['updatedBy'],
+        created_when = map['createdWhen'],
+        created_by = map['createdBy'],
+        updated_when = map['updatedWhen'],
+        updated_by = map['updatedBy'],
         active = map['active'];
 
   ObjectBase.fromSnapshot(DocumentSnapshot snapshot) :

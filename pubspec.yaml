@@ -63,6 +63,7 @@ flutter:
   #  - images/a_dot_ham.jpeg
   assets:
     - assets/
+    - assets/json/re100.json
     - assets/dq/dq01.png
     - assets/dq/dq02.png
     - assets/dq/dq03.png
@@ -152,6 +153,7 @@ flutter:
     - assets/gunpla_grade/ic_re100_96.png
     - assets/gunpla_grade/ic_realgrade_96.png
     - assets/gunpla_grade/ic_sd_96.png
+    - assets/gunpla/re100/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

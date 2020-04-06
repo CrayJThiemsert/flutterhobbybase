@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hobbybase/model/Gunpla.dart';
 import 'package:imagebutton/imagebutton.dart';
 import 'placeholder_widget.dart';
 import 'package:hobbybase/transition/scale_transition.dart';
@@ -137,9 +139,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   void initState() {
     // TODO: implement initState
     _wheelListVisibility = true;
+//    _imageToShow = AssetImage("assets/dq/dq01.png");
+//    _imagePathToShow = "assets/dq/dq01.png";
+//    _imageToShowTag = "dq01";
     _imageToShow = AssetImage("assets/dq/dq01.png");
-    _imagePathToShow = "assets/dq/dq01.png";
-    _imageToShowTag = "dq01";
+    _imagePathToShow = "";
+    _imageToShowTag = "";
 //    _animationController = AnimationController(
 //        vsync: this,
 //        duration: Duration(
@@ -411,53 +416,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     mainAxisAlignment: MainAxisAlignment.end,
 
                     children: <Widget>[
-                      Visibility(
-                        visible: true, //_wheelListVisibility,
-                        child:
-                        Container(
-                        decoration: new BoxDecoration(
-                          color: Colors.indigo,
-                          gradient: new LinearGradient(
-                            colors: [Colors.white, Colors.cyan],
-                          ),
-                          boxShadow: [new BoxShadow(
-                              color: Colors.black54,
-                              offset: new Offset(4.0, 4.0),
-                              blurRadius: 4.0
-                          )],
-                        ),
+                      buildWheelList(),
 
-                        //            alignment: Alignment.center,
-                        //            color: Colors.amber,
-                        height: MediaQuery.of(context).size.height / 2,
-                        width: 225, //MediaQuery.of(context).size.width - 120,
-                        child: ListWheelScrollView(
-                            onSelectedItemChanged: (index) {
-                              print('hello monster ${(index+1).toString().padLeft(2, '0')}');
-                              setState(() {
-                                _imageToShow = new AssetImage("assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png");
-                                _imagePathToShow = "assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png";
-                                _imageToShowTag = "dq${(index+1).toString().padLeft(2, '0')}";
-                                //                      _animationController
-                                //                          .forward(); // tapping the button, starts the animation.
-                              });
-                            },
-                            controller: _controller,
-                            diameterRatio: 2.5,
-                            offAxisFraction: -1.5,
-                            itemExtent: 80,
-                            //              magnification: 1.0,
-                            squeeze: 1.0,
-                            //              useMagnifier: true,
-                            physics:  FixedExtentScrollPhysics(), // BouncingScrollPhysics()
-                            children: ListTile.divideTiles(
-                              context: context,
-                              tiles: _homeListWheel(context), //List of widgets,
-                            ).toList(),
-
-                        ),
-                      ),
-                      ),
                     ],
                   ),
 
@@ -774,6 +734,135 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
 
     return listtiles;
+  }
+
+  List<Widget> _gunplaListWheel(BuildContext context, List<Gunpla> gunplas) {
+    List<Widget> listtiles = [];
+    for(var i = 0; i < gunplas.length; i++) {
+      var runner = i.toString().padLeft(2, '0');
+      var name = gunplas[i].name.toUpperCase();
+      var boxart = "assets/gunpla/${gunplas[i].boxArtPath}";
+//      if(i > 9) {
+//        runner = i.toString();
+//      }
+      print("${runner} - ${name} - [${boxart}]");
+      listtiles.add(GestureDetector(
+//          onTap: () {
+//            print('hello monster $i');
+//          },
+          child: ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 40.0),
+            // leading = Image icon on the left of tile
+//            leading: new Image.asset("assets/dq/dq${runner}.png"), //Icon(Icons.portrait),
+            leading: new Image.asset(boxart),
+            title: Text("${runner} - ${name}"),
+//            GestureDetector(
+//              onTap: () {
+//                print('tap monster $i');
+//              },
+//              child: FlatButton(
+//                  onPressed: () {
+//                    print('pressed monster $i');
+//                  },
+//                  child: Text("Monster-${runner}"),
+//              ),
+//            ),
+
+            subtitle: Text("Beautiful View..!"),
+            //      trailing: Icon(Icons.arrow_forward_ios),
+//            onTap: () {
+//              print('hello ${runner}');
+//            },
+          )));
+    }
+
+
+    return listtiles;
+  }
+
+  Widget buildWheelList() {
+    return FutureBuilder(
+      future: DefaultAssetBundle.of(context).loadString('assets/json/re100.json'),
+      builder: (context, snapshot) {
+        List<Gunpla> gunplas = parseJson(snapshot.data.toString());
+        return !gunplas.isEmpty
+            ? wheelList(gunplas)
+            : Center( child: CircularProgressIndicator());
+      });
+
+
+  }
+
+  Widget wheelList(List<Gunpla> gunplas) {
+//    var boxart = "assets/gunpla/${gunplas[0].boxArtPath}";
+//    _imageToShow = new AssetImage("${boxart}");
+////              _imagePathToShow = "assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png";
+//    _imagePathToShow = boxart;
+////              _imageToShowTag = "dq${(index+1).toString().padLeft(2, '0')}";
+//    var name = gunplas[0].name;
+//    _imageToShowTag = name;
+
+    return Visibility(
+      visible: true, //_wheelListVisibility,
+      child:
+      Container(
+        decoration: new BoxDecoration(
+          color: Colors.indigo,
+          gradient: new LinearGradient(
+            colors: [Colors.white, Colors.cyan],
+          ),
+          boxShadow: [new BoxShadow(
+              color: Colors.black54,
+              offset: new Offset(4.0, 4.0),
+              blurRadius: 4.0
+          )],
+        ),
+
+        //            alignment: Alignment.center,
+        //            color: Colors.amber,
+        height: MediaQuery.of(context).size.height / 2,
+        width: 225, //MediaQuery.of(context).size.width - 120,
+        child: ListWheelScrollView(
+          onSelectedItemChanged: (index) {
+            print('hello monster ${(index+1).toString().padLeft(2, '0')}');
+            setState(() {
+//              _imageToShow = new AssetImage("assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png");
+              var boxart = "assets/gunpla/${gunplas[index].boxArtPath}";
+              _imageToShow = new AssetImage("${boxart}");
+//              _imagePathToShow = "assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png";
+              _imagePathToShow = boxart;
+//              _imageToShowTag = "dq${(index+1).toString().padLeft(2, '0')}";
+              var name = gunplas[index].name;
+              _imageToShowTag = name;
+              //                      _animationController
+              //                          .forward(); // tapping the button, starts the animation.
+            });
+          },
+          controller: _controller,
+          diameterRatio: 2.5,
+          offAxisFraction: -1.5,
+          itemExtent: 80,
+          //              magnification: 1.0,
+          squeeze: 1.0,
+          //              useMagnifier: true,
+          physics:  FixedExtentScrollPhysics(), // BouncingScrollPhysics()
+          children: ListTile.divideTiles(
+            context: context,
+            tiles: _gunplaListWheel(context, gunplas), //List of widgets,
+          ).toList(),
+
+        ),
+      ),
+    );
+  }
+
+  List<Gunpla> parseJson(String response) {
+    if(response == null) {
+      return [];
+    }
+    final parsed = json.decode(response.toString()).cast<Map<String, dynamic>>();
+    return parsed.map<Gunpla>((json) => new Gunpla.fromJson(json)).toList();
   }
 }
 
