@@ -894,8 +894,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     if(response == null) {
       return [];
     }
-    final parsed = json.decode(response.toString()).cast<Map<String, dynamic>>();
-    return parsed.map<Gunpla>((json) => new Gunpla.fromJson(json)).toList();
+    final parsed = json.decode(response.toString()); //.cast<Map<String, dynamic>>();
+    return parsed?.map<Gunpla>((json) => new Gunpla.fromJson(json))?.toList() ?? [];
   }
 }
 
