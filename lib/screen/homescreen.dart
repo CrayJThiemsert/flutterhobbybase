@@ -35,8 +35,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   bool _isEnabled = true;
 
   AssetImage _imageToShow;
-  String _imagePathToShow = "assets/dq/dq01.png";
-  String _imageToShowTag = "demoTag";
+  String _imagePathToShow = "assets/cardboard01.png"; //"assets/dq/dq01.png";
+  String _imageToShowTag = ""; //"demoTag";
 
   int _currentFabIndex = 1;
   bool _wheelListVisibility = false;
@@ -142,8 +142,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //    _imageToShow = AssetImage("assets/dq/dq01.png");
 //    _imagePathToShow = "assets/dq/dq01.png";
 //    _imageToShowTag = "dq01";
-    _imageToShow = AssetImage("assets/dq/dq01.png");
-    _imagePathToShow = "";
+    _imageToShow = AssetImage("assets/cardboard01.png");
+    _imagePathToShow = "assets/cardboard01.png";
     _imageToShowTag = "";
 //    _animationController = AnimationController(
 //        vsync: this,
@@ -427,17 +427,58 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //                                alignment: Alignment.bottomLeft,
                     //            height: MediaQuery.of(context).size.height / 2,
 //                                width: MediaQuery.of(context).size.width,
-                  width: 200,
-                    margin: EdgeInsets.only(top: 50),
+//                  width: 200,
+                    margin: EdgeInsets.only(top: 50, right: 50),
 
                     child: SizedBox(
                       child: GestureDetector(
                         child: Hero(
                           tag: _imageToShowTag,
-                          child: Image.asset(
-                            _imagePathToShow,
-                            scale: 0.6,
-                          ),
+                          child:
+                              Container(
+                                decoration: BoxDecoration(
+                                    gradient: new RadialGradient(
+                                        colors: [Colors.yellow, Colors.black],
+                                        center: Alignment(1.5, 0.2),
+                                        radius: 3.3,
+                                        stops: [0.0, 0.2]
+                                    ),
+                                    boxShadow: [new BoxShadow(
+                                        color: Colors.black54,
+                                        offset: new Offset(4.0, 4.0),
+                                        blurRadius: 4.0
+                                    )],
+//                                  color: Colors.indigoAccent,
+                                  border: Border.all(
+                                    color: Colors.tealAccent,
+                                    width: 2.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(15.0)
+                                ),
+                                child: ClipRRect(
+
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(5.0)
+                                  ),
+                                  child: Image.asset(
+                                      _imagePathToShow,
+          //                            scale: 0.8,
+                                      height: 150,
+                                      width: 130,
+                                      fit: BoxFit.scaleDown,
+                                    ),
+                                ),
+                              ),
+//                            (_imagePathToShow != "")
+//                              ?
+//                              Image.asset(
+//                                _imagePathToShow,
+//                                scale: 0.6,
+//                              )
+//                             :  Image.asset(
+//                              "assets/cardbox01.jpg",
+//                              scale: 0.6,
+//                            ), //Center( child: CircularProgressIndicator()) ,
                           transitionOnUserGestures: true,
                         ),
 
@@ -795,14 +836,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget wheelList(List<Gunpla> gunplas) {
-//    var boxart = "assets/gunpla/${gunplas[0].boxArtPath}";
-//    _imageToShow = new AssetImage("${boxart}");
-////              _imagePathToShow = "assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png";
-//    _imagePathToShow = boxart;
-////              _imageToShowTag = "dq${(index+1).toString().padLeft(2, '0')}";
-//    var name = gunplas[0].name;
-//    _imageToShowTag = name;
-
     return Visibility(
       visible: true, //_wheelListVisibility,
       child:
