@@ -428,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     //            height: MediaQuery.of(context).size.height / 2,
 //                                width: MediaQuery.of(context).size.width,
 //                  width: 200,
-                    margin: EdgeInsets.only(top: 50, right: 50),
+                    margin: EdgeInsets.only(top: 80, right: 50),
 
                     child: SizedBox(
                       child: GestureDetector(
@@ -463,8 +463,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   child: Image.asset(
                                       _imagePathToShow,
           //                            scale: 0.8,
-                                      height: 150,
-                                      width: 130,
+                                      height: 170,
+                                      width: 170,
                                       fit: BoxFit.scaleDown,
                                     ),
                                 ),
@@ -786,7 +786,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //      if(i > 9) {
 //        runner = i.toString();
 //      }
-      print("${runner} - ${name} - [${boxart}]");
+//      print("${runner} - ${name} - [${boxart}]");
       listtiles.add(GestureDetector(
 //          onTap: () {
 //            print('hello monster $i');
@@ -824,7 +824,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget buildWheelList() {
     return FutureBuilder(
-      future: DefaultAssetBundle.of(context).loadString('assets/json/re100.json'),
+//      future: DefaultAssetBundle.of(context).loadString('assets/json/re100.json'),
+//        future: DefaultAssetBundle.of(context).loadString('assets/json/hg.json'),
+        future: DefaultAssetBundle.of(context).loadString('assets/json/mg.json'),
+//        future: DefaultAssetBundle.of(context).loadString('assets/json/rg.json'),
+//        future: DefaultAssetBundle.of(context).loadString('assets/json/pg.json'),
       builder: (context, snapshot) {
         List<Gunpla> gunplas = parseJson(snapshot.data.toString());
         return !gunplas.isEmpty
