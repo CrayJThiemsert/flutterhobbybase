@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hobbybase/model/Grade.dart';
 import 'package:hobbybase/model/Gunpla.dart';
 import 'package:imagebutton/imagebutton.dart';
 import 'placeholder_widget.dart';
@@ -73,6 +74,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     Image.asset("assets/gunpla_grade/ic_realgrade_96.png"),
     Image.asset("assets/gunpla_grade/ic_mastergrade_96.png"),
     Image.asset("assets/gunpla_grade/ic_perfectgrade_96.png"),
+  ];
+
+  final List<Grade> _fabGrades = [
+    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
+    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
+    Grade(name: "HG", jsonpath: "assets/json/hg.json"),
+    Grade(name: "RE100", jsonpath: "assets/json/re100.json"),
+    Grade(name: "RG", jsonpath: "assets/json/rg.json"),
+    Grade(name: "MG", jsonpath: "assets/json/mg.json"),
+    Grade(name: "PG", jsonpath: "assets/json/pg.json"),
   ];
 
   Future<bool> _onWillPop() {
@@ -180,9 +191,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    print("Test get cloud firectore data: ");
+//    print("Test get cloud firectore data: ");
     // Test get cloud firestore data
-    getUsersData();
+//    getUsersData();
 
 
     return WillPopScope(
@@ -230,7 +241,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 1");
                   setState(() {
-                    _currentFabIndex = 0;
+//                    _currentFabIndex = 0;
+                    setCurrentFabSelected(0);
                   });
                   _wheelListVisibility = true;
                   fabKey.currentState.close();
@@ -244,7 +256,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 1");
                   setState(() {
-                    _currentFabIndex = 1;
+//                    _currentFabIndex = 1;
+                    setCurrentFabSelected(1);
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
@@ -259,7 +272,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 2");
                   setState(() {
-                    _currentFabIndex = 2;
+//                    _currentFabIndex = 2;
+                    setCurrentFabSelected(2);
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
@@ -274,7 +288,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 1");
                   setState(() {
-                    _currentFabIndex = 3;
+//                    _currentFabIndex = 3;
+                    setCurrentFabSelected(3);
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
@@ -289,7 +304,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 3");
                   setState(() {
-                    _currentFabIndex = 4;
+//                    _currentFabIndex = 4;
+                    setCurrentFabSelected(4);
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
@@ -304,7 +320,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 4. This one closes the menu on tap");
                   setState(() {
-                    _currentFabIndex = 5;
+//                    _currentFabIndex = 5;
+                    setCurrentFabSelected(5);
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
@@ -319,7 +336,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 onPressed: () {
                   //                  _showSnackBar(context, "You pressed 5");
                   setState(() {
-                    _currentFabIndex = 6;
+//                    _currentFabIndex = 6;
+                    setCurrentFabSelected(6);
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
@@ -376,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
    * create Mobile/Vertical View
    */
   Widget _homePhoneView() {
-    print('call _homePhoneView');
+//    print('call _homePhoneView');
     return SafeArea(
       top: _isEnabled,
       bottom: _isEnabled,
@@ -514,12 +532,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             height: 36,
                           ),
                           onTap: () {
-                            print('Pressed!!');
+
                             setState(() {
                               _wheelListVisibility = false;
                             });
 
                             _currentFabIndex = _currentFabIndex;
+
                             if(fabKey.currentState.isOpen) {
                               fabKey.currentState.close();
                             } else {
@@ -826,9 +845,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return FutureBuilder(
 //      future: DefaultAssetBundle.of(context).loadString('assets/json/re100.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/hg.json'),
-        future: DefaultAssetBundle.of(context).loadString('assets/json/mg.json'),
+//        future: DefaultAssetBundle.of(context).loadString('assets/json/mg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/rg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/pg.json'),
+        future: DefaultAssetBundle.of(context).loadString(_fabGrades[_currentFabIndex].jsonpath),
       builder: (context, snapshot) {
         List<Gunpla> gunplas = parseJson(snapshot.data.toString());
         return !gunplas.isEmpty
@@ -861,10 +881,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         height: MediaQuery.of(context).size.height / 2,
         width: 225, //MediaQuery.of(context).size.width - 120,
         child: ListWheelScrollView(
+
           onSelectedItemChanged: (index) {
             print('hello monster ${(index+1).toString().padLeft(2, '0')}');
             setState(() {
 //              _imageToShow = new AssetImage("assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png");
+              if(index > gunplas.length) {
+                index = 0;
+              }
               var boxart = "assets/gunpla/${gunplas[index].boxArtPath}";
               _imageToShow = new AssetImage("${boxart}");
 //              _imagePathToShow = "assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png";
@@ -876,7 +900,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               //                          .forward(); // tapping the button, starts the animation.
             });
           },
-          controller: _controller,
+//          controller: _controller,
           diameterRatio: 2.5,
           offAxisFraction: -1.5,
           itemExtent: 80,
@@ -900,6 +924,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     }
     final parsed = json.decode(response.toString()); //.cast<Map<String, dynamic>>();
     return parsed?.map<Gunpla>((json) => new Gunpla.fromJson(json))?.toList() ?? [];
+  }
+
+  void setCurrentFabSelected(int selectedFabIndex) {
+    _currentFabIndex = selectedFabIndex;
+
+    print("Pressed ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
   }
 }
 
