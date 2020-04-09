@@ -900,7 +900,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               //                          .forward(); // tapping the button, starts the animation.
             });
           },
-//          controller: _controller,
+//          controller: _controller, // not used controller in this case?
           diameterRatio: 2.5,
           offAxisFraction: -1.5,
           itemExtent: 80,
