@@ -6,6 +6,7 @@ import 'package:hobbybase/screen/homescreen.dart';
 import 'package:hobbybase/screen/sign_in_teddy.dart';
 
 import 'app_logo.dart';
+import 'model/User.dart';
 
 void main() => runApp( MaterialApp(
 //      initialRoute: '/',
@@ -19,12 +20,24 @@ void main() => runApp( MaterialApp(
       '/SignInScreen': (BuildContext context) =>
         FutureBuilder<FirebaseUser>(
           future: FirebaseAuth.instance.currentUser(),
-          builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot)  {
             if(snapshot.hasData) {
               FirebaseUser user = snapshot.data; // This is your user instance
               // is because there is user already logged
-              debugPrint("user.displayName=${user.email}");
-              return new HomeScreen();
+              debugPrint("user.displayName=${user.email} - ${user.displayName}");
+              String displayNameTemp = user.email.substring(0, user.email.indexOf('@'));
+
+              if(user.displayName == '') {
+                UserUpdateInfo userUpdateInfo = new UserUpdateInfo();
+                userUpdateInfo.displayName = displayNameTemp;
+                user.updateProfile(userUpdateInfo);
+              }
+
+//              User.getUserDB(user.email).then((userdb) {
+              User userdb = User(email: user.email, name: displayNameTemp, active: true);
+                return new HomeScreen(userdb);
+//              });
+
             } else {
               debugPrint("Session timeout!!");
               return new SignInTeddyScreen();

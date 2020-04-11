@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hobbybase/model/Grade.dart';
 import 'package:hobbybase/model/Gunpla.dart';
+import 'package:hobbybase/model/User.dart';
 import 'package:imagebutton/imagebutton.dart';
 import 'placeholder_widget.dart';
 import 'package:hobbybase/transition/scale_transition.dart';
@@ -16,9 +17,12 @@ import 'package:hobbybase/transition/slide_right_transition.dart';
 import 'package:hobbybase/screen/secondroute.dart';
 
 class HomeScreen extends StatefulWidget {
+  User user = User();
+  HomeScreen(this.user);
+
   @override
 //  _SafeAreaState createState() => _SafeAreaState();
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeScreenState createState() => _HomeScreenState(this.user);
 }
     // TODO: implement createState
 //    return null;
@@ -86,7 +90,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     Grade(name: "PG", jsonpath: "assets/json/pg.json"),
   ];
 
+  User user = User();
+  _HomeScreenState(this.user);
+
   Future<bool> _onWillPop() {
+
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -149,13 +157,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     // TODO: implement initState
+    getUserData();
+
     _wheelListVisibility = true;
 //    _imageToShow = AssetImage("assets/dq/dq01.png");
 //    _imagePathToShow = "assets/dq/dq01.png";
 //    _imageToShowTag = "dq01";
     _imageToShow = AssetImage("assets/cardboard01.png");
     _imagePathToShow = "assets/cardboard01.png";
-    _imageToShowTag = "";
+    _imageToShowTag = user.name;
 //    _animationController = AnimationController(
 //        vsync: this,
 //        duration: Duration(
@@ -440,78 +450,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ),
 
                   // Hero Image
-                  Container(
-//                    color: Colors.greenAccent,
-//                                alignment: Alignment.bottomLeft,
-                    //            height: MediaQuery.of(context).size.height / 2,
-//                                width: MediaQuery.of(context).size.width,
-//                  width: 200,
-                    margin: EdgeInsets.only(top: 80, right: 50),
+                  buildHeroFrame(),
 
-                    child: SizedBox(
-                      child: GestureDetector(
-                        child: Hero(
-                          tag: _imageToShowTag,
-                          child:
-                              Container(
-                                decoration: BoxDecoration(
-                                    gradient: new RadialGradient(
-                                        colors: [Colors.yellow, Colors.black],
-                                        center: Alignment(1.5, 0.2),
-                                        radius: 3.3,
-                                        stops: [0.0, 0.2]
-                                    ),
-                                    boxShadow: [new BoxShadow(
-                                        color: Colors.black54,
-                                        offset: new Offset(4.0, 4.0),
-                                        blurRadius: 4.0
-                                    )],
-//                                  color: Colors.indigoAccent,
-                                  border: Border.all(
-                                    color: Colors.tealAccent,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15.0)
-                                ),
-                                child: ClipRRect(
-
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(5.0)
-                                  ),
-                                  child: Image.asset(
-                                      _imagePathToShow,
-          //                            scale: 0.8,
-                                      height: 170,
-                                      width: 170,
-                                      fit: BoxFit.scaleDown,
-                                    ),
-                                ),
-                              ),
-//                            (_imagePathToShow != "")
-//                              ?
-//                              Image.asset(
-//                                _imagePathToShow,
-//                                scale: 0.6,
-//                              )
-//                             :  Image.asset(
-//                              "assets/cardbox01.jpg",
-//                              scale: 0.6,
-//                            ), //Center( child: CircularProgressIndicator()) ,
-                          transitionOnUserGestures: true,
-                        ),
-
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) {
-                            return DetailScreen(
-                              imageToShowHero: _imageToShowTag,
-                              imageToShowPath: _imagePathToShow,
-                            );
-                          }));
-                        },
-                      ),
-                    ),
-
-                  ),
 
                   // Grade Image
                   Container(
@@ -931,6 +871,125 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
     print("Pressed ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
   }
+
+  Widget buildHeroFrame() {
+    return // Hero Image
+      Container(
+        margin: EdgeInsets.only(top: 80, right: 50),
+
+        child: SizedBox(
+          child: GestureDetector(
+            child: Hero(
+              tag: _imageToShowTag,
+              child:
+                Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          gradient: new RadialGradient(
+                              colors: [Colors.yellow, Colors.black],
+                              center: Alignment(1.5, 0.2),
+                              radius: 3.3,
+                              stops: [0.0, 0.2]
+                          ),
+                          boxShadow: [new BoxShadow(
+                              color: Colors.black54,
+                              offset: new Offset(4.0, 4.0),
+                              blurRadius: 4.0
+                          )],
+      //                                  color: Colors.indigoAccent,
+                          border: Border.all(
+                            color: Colors.tealAccent,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0)
+                      ),
+                      child: ClipRRect(
+
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(5.0)
+                        ),
+                        child:
+                            Image.asset(
+                              _imagePathToShow,
+                              //                            scale: 0.8,
+                              height: 170,
+                              width: 170,
+                              fit: BoxFit.scaleDown,
+                            ),
+                      ),
+                    ),
+                    // Hero title
+                    Container(
+                      width: 170,
+                      padding: EdgeInsets.all(4.0),
+                      decoration: BoxDecoration(
+                          gradient: new RadialGradient(
+                              colors: [Colors.indigoAccent, Colors.indigo],
+                              center: Alignment(1.5, 0.2),
+                              radius: 3.3,
+                              stops: [0.0, 0.2]
+                          ),
+                          boxShadow: [new BoxShadow(
+                              color: Colors.black54,
+                              offset: new Offset(4.0, 4.0),
+                              blurRadius: 4.0
+                          )],
+                          //                                  color: Colors.indigoAccent,
+                          border: Border.all(
+                            color: Colors.purpleAccent,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0)
+                      ),
+                      child: ClipRRect(
+
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(5.0)
+                        ),
+                        child:
+                          Text(
+                            _imageToShowTag.toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: //Theme.of(context).textTheme.headline,
+                            TextStyle(
+
+                              fontSize: 12.0,
+                              color: Colors.white,
+                              fontFamily: 'K2D-BoldItalic'
+                            ),
+                          ),
+                      ),
+                    ),
+                  ],
+                ),
+              transitionOnUserGestures: true,
+            ),
+
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) {
+                return DetailScreen(
+                  imageToShowHero: _imageToShowTag,
+                  imageToShowPath: _imagePathToShow,
+                );
+              }));
+            },
+          ),
+        ),
+
+      );
+  }
+
+  Future<void> getUserData() {
+
+    User.getUserDB(user.email).then((userdb) {
+      user = userdb;
+      print('--- Current user is ${user.name} ---');
+      setState(() {
+        _imageToShowTag = user.name;
+      });
+    });
+  }
 }
 
 class DetailScreen extends StatelessWidget {
@@ -946,10 +1005,56 @@ class DetailScreen extends StatelessWidget {
         child: Center(
           child: Hero(
             tag: imageToShowHero,
-            child: Image.asset(
-              imageToShowPath,
-              scale: 0.5,
-            ),
+            child:
+              Column(
+                children: [
+                  Image.asset(
+                      imageToShowPath,
+                      scale: 0.5,
+                    ),
+                  Container(
+                    width: 170,
+                    padding: EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                        gradient: new RadialGradient(
+                            colors: [Colors.indigoAccent, Colors.indigo],
+                            center: Alignment(1.5, 0.2),
+                            radius: 3.3,
+                            stops: [0.0, 0.2]
+                        ),
+                        boxShadow: [new BoxShadow(
+                            color: Colors.black54,
+                            offset: new Offset(4.0, 4.0),
+                            blurRadius: 4.0
+                        )],
+                        //                                  color: Colors.indigoAccent,
+                        border: Border.all(
+                          color: Colors.purpleAccent,
+                          width: 2.0,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0)
+                    ),
+                    child: ClipRRect(
+
+                      borderRadius: BorderRadius.all(
+                          Radius.circular(5.0)
+                      ),
+                      child:
+                      Text(
+                        imageToShowHero.toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: //Theme.of(context).textTheme.headline,
+                        TextStyle(
+
+                            fontSize: 12.0,
+                            color: Colors.white,
+                            fontFamily: 'K2D-BoldItalic'
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             transitionOnUserGestures: true,
           ),
         ),

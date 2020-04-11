@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hobbybase/model/User.dart';
 import 'package:hobbybase/widget/masked_text.dart';
 import 'signin_button.dart';
 import 'teddy_controller.dart';
@@ -88,12 +90,12 @@ class _SignInTeddyScreenState extends State<SignInTeddyScreen> with SingleTicker
   String _verificationId;
   Timer _codeTimer;
 
-  void navigationPage() {
+  void navigationPage(User user) {
 //    Navigator.of(context).pushNamed('/HomeScreen');
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => HomeScreen() ));
+            builder: (context) => HomeScreen(user) ));
   }
 
   Widget _showSelectedContainer() {
@@ -159,7 +161,7 @@ class _SignInTeddyScreenState extends State<SignInTeddyScreen> with SingleTicker
                         onPressed: () {
   //                                              if(_teddyController.submitPassword()) {
                           if(_teddyController.signInWithEmailAndPassword() != null) {
-                            navigationPage();
+                            getUserDB(_teddyController.getEmail());
                           }
                         }),
                     GestureDetector(
@@ -285,7 +287,7 @@ class _SignInTeddyScreenState extends State<SignInTeddyScreen> with SingleTicker
                                   color: Colors.white)),
                           onPressed: () {
                             _teddyController.signUpWithEmailAndPassword(context).then((FirebaseUser user) =>  
-                              navigationPage() ).catchError((error) =>
+                              createNewUserDB(_teddyController.getEmail()) ).catchError((error) =>
                               {
                                 AwesomeDialog(
                                   context: context,
@@ -507,7 +509,7 @@ class _SignInTeddyScreenState extends State<SignInTeddyScreen> with SingleTicker
         // Example: authenticate with your own API, use the data gathered
         // to post your profile/user, etc.
 
-        navigationPage();
+        getUserDB(_teddyController.getEmail());
 //        Navigator.of(context).pushReplacement(CupertinoPageRoute(
 //          builder: (context) => MainScreen(
 //            googleUser: _googleUser,
@@ -689,6 +691,68 @@ class _SignInTeddyScreenState extends State<SignInTeddyScreen> with SingleTicker
   _playAnimation() {
     _controller.reset();
     _controller.forward();
+  }
+
+  Future<User> createNewUserDB(String email) async {
+//    String email = _teddyController.getEmail();
+    try {
+      String username = email.substring(0, email.indexOf('@'));
+      User user = new User(
+        email: email,
+        name: username,
+      );
+      var db = Firestore.instance;
+
+      await db.collection("users")
+          .document(email)
+          .setData({
+        'email': user.email,
+        'username': user.name,
+
+        'role': 'user',
+        'sent_notification': true,
+        'uid': user.email,
+        'username': user.name,
+        'created_when': Timestamp.now(),
+        'created_by': user.email,
+        'updated_when': Timestamp.now(),
+        'updated_by': user.email,
+        'active': true,
+      });
+
+      navigationPage(user);
+      return user;
+    } on Exception catch(err) {
+      print('Add new user error: $err');
+      return User();
+    } finally {
+
+      print('End of createNewUserDB()');
+    }
+  }
+
+  Future<User> getUserDB(String email) async {
+    try {
+//      String username = email.substring(0, email.indexOf('@'));
+//      User user = new User(
+//        email: email,
+//        name: username,
+//      );
+      var db = Firestore.instance;
+
+      var snap = await db.collection("users")
+          .document(email)
+          .get();
+      User user = User.fromMap(snap.data);
+      navigationPage(user);
+      return user;
+    } on Exception catch(err) {
+      print('Add new user error: $err');
+      return User();
+    } finally {
+
+      print('End of getUserDB()');
+    }
   }
 }
 

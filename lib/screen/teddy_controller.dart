@@ -117,6 +117,10 @@ class TeddyController extends FlareControls {
     _email = value;
   }
 
+  String getEmail() {
+    return _email;
+  }
+
   void setPassword(String value) {
     _password = value;
   }
@@ -169,13 +173,13 @@ class TeddyController extends FlareControls {
     return result;
   }
 
-  void navigationPage(BuildContext context) {
-//    Navigator.of(context).pushNamed('/HomeScreen');
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => HomeScreen() ));
-  }
+//  void navigationPage(BuildContext context) {
+////    Navigator.of(context).pushNamed('/HomeScreen');
+//    Navigator.push(
+//        context,
+//        MaterialPageRoute(
+//            builder: (context) => HomeScreen() ));
+//  }
 
   Future<FirebaseUser> signUpWithEmailAndPassword(BuildContext context) async {
     bool result = false;
