@@ -91,6 +91,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   ];
 
   User user = User();
+
+  List<bool> _selections = List.generate(3, (_) => false);
   _HomeScreenState(this.user);
 
   Future<bool> _onWillPop() {
@@ -205,6 +207,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     // Test get cloud firestore data
 //    getUsersData();
 
+//    WidgetsFlutterBinding.ensureInitialized();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -884,6 +888,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               child:
                 Column(
                   children: [
+                    // Background & Hero Image
                     Container(
                       decoration: BoxDecoration(
                           gradient: new RadialGradient(
@@ -919,7 +924,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             ),
                       ),
                     ),
-                    // Hero title
+                    // Hero Caption
                     Container(
                       width: 170,
                       padding: EdgeInsets.all(4.0),
@@ -959,6 +964,68 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               fontFamily: 'K2D-BoldItalic'
                             ),
                           ),
+                      ),
+                    ),
+                    // Action buttons (Liked, Owned, Shared)
+                    Container(
+                      width: 170,
+
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.all(4.0),
+
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(3.0)
+//                          gradient: new RadialGradient(
+//                              colors: [Colors.indigoAccent, Colors.indigo],
+//                              center: Alignment(1.5, 0.2),
+//                              radius: 3.3,
+//                              stops: [0.0, 0.2]
+//                          ),
+//                          boxShadow: [new BoxShadow(
+//                              color: Colors.black54,
+//                              offset: new Offset(4.0, 4.0),
+//                              blurRadius: 4.0
+//                          )],
+//                          //                                  color: Colors.indigoAccent,
+//                          border: Border.all(
+//                            color: Colors.purpleAccent,
+//                            width: 2.0,
+//                          ),
+//                          borderRadius: BorderRadius.circular(8.0)
+                      ),
+                      child: ClipRRect(
+
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(5.0)
+                        ),
+                        child:
+                        ToggleButtons(
+                          children: <Widget>[
+                            Icon(Icons.thumb_up),
+                            Icon(Icons.pets),
+                            Icon(Icons.record_voice_over),
+//                            Image.asset('assets/action/baseline_thumb_up_black_48dp.png' , width: 22,),
+//                            Image.asset('assets/action/baseline_pets_black_48dp.png', width: 22,),
+//                            Image.asset('assets/action/baseline_record_voice_over_black_48dp.png', width: 22,),
+                          ],
+
+                          color: Colors.black26,
+                          selectedColor: Colors.white,
+                          fillColor: Colors.redAccent,
+
+                          borderRadius: BorderRadius.circular(15),
+                          borderWidth: 2,
+                          borderColor: Colors.lime,
+                          selectedBorderColor: Colors.lime,
+                          isSelected: _selections,
+                          onPressed: (int index) {
+                            setState(() {
+                              _selections[index] = !_selections[index];
+                              print('${index} - ${_selections[index]}');
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ],

@@ -8,7 +8,8 @@ import 'package:hobbybase/screen/sign_in_teddy.dart';
 import 'app_logo.dart';
 import 'model/User.dart';
 
-void main() => runApp( MaterialApp(
+void main() =>
+    runApp( MaterialApp(
 //      initialRoute: '/',
 //      routes: {
 //        '/': (context) => SplashScreenAnimation(),

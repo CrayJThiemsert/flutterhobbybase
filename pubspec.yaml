@@ -75,6 +75,7 @@ flutter:
     - assets/gunpla/mg/
     - assets/gunpla/pg/
     - assets/gunpla/rg/
+    - assets/action/
 
   fonts:
     - family: K2D-BoldItalic
