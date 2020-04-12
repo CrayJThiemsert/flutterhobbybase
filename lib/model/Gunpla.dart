@@ -5,7 +5,7 @@ import 'package:hobbybase/model/ObjectBase.dart';
 class Gunpla {
   String name;
   String grade;
-  String boxArtPath;
+  String box_art_path;
   String priceYen;
   String priceThb;
   String series;
@@ -20,7 +20,7 @@ class Gunpla {
   Gunpla(
       {this.name,
         this.grade,
-        this.boxArtPath,
+        this.box_art_path,
         this.priceYen,
         this.priceThb,
         this.series,
@@ -35,7 +35,7 @@ class Gunpla {
   Gunpla.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     grade = json['grade'];
-    boxArtPath = json['box_art_path'];
+    box_art_path = json['box_art_path'];
     priceYen = json['price_yen'];
     priceThb = json['price_thb'];
     series = json['series'];
@@ -52,7 +52,7 @@ class Gunpla {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
     data['grade'] = this.grade;
-    data['box_art_path'] = this.boxArtPath;
+    data['box_art_path'] = this.box_art_path;
     data['price_yen'] = this.priceYen;
     data['price_thb'] = this.priceThb;
     data['series'] = this.series;

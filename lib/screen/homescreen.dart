@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hobbybase/model/Grade.dart';
 import 'package:hobbybase/model/Gunpla.dart';
+import 'package:hobbybase/model/GunplaAction.dart';
 import 'package:hobbybase/model/User.dart';
 import 'package:imagebutton/imagebutton.dart';
 import 'placeholder_widget.dart';
@@ -42,9 +44,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   AssetImage _imageToShow;
   String _imagePathToShow = "assets/cardboard01.png"; //"assets/dq/dq01.png";
   String _imageToShowTag = ""; //"demoTag";
+  String _imageToShowBoxArt = "";
 
   int _currentFabIndex = 1;
   bool _wheelListVisibility = false;
+  List<Gunpla> gunplas = List<Gunpla>(); // parseJson(snapshot.data.toString());
 
   int _currentIndex = 0;
   final List<Widget> _children = [
@@ -92,7 +96,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   User user = User();
 
-  List<bool> _selections = List.generate(3, (_) => false);
+  List<bool> _actionSelections = List.generate(3, (_) => false);
+  HashMap _gunplaActions = HashMap<String, GunplaAction>();
+  bool _isChangeGrade = false;
+
   _HomeScreenState(this.user);
 
   Future<bool> _onWillPop() {
@@ -161,6 +168,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     // TODO: implement initState
     getUserData();
 
+    _isChangeGrade = true;
     _wheelListVisibility = true;
 //    _imageToShow = AssetImage("assets/dq/dq01.png");
 //    _imagePathToShow = "assets/dq/dq01.png";
@@ -408,7 +416,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
    * create Mobile/Vertical View
    */
   Widget _homePhoneView() {
-//    print('call _homePhoneView');
+    print('call _homePhoneView');
     return SafeArea(
       top: _isEnabled,
       bottom: _isEnabled,
@@ -708,9 +716,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //      }
 //      debugPrint(runner);
       listtiles.add(GestureDetector(
-//          onTap: () {
-//            print('hello monster $i');
-//          },
           child: ListTile(
             dense: true,
             contentPadding: EdgeInsets.symmetric(horizontal: 40.0),
@@ -745,15 +750,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     for(var i = 0; i < gunplas.length; i++) {
       var runner = i.toString().padLeft(2, '0');
       var name = gunplas[i].name.toUpperCase();
-      var boxart = "assets/gunpla/${gunplas[i].boxArtPath}";
+      var boxart = "assets/gunpla/${gunplas[i].box_art_path}";
 //      if(i > 9) {
 //        runner = i.toString();
 //      }
 //      print("${runner} - ${name} - [${boxart}]");
       listtiles.add(GestureDetector(
-//          onTap: () {
-//            print('hello monster $i');
-//          },
           child: ListTile(
             dense: true,
             contentPadding: EdgeInsets.symmetric(horizontal: 40.0),
@@ -786,16 +788,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget buildWheelList() {
+
     return FutureBuilder(
 //      future: DefaultAssetBundle.of(context).loadString('assets/json/re100.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/hg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/mg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/rg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/pg.json'),
-        future: DefaultAssetBundle.of(context).loadString(_fabGrades[_currentFabIndex].jsonpath),
-      builder: (context, snapshot) {
-        List<Gunpla> gunplas = parseJson(snapshot.data.toString());
-        return !gunplas.isEmpty
+        future: DefaultAssetBundle.of(context).loadString(_fabGrades[_currentFabIndex].jsonpath) ,
+        builder: (context, snapshot) {
+          if(_isChangeGrade) {
+            gunplas = parseJson(snapshot.data.toString());
+            initGunplaActionMap(gunplas);
+          }
+
+          return !gunplas.isEmpty
             ? wheelList(gunplas)
             : Center( child: CircularProgressIndicator());
       });
@@ -804,6 +811,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget wheelList(List<Gunpla> gunplas) {
+
     return Visibility(
       visible: true, //_wheelListVisibility,
       child:
@@ -829,19 +837,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           onSelectedItemChanged: (index) {
             print('hello monster ${(index+1).toString().padLeft(2, '0')}');
             setState(() {
+
 //              _imageToShow = new AssetImage("assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png");
               if(index > gunplas.length) {
                 index = 0;
               }
-              var boxart = "assets/gunpla/${gunplas[index].boxArtPath}";
+              var boxart = "assets/gunpla/${gunplas[index].box_art_path}";
               _imageToShow = new AssetImage("${boxart}");
 //              _imagePathToShow = "assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png";
               _imagePathToShow = boxart;
 //              _imageToShowTag = "dq${(index+1).toString().padLeft(2, '0')}";
               var name = gunplas[index].name;
               _imageToShowTag = name;
-              //                      _animationController
-              //                          .forward(); // tapping the button, starts the animation.
+              _imageToShowBoxArt = gunplas[index].box_art_path;
+              clearActionToggleButtons();
             });
           },
 //          controller: _controller, // not used controller in this case?
@@ -871,9 +880,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   void setCurrentFabSelected(int selectedFabIndex) {
-    _currentFabIndex = selectedFabIndex;
+    if(_currentFabIndex != selectedFabIndex) {
+      _currentFabIndex = selectedFabIndex;
+      _isChangeGrade = true;
+    } else {
+      _isChangeGrade = false;
+    }
 
     print("Pressed ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
+
+
   }
 
   Widget buildHeroFrame() {
@@ -966,7 +982,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           ),
                       ),
                     ),
-                    // Action buttons (Liked, Owned, Shared)
+                    // Toggle Action buttons (Liked, Owned, Shared)
                     Container(
                       width: 170,
 
@@ -1018,11 +1034,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           borderWidth: 2,
                           borderColor: Colors.lime,
                           selectedBorderColor: Colors.lime,
-                          isSelected: _selections,
+                          isSelected: _actionSelections,
                           onPressed: (int index) {
                             setState(() {
-                              _selections[index] = !_selections[index];
-                              print('${index} - ${_selections[index]}');
+                              _actionSelections[index] = !_actionSelections[index];
+                              print('${index} - ${_actionSelections[index]}');
+                              updateSelectedActionMap(index);
                             });
                           },
                         ),
@@ -1056,6 +1073,77 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         _imageToShowTag = user.name;
       });
     });
+  }
+
+  void clearActionToggleButtons() {
+    setState(() {
+      for (var i = 0; i < _actionSelections.length; i++) {
+        _actionSelections[i] = false;
+      }
+      // Set Actions from select gunpla
+      if (_imageToShowBoxArt != null && _gunplaActions.containsKey(_imageToShowBoxArt)) {
+        print('Grade[${_fabGrades[_currentFabIndex].name}] | _isChangeGrade=${_isChangeGrade} | _imageToShowBoxArt[${_imageToShowBoxArt}]');
+        print('refresh - is_liked=${_gunplaActions[_imageToShowBoxArt].is_liked} is_owned=${_gunplaActions[_imageToShowBoxArt].is_owned} is_shared=${_gunplaActions[_imageToShowBoxArt].is_shared} ');
+        GunplaAction gunplaAction = _gunplaActions[_imageToShowBoxArt];
+        _actionSelections[0] = gunplaAction.is_liked;
+        _actionSelections[1] = gunplaAction.is_owned;
+        _actionSelections[2] = gunplaAction.is_shared;
+      }
+    });
+
+  }
+
+  void initGunplaActionMap(List<Gunpla> gunplas) {
+    print('call initGunplaActionMap +++++');
+    _gunplaActions.clear();
+
+    for(var i=0; i < gunplas.length; i++) {
+
+//      if(i == 5) { // For test only, can deleted after done
+//        _gunplaActions[gunplas[i].box_art_path] = GunplaAction(
+//          gunpla: gunplas[i],
+//          is_liked: false,
+//          is_owned: true,
+//          is_shared: false,
+//        );
+//      } else {
+        _gunplaActions[gunplas[i].box_art_path] = GunplaAction(
+          gunpla: gunplas[i],
+          is_liked: false,
+          is_owned: false,
+          is_shared: false,
+        );
+//      }
+
+    }
+    if(gunplas.length > 0 && _fabGrades[_currentFabIndex].name == gunplas[0].grade) {
+      _isChangeGrade = false;
+    }
+  }
+
+  /**
+   * Update select Action back to selected gunpla Map
+   */
+  void updateSelectedActionMap(int index) {
+    print('before updated - ANA is_shared=${_gunplaActions[_imageToShowBoxArt].is_shared}');
+    if (_imageToShowBoxArt != null && _gunplaActions.containsKey(_imageToShowBoxArt)) {
+      GunplaAction gunplaAction = _gunplaActions[_imageToShowBoxArt];
+      switch(index) {
+        case 0:
+          gunplaAction.is_liked = _actionSelections[index];
+          _gunplaActions[_imageToShowBoxArt] = gunplaAction;
+          break;
+        case 1:
+          gunplaAction.is_owned = _actionSelections[index];
+          _gunplaActions[_imageToShowBoxArt] = gunplaAction;
+          break;
+        case 2:
+          gunplaAction.is_shared = _actionSelections[index];
+          _gunplaActions[_imageToShowBoxArt] = gunplaAction;
+          break;
+      }
+    }
+    print('after updated - ANA is_shared=${_gunplaActions[_imageToShowBoxArt].is_shared}');
   }
 }
 
