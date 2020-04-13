@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:hobbybase/model/Grade.dart';
 import 'package:hobbybase/model/Gunpla.dart';
 import 'package:hobbybase/model/GunplaAction.dart';
+import 'package:hobbybase/model/Owned.dart';
 import 'package:hobbybase/model/User.dart';
 import 'package:imagebutton/imagebutton.dart';
 import 'placeholder_widget.dart';
@@ -26,11 +27,12 @@ class HomeScreen extends StatefulWidget {
 //  _SafeAreaState createState() => _SafeAreaState();
   _HomeScreenState createState() => _HomeScreenState(this.user);
 }
-    // TODO: implement createState
+// TODO: implement createState
 //    return null;
 //  }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
 
   final FixedExtentScrollController _controller = FixedExtentScrollController();
@@ -97,31 +99,31 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   User user = User();
 
   List<bool> _actionSelections = List.generate(3, (_) => false);
-  HashMap _gunplaActions = HashMap<String, GunplaAction>();
+  HashMap _gunplaActionMap = HashMap<String, GunplaAction>();
+  HashMap _gunplaOwnedMap = HashMap<String, Owned>();
   bool _isChangeGrade = false;
 
   _HomeScreenState(this.user);
 
   Future<bool> _onWillPop() {
-
     return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Are you sure?'),
-        content: Text('Do you want to exit an App'),
-        actions: <Widget>[
-          FlatButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('Do you want to exit an App'),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('No'),
+              ),
+              FlatButton(
+                onPressed: () => exit(0),
+                /*Navigator.of(context).pop(true)*/
+                child: Text('Yes'),
+              ),
+            ],
           ),
-          FlatButton(
-            onPressed: () => exit(0),
-            /*Navigator.of(context).pop(true)*/
-            child: Text('Yes'),
-          ),
-        ],
-      ),
-    ) ??
+        ) ??
         false;
   }
 
@@ -129,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     setState(() {
       _currentIndex = index;
       debugPrint("_currentIndex[${_currentIndex}]");
-      if(_currentIndex == 2) {
+      if (_currentIndex == 2) {
         debugPrint("Do logoff");
         signOut();
       }
@@ -138,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   IconData displayFabOpenIcon() {
     setState(() {
-      switch(_currentFabIndex) {
+      switch (_currentFabIndex) {
         case 0:
           return Icons.airplanemode_active;
         case 1:
@@ -151,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           return Icons.visibility;
         case 5:
           return Icons.video_call;
-        default :
+        default:
           return Icons.menu;
       }
     });
@@ -159,7 +161,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut().then((_) {
-      Navigator.of(context).pushNamedAndRemoveUntil("/SignInScreen", ModalRoute.withName("/HomeScreen"));
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          "/SignInScreen", ModalRoute.withName("/HomeScreen"));
     });
   }
 
@@ -167,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   void initState() {
     // TODO: implement initState
     getUserData();
+    getOwnedDataDB();
 
     _isChangeGrade = true;
     _wheelListVisibility = true;
@@ -203,8 +207,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     Firestore.instance
         .collection('users')
         .snapshots()
-        .listen((data) =>
-          data.documents.forEach((doc) => print(doc["uid"])));
+        .listen((data) => data.documents.forEach((doc) => print(doc["uid"])));
   }
 
   @override
@@ -221,7 +224,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-
 //      appBar: AppBar(
 //        title: Text('First Routex'),
 //      ),
@@ -230,8 +232,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //              Container(
 //                padding: EdgeInsets.only(top: 32.0, left: 8.0),
 //                child:
-          FabCircularMenu(
-
+              FabCircularMenu(
             key: fabKey,
             // Cannot be `Alignment.center`
             alignment: Alignment.topLeft,
@@ -240,7 +241,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ringWidth: 70.0,
             fabSize: 64.0,
             fabElevation: 1.0,
-
 
             // Also can use specific color based on weather
             // the menu is open or not:
@@ -283,7 +283,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
-
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -299,7 +298,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
-
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -315,7 +313,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
-
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -331,7 +328,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
-
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -347,7 +343,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
-
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -363,7 +358,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     _wheelListVisibility = true;
                     fabKey.currentState.close();
                   });
-
                 },
                 shape: CircleBorder(),
 //                      padding: const EdgeInsets.all(24.0),
@@ -373,12 +367,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           ),
         ),
         body: LayoutBuilder(
-
           builder: (context, constraints) {
-            if(constraints.maxWidth < 600) {
+            if (constraints.maxWidth < 600) {
               // Mobile/Vertical
               return _homePhoneView();
-
             } else {
               // Tablet/Horizontal
               return _homeTabletView();
@@ -402,14 +394,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //                title: Text('Profile')
 //            ),
             new BottomNavigationBarItem(
-                icon: Icon(Icons.settings_power),
-                title: Text('Logoff')
-            )
+                icon: Icon(Icons.settings_power), title: Text('Logoff'))
           ],
         ),
       ),
     );
-
   }
 
   /**
@@ -423,27 +412,24 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       left: _isEnabled,
       right: _isEnabled,
       minimum: const EdgeInsets.all(2.0),
-
       child: Column(
-
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           // Top area for Hero & Wheel List
           Container(
-
             decoration: new BoxDecoration(
 //              color: Colors.cyan,
               gradient: new RadialGradient(
-                colors: [Colors.blueGrey, Colors.white],
-                center: Alignment(-1.5, -0.2),
-                radius: 3.3,
-                stops: [0.0, 0.2]
-              ),
-              boxShadow: [new BoxShadow(
-                  color: Colors.black54,
-                  offset: new Offset(4.0, 4.0),
-                  blurRadius: 4.0
-              )],
+                  colors: [Colors.blueGrey, Colors.white],
+                  center: Alignment(-1.5, -0.2),
+                  radius: 3.3,
+                  stops: [0.0, 0.2]),
+              boxShadow: [
+                new BoxShadow(
+                    color: Colors.black54,
+                    offset: new Offset(4.0, 4.0),
+                    blurRadius: 4.0)
+              ],
             ),
             child: Container(
               padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 6.0),
@@ -454,50 +440,43 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   // Wheel list
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
-
                     children: <Widget>[
                       buildWheelList(),
-
                     ],
                   ),
 
                   // Hero Image
                   buildHeroFrame(),
 
-
                   // Grade Image
                   Container(
                     margin: EdgeInsets.only(top: 8.0, left: 8.0),
-                    child:
-                    Card(
+                    child: Card(
                       elevation: 15.0,
-                      child:
-                        GestureDetector(
-                          child: SizedBox(
-                            child:
-                              FittedBox(
-                                alignment: Alignment.center,
-                                fit: BoxFit.fill,
-                                child:  _fabImages[_currentFabIndex],
-                              ),
-                            width: 60,
-                            height: 36,
+                      child: GestureDetector(
+                        child: SizedBox(
+                          child: FittedBox(
+                            alignment: Alignment.center,
+                            fit: BoxFit.fill,
+                            child: _fabImages[_currentFabIndex],
                           ),
-                          onTap: () {
-
-                            setState(() {
-                              _wheelListVisibility = false;
-                            });
-
-                            _currentFabIndex = _currentFabIndex;
-
-                            if(fabKey.currentState.isOpen) {
-                              fabKey.currentState.close();
-                            } else {
-                              fabKey.currentState.open();
-                            }
-                          },
+                          width: 60,
+                          height: 36,
                         ),
+                        onTap: () {
+                          setState(() {
+                            _wheelListVisibility = false;
+                          });
+
+                          _currentFabIndex = _currentFabIndex;
+
+                          if (fabKey.currentState.isOpen) {
+                            fabKey.currentState.close();
+                          } else {
+                            fabKey.currentState.open();
+                          }
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -509,14 +488,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             child: Container(
 //            height: 200,
               color: Colors.amberAccent,
-              child:  _children[_currentIndex],
+              child: _children[_currentIndex],
             ),
           )
         ],
       ),
     );
   }
-
 
   /**
    * create Mobile/Vertical View
@@ -537,7 +515,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             color: Colors.orange,
             child: Text(
               "Phone View!! This widget is below safe area. If you remove the SafeArea "
-                  "widget then this text will be behind the notch.",
+              "widget then this text will be behind the notch.",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white),
             ),
@@ -600,7 +578,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             color: Colors.blue,
             child: Text(
               "Tablet View!! This widget is below safe area. If you remove the SafeArea "
-                  "widget then this text will be behind the notch.",
+              "widget then this text will be behind the notch.",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white),
             ),
@@ -663,7 +641,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             color: Colors.blue,
             child: Text(
               "Tablet View!! This widget is below safe area. If you remove the SafeArea "
-                  "widget then this text will be behind the notch.",
+              "widget then this text will be behind the notch.",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white),
             ),
@@ -709,7 +687,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   List<Widget> _homeListWheel(BuildContext context) {
     List<Widget> listtiles = [];
-    for(var i = 1; i <= 82; i++) {
+    for (var i = 1; i <= 82; i++) {
       var runner = i.toString().padLeft(2, '0');
 //      if(i > 9) {
 //        runner = i.toString();
@@ -717,10 +695,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //      debugPrint(runner);
       listtiles.add(GestureDetector(
           child: ListTile(
-            dense: true,
-            contentPadding: EdgeInsets.symmetric(horizontal: 40.0),
-            leading: new Image.asset("assets/dq/dq${runner}.png"), //Icon(Icons.portrait),
-            title: Text("Monster-${runner}"),
+        dense: true,
+        contentPadding: EdgeInsets.symmetric(horizontal: 40.0),
+        leading: new Image.asset(
+            "assets/dq/dq${runner}.png"), //Icon(Icons.portrait),
+        title: Text("Monster-${runner}"),
 //            GestureDetector(
 //              onTap: () {
 //                print('tap monster $i');
@@ -733,21 +712,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //              ),
 //            ),
 
-            subtitle: Text("Beautiful View..!"),
-    //      trailing: Icon(Icons.arrow_forward_ios),
+        subtitle: Text("Beautiful View..!"),
+        //      trailing: Icon(Icons.arrow_forward_ios),
 //            onTap: () {
 //              print('hello ${runner}');
 //            },
       )));
     }
 
-
     return listtiles;
   }
 
   List<Widget> _gunplaListWheel(BuildContext context, List<Gunpla> gunplas) {
     List<Widget> listtiles = [];
-    for(var i = 0; i < gunplas.length; i++) {
+    for (var i = 0; i < gunplas.length; i++) {
       var runner = i.toString().padLeft(2, '0');
       var name = gunplas[i].name.toUpperCase();
       var boxart = "assets/gunpla/${gunplas[i].box_art_path}";
@@ -757,12 +735,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //      print("${runner} - ${name} - [${boxart}]");
       listtiles.add(GestureDetector(
           child: ListTile(
-            dense: true,
-            contentPadding: EdgeInsets.symmetric(horizontal: 40.0),
-            // leading = Image icon on the left of tile
+        dense: true,
+        contentPadding: EdgeInsets.symmetric(horizontal: 40.0),
+        // leading = Image icon on the left of tile
 //            leading: new Image.asset("assets/dq/dq${runner}.png"), //Icon(Icons.portrait),
-            leading: new Image.asset(boxart),
-            title: Text("${runner} - ${name}"),
+        leading: new Image.asset(boxart),
+        title: Text("${runner} - ${name}"),
 //            GestureDetector(
 //              onTap: () {
 //                print('tap monster $i');
@@ -775,57 +753,53 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //              ),
 //            ),
 
-            subtitle: Text("Beautiful View..!"),
-            //      trailing: Icon(Icons.arrow_forward_ios),
+        subtitle: Text("Beautiful View..!"),
+        //      trailing: Icon(Icons.arrow_forward_ios),
 //            onTap: () {
 //              print('hello ${runner}');
 //            },
-          )));
+      )));
     }
-
 
     return listtiles;
   }
 
   Widget buildWheelList() {
-
     return FutureBuilder(
 //      future: DefaultAssetBundle.of(context).loadString('assets/json/re100.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/hg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/mg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/rg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/pg.json'),
-        future: DefaultAssetBundle.of(context).loadString(_fabGrades[_currentFabIndex].jsonpath) ,
+        future: DefaultAssetBundle.of(context)
+            .loadString(_fabGrades[_currentFabIndex].jsonpath),
         builder: (context, snapshot) {
-          if(_isChangeGrade) {
+          if (_isChangeGrade) {
             gunplas = parseJson(snapshot.data.toString());
             initGunplaActionMap(gunplas);
           }
 
           return !gunplas.isEmpty
-            ? wheelList(gunplas)
-            : Center( child: CircularProgressIndicator());
-      });
-
-
+              ? wheelList(gunplas)
+              : Center(child: CircularProgressIndicator());
+        });
   }
 
   Widget wheelList(List<Gunpla> gunplas) {
-
     return Visibility(
       visible: true, //_wheelListVisibility,
-      child:
-      Container(
+      child: Container(
         decoration: new BoxDecoration(
           color: Colors.indigo,
           gradient: new LinearGradient(
             colors: [Colors.white, Colors.cyan],
           ),
-          boxShadow: [new BoxShadow(
-              color: Colors.black54,
-              offset: new Offset(4.0, 4.0),
-              blurRadius: 4.0
-          )],
+          boxShadow: [
+            new BoxShadow(
+                color: Colors.black54,
+                offset: new Offset(4.0, 4.0),
+                blurRadius: 4.0)
+          ],
         ),
 
         //            alignment: Alignment.center,
@@ -833,13 +807,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         height: MediaQuery.of(context).size.height / 2,
         width: 225, //MediaQuery.of(context).size.width - 120,
         child: ListWheelScrollView(
-
           onSelectedItemChanged: (index) {
-            print('hello monster ${(index+1).toString().padLeft(2, '0')}');
-            setState(() {
+            print('hello monster ${(index + 1).toString().padLeft(2, '0')}');
+            print(
+                'Here getOwnedDataDB ${_gunplaOwnedMap.length} records');
 
+            setState(() {
 //              _imageToShow = new AssetImage("assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png");
-              if(index > gunplas.length) {
+              if (index > gunplas.length) {
                 index = 0;
               }
               var boxart = "assets/gunpla/${gunplas[index].box_art_path}";
@@ -860,138 +835,122 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           //              magnification: 1.0,
           squeeze: 1.0,
           //              useMagnifier: true,
-          physics:  FixedExtentScrollPhysics(), // BouncingScrollPhysics()
+          physics: FixedExtentScrollPhysics(), // BouncingScrollPhysics()
           children: ListTile.divideTiles(
             context: context,
             tiles: _gunplaListWheel(context, gunplas), //List of widgets,
           ).toList(),
-
         ),
       ),
     );
   }
 
   List<Gunpla> parseJson(String response) {
-    if(response == null) {
+    if (response == null) {
       return [];
     }
-    final parsed = json.decode(response.toString()); //.cast<Map<String, dynamic>>();
-    return parsed?.map<Gunpla>((json) => new Gunpla.fromJson(json))?.toList() ?? [];
+    final parsed =
+        json.decode(response.toString()); //.cast<Map<String, dynamic>>();
+    return parsed?.map<Gunpla>((json) => new Gunpla.fromJson(json))?.toList() ??
+        [];
   }
 
   void setCurrentFabSelected(int selectedFabIndex) {
-    if(_currentFabIndex != selectedFabIndex) {
+    if (_currentFabIndex != selectedFabIndex) {
       _currentFabIndex = selectedFabIndex;
       _isChangeGrade = true;
     } else {
       _isChangeGrade = false;
     }
 
-    print("Pressed ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
-
-
+    print(
+        "Pressed ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
   }
 
   Widget buildHeroFrame() {
     return // Hero Image
-      Container(
-        margin: EdgeInsets.only(top: 80, right: 50),
-
-        child: SizedBox(
-          child: GestureDetector(
-            child: Hero(
-              tag: _imageToShowTag,
-              child:
-                Column(
-                  children: [
-                    // Background & Hero Image
-                    Container(
-                      decoration: BoxDecoration(
-                          gradient: new RadialGradient(
-                              colors: [Colors.yellow, Colors.black],
-                              center: Alignment(1.5, 0.2),
-                              radius: 3.3,
-                              stops: [0.0, 0.2]
-                          ),
-                          boxShadow: [new BoxShadow(
-                              color: Colors.black54,
-                              offset: new Offset(4.0, 4.0),
-                              blurRadius: 4.0
-                          )],
-      //                                  color: Colors.indigoAccent,
-                          border: Border.all(
-                            color: Colors.tealAccent,
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0)
+        Container(
+      margin: EdgeInsets.only(top: 80, right: 50),
+      child: SizedBox(
+        child: GestureDetector(
+          child: Hero(
+            tag: _imageToShowTag,
+            child: Column(
+              children: [
+                // Background & Hero Image
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: new RadialGradient(
+                          colors: [Colors.yellow, Colors.black],
+                          center: Alignment(1.5, 0.2),
+                          radius: 3.3,
+                          stops: [0.0, 0.2]),
+                      boxShadow: [
+                        new BoxShadow(
+                            color: Colors.black54,
+                            offset: new Offset(4.0, 4.0),
+                            blurRadius: 4.0)
+                      ],
+                      //                                  color: Colors.indigoAccent,
+                      border: Border.all(
+                        color: Colors.tealAccent,
+                        width: 2.0,
                       ),
-                      child: ClipRRect(
-
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(5.0)
-                        ),
-                        child:
-                            Image.asset(
-                              _imagePathToShow,
-                              //                            scale: 0.8,
-                              height: 170,
-                              width: 170,
-                              fit: BoxFit.scaleDown,
-                            ),
-                      ),
-                    ),
-                    // Hero Caption
-                    Container(
+                      borderRadius: BorderRadius.circular(8.0)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    child: Image.asset(
+                      _imagePathToShow,
+                      //                            scale: 0.8,
+                      height: 170,
                       width: 170,
-                      padding: EdgeInsets.all(4.0),
-                      decoration: BoxDecoration(
-                          gradient: new RadialGradient(
-                              colors: [Colors.indigoAccent, Colors.indigo],
-                              center: Alignment(1.5, 0.2),
-                              radius: 3.3,
-                              stops: [0.0, 0.2]
-                          ),
-                          boxShadow: [new BoxShadow(
-                              color: Colors.black54,
-                              offset: new Offset(4.0, 4.0),
-                              blurRadius: 4.0
-                          )],
-                          //                                  color: Colors.indigoAccent,
-                          border: Border.all(
-                            color: Colors.purpleAccent,
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0)
+                      fit: BoxFit.scaleDown,
+                    ),
+                  ),
+                ),
+                // Hero Caption
+                Container(
+                  width: 170,
+                  padding: EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                      gradient: new RadialGradient(
+                          colors: [Colors.indigoAccent, Colors.indigo],
+                          center: Alignment(1.5, 0.2),
+                          radius: 3.3,
+                          stops: [0.0, 0.2]),
+                      boxShadow: [
+                        new BoxShadow(
+                            color: Colors.black54,
+                            offset: new Offset(4.0, 4.0),
+                            blurRadius: 4.0)
+                      ],
+                      //                                  color: Colors.indigoAccent,
+                      border: Border.all(
+                        color: Colors.purpleAccent,
+                        width: 2.0,
                       ),
-                      child: ClipRRect(
-
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(5.0)
-                        ),
-                        child:
-                          Text(
-                            _imageToShowTag.toUpperCase(),
-                            textAlign: TextAlign.center,
-                            style: //Theme.of(context).textTheme.headline,
-                            TextStyle(
-
+                      borderRadius: BorderRadius.circular(8.0)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    child: Text(
+                      _imageToShowTag.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: //Theme.of(context).textTheme.headline,
+                          TextStyle(
                               fontSize: 12.0,
                               color: Colors.white,
-                              fontFamily: 'K2D-BoldItalic'
-                            ),
-                          ),
-                      ),
+                              fontFamily: 'K2D-BoldItalic'),
                     ),
-                    // Toggle Action buttons (Liked, Owned, Shared)
-                    Container(
-                      width: 170,
-
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.all(4.0),
-
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(3.0)
+                  ),
+                ),
+                // Toggle Action buttons (Liked, Owned, Shared)
+                Container(
+                  width: 170,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(3.0)
 //                          gradient: new RadialGradient(
 //                              colors: [Colors.indigoAccent, Colors.indigo],
 //                              center: Alignment(1.5, 0.2),
@@ -1010,65 +969,58 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //                          ),
 //                          borderRadius: BorderRadius.circular(8.0)
                       ),
-                      child: ClipRRect(
-
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(5.0)
-                        ),
-                        child:
-                        ToggleButtons(
-                          children: <Widget>[
-                            Icon(Icons.thumb_up),
-                            Icon(Icons.pets),
-                            Icon(Icons.record_voice_over),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    child: ToggleButtons(
+                      children: <Widget>[
+                        Icon(Icons.thumb_up),
+                        Icon(Icons.pets),
+                        Icon(Icons.record_voice_over),
 //                            Image.asset('assets/action/baseline_thumb_up_black_48dp.png' , width: 22,),
 //                            Image.asset('assets/action/baseline_pets_black_48dp.png', width: 22,),
 //                            Image.asset('assets/action/baseline_record_voice_over_black_48dp.png', width: 22,),
-                          ],
-
-                          color: Colors.black26,
-                          selectedColor: Colors.white,
-                          fillColor: Colors.redAccent,
-
-                          borderRadius: BorderRadius.circular(15),
-                          borderWidth: 2,
-                          borderColor: Colors.lime,
-                          selectedBorderColor: Colors.lime,
-                          isSelected: _actionSelections,
-                          onPressed: (int index) {
-                            setState(() {
-                              _actionSelections[index] = !_actionSelections[index];
-                              print('${index} - ${_actionSelections[index]}');
-                              updateSelectedActionMap(index);
-                            });
-                          },
-                        ),
-                      ),
+                      ],
+                      color: Colors.black26,
+                      selectedColor: Colors.white,
+                      fillColor: Colors.redAccent,
+                      borderRadius: BorderRadius.circular(15),
+                      borderWidth: 2,
+                      borderColor: Colors.lime,
+                      selectedBorderColor: Colors.lime,
+                      isSelected: _actionSelections,
+                      onPressed: (int index) {
+                        setState(() {
+                          _actionSelections[index] = !_actionSelections[index];
+                          print('${index} - ${_actionSelections[index]}');
+                          if (updateSelectedActionMap(index)) {
+                            updateGunplaActionDB(index);
+                          }
+                        });
+                      },
                     ),
-                  ],
+                  ),
                 ),
-              transitionOnUserGestures: true,
+              ],
             ),
-
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return DetailScreen(
-                  imageToShowHero: _imageToShowTag,
-                  imageToShowPath: _imagePathToShow,
-                );
-              }));
-            },
+            transitionOnUserGestures: true,
           ),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) {
+              return DetailScreen(
+                imageToShowHero: _imageToShowTag,
+                imageToShowPath: _imagePathToShow,
+              );
+            }));
+          },
         ),
-
-      );
+      ),
+    );
   }
 
   Future<void> getUserData() {
-
     User.getUserDB(user.email).then((userdb) {
       user = userdb;
-      print('--- Current user is ${user.name} ---');
+      print('--- Current user is ${user.toString()} ---');
       setState(() {
         _imageToShowTag = user.name;
       });
@@ -1081,24 +1033,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         _actionSelections[i] = false;
       }
       // Set Actions from select gunpla
-      if (_imageToShowBoxArt != null && _gunplaActions.containsKey(_imageToShowBoxArt)) {
-        print('Grade[${_fabGrades[_currentFabIndex].name}] | _isChangeGrade=${_isChangeGrade} | _imageToShowBoxArt[${_imageToShowBoxArt}]');
-        print('refresh - is_liked=${_gunplaActions[_imageToShowBoxArt].is_liked} is_owned=${_gunplaActions[_imageToShowBoxArt].is_owned} is_shared=${_gunplaActions[_imageToShowBoxArt].is_shared} ');
-        GunplaAction gunplaAction = _gunplaActions[_imageToShowBoxArt];
+      if (_imageToShowBoxArt != null &&
+          _gunplaActionMap.containsKey(_imageToShowBoxArt)) {
+        print(
+            'Grade[${_fabGrades[_currentFabIndex].name}] | _isChangeGrade=${_isChangeGrade} | _imageToShowBoxArt[${_imageToShowBoxArt}]');
+        print(
+            'refresh - is_liked=${_gunplaActionMap[_imageToShowBoxArt].is_liked} is_owned=${_gunplaActionMap[_imageToShowBoxArt].is_owned} is_shared=${_gunplaActionMap[_imageToShowBoxArt].is_shared} ');
+        GunplaAction gunplaAction = _gunplaActionMap[_imageToShowBoxArt];
         _actionSelections[0] = gunplaAction.is_liked;
         _actionSelections[1] = gunplaAction.is_owned;
         _actionSelections[2] = gunplaAction.is_shared;
       }
     });
-
   }
 
   void initGunplaActionMap(List<Gunpla> gunplas) {
     print('call initGunplaActionMap +++++');
-    _gunplaActions.clear();
+    _gunplaActionMap.clear();
 
-    for(var i=0; i < gunplas.length; i++) {
-
+    for (var i = 0; i < gunplas.length; i++) {
 //      if(i == 5) { // For test only, can deleted after done
 //        _gunplaActions[gunplas[i].box_art_path] = GunplaAction(
 //          gunpla: gunplas[i],
@@ -1107,51 +1060,162 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 //          is_shared: false,
 //        );
 //      } else {
-        _gunplaActions[gunplas[i].box_art_path] = GunplaAction(
-          gunpla: gunplas[i],
-          is_liked: false,
-          is_owned: false,
-          is_shared: false,
-        );
+      _gunplaActionMap[gunplas[i].box_art_path] = GunplaAction(
+        gunpla: gunplas[i],
+        is_liked: getActionValue(gunplas[i].box_art_path, 0),
+        is_owned: getActionValue(gunplas[i].box_art_path, 1),
+        is_shared: getActionValue(gunplas[i].box_art_path, 2),
+      );
 //      }
 
     }
-    if(gunplas.length > 0 && _fabGrades[_currentFabIndex].name == gunplas[0].grade) {
+    if (gunplas.length > 0 &&
+        _fabGrades[_currentFabIndex].name == gunplas[0].grade) {
       _isChangeGrade = false;
+      print('change grade to false!!');
+//      getOwnedDataDB().then((_) => () {
+//      print(
+//      'It xx End of getOwnedDataDB ${_gunplaOwnedMap.length} records');
+//      });
+
     }
+  }
+
+  bool getActionValue(String box_art_path, int index) {
+    bool result = false;
+    String key = box_art_path.replaceAll('/', '_');
+    if(_gunplaOwnedMap.containsKey(key)) {
+      switch(index) {
+        case 0:
+          result = _gunplaOwnedMap[key].is_liked;
+          break;
+        case 1:
+          result = _gunplaOwnedMap[key].is_owned;
+          break;
+        case 2:
+          result = _gunplaOwnedMap[key].is_shared;
+          break;
+      }
+
+    }
+    return result;
+
   }
 
   /**
    * Update select Action back to selected gunpla Map
    */
-  void updateSelectedActionMap(int index) {
-    print('before updated - ANA is_shared=${_gunplaActions[_imageToShowBoxArt].is_shared}');
-    if (_imageToShowBoxArt != null && _gunplaActions.containsKey(_imageToShowBoxArt)) {
-      GunplaAction gunplaAction = _gunplaActions[_imageToShowBoxArt];
-      switch(index) {
+  bool updateSelectedActionMap(int index) {
+    bool is_done = false;
+    print(
+        'before updated - ANA is_shared=${_gunplaActionMap[_imageToShowBoxArt].is_shared}');
+    if (_imageToShowBoxArt != null &&
+        _gunplaActionMap.containsKey(_imageToShowBoxArt)) {
+      GunplaAction gunplaAction = _gunplaActionMap[_imageToShowBoxArt];
+      switch (index) {
         case 0:
           gunplaAction.is_liked = _actionSelections[index];
-          _gunplaActions[_imageToShowBoxArt] = gunplaAction;
+          _gunplaActionMap[_imageToShowBoxArt] = gunplaAction;
           break;
         case 1:
           gunplaAction.is_owned = _actionSelections[index];
-          _gunplaActions[_imageToShowBoxArt] = gunplaAction;
+          _gunplaActionMap[_imageToShowBoxArt] = gunplaAction;
           break;
         case 2:
           gunplaAction.is_shared = _actionSelections[index];
-          _gunplaActions[_imageToShowBoxArt] = gunplaAction;
+          _gunplaActionMap[_imageToShowBoxArt] = gunplaAction;
           break;
       }
+      is_done = true;
     }
-    print('after updated - ANA is_shared=${_gunplaActions[_imageToShowBoxArt].is_shared}');
+    print(
+        'after updated - ANA is_shared=${_gunplaActionMap[_imageToShowBoxArt].is_shared}');
+    return is_done;
+  }
+
+  Future<GunplaAction> updateGunplaActionDB(int index) async {
+    GunplaAction gunplaAction = GunplaAction();
+    try {
+      if (_gunplaActionMap.containsKey(_imageToShowBoxArt)) {
+        gunplaAction = _gunplaActionMap[_imageToShowBoxArt];
+        var db = Firestore.instance;
+        if (!gunplaAction.is_liked &&
+            !gunplaAction.is_owned &&
+            !gunplaAction.is_shared) {
+          // delete
+          print('deleting...');
+          await db
+              .collection("users/${user.uid}/owned")
+              .document(
+                  "${gunplaAction.gunpla.box_art_path.replaceAll('/', '_')}")
+              .delete();
+        } else {
+          // update
+          print('updating...');
+          String uid = "${gunplaAction.gunpla.box_art_path.replaceAll('/', '_')}";
+          await db
+              .collection("users/${user.uid}/owned")
+              .document(uid)
+              .setData({
+            'uid': uid,
+            'name': gunplaAction.gunpla.name,
+            'box_art_path': gunplaAction.gunpla.box_art_path,
+            'is_liked': gunplaAction.is_liked,
+            'is_owned': gunplaAction.is_owned,
+            'is_shared': gunplaAction.is_shared,
+            'created_when': Timestamp.now(),
+            'created_by': user.email,
+            'updated_when': Timestamp.now(),
+            'updated_by': user.email,
+            'active': true,
+          });
+        }
+      }
+
+      return gunplaAction;
+    } on Exception catch (err) {
+      print('Update Owned error: $err');
+      return gunplaAction;
+    } finally {
+      print(
+          'End of updateGunplaActionDB ${gunplaAction.gunpla.box_art_path.replaceAll('/', '_')}');
+    }
+  }
+
+  Future<void> getOwnedDataDB() async {
+    try {
+      _gunplaOwnedMap.clear();
+      await Firestore.instance
+          .collection("users/${user.uid}/owned")
+          .snapshots()
+          .listen((data) => data.documents.forEach((doc) {
+                print('=>${doc["uid"]}');
+                Owned own = Owned(
+                  uid: doc['uid'],
+                  name: doc['name'],
+                  box_art_path: doc['box_art_path'],
+                  is_liked: doc['is_liked'],
+                  is_owned: doc['is_owned'],
+                  is_shared: doc['is_shared']
+                );
+                _gunplaOwnedMap[own.uid] =  own;
+              }));
+    } on Exception catch (err) {
+      print('getOwnedDataDB error: $err');
+    } finally {
+      print(
+          'End of getOwnedDataDB ${_gunplaOwnedMap.length} records');
+    }
   }
 }
+
+
 
 class DetailScreen extends StatelessWidget {
   final String imageToShowHero;
   final String imageToShowPath;
 
-  DetailScreen( {this.imageToShowHero, this.imageToShowPath });
+  DetailScreen({this.imageToShowHero, this.imageToShowPath});
 
   @override
   Widget build(BuildContext context) {
@@ -1160,56 +1224,48 @@ class DetailScreen extends StatelessWidget {
         child: Center(
           child: Hero(
             tag: imageToShowHero,
-            child:
-              Column(
-                children: [
-                  Image.asset(
-                      imageToShowPath,
-                      scale: 0.5,
-                    ),
-                  Container(
-                    width: 170,
-                    padding: EdgeInsets.all(4.0),
-                    decoration: BoxDecoration(
-                        gradient: new RadialGradient(
-                            colors: [Colors.indigoAccent, Colors.indigo],
-                            center: Alignment(1.5, 0.2),
-                            radius: 3.3,
-                            stops: [0.0, 0.2]
-                        ),
-                        boxShadow: [new BoxShadow(
+            child: Column(
+              children: [
+                Image.asset(
+                  imageToShowPath,
+                  scale: 0.5,
+                ),
+                Container(
+                  width: 170,
+                  padding: EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                      gradient: new RadialGradient(
+                          colors: [Colors.indigoAccent, Colors.indigo],
+                          center: Alignment(1.5, 0.2),
+                          radius: 3.3,
+                          stops: [0.0, 0.2]),
+                      boxShadow: [
+                        new BoxShadow(
                             color: Colors.black54,
                             offset: new Offset(4.0, 4.0),
-                            blurRadius: 4.0
-                        )],
-                        //                                  color: Colors.indigoAccent,
-                        border: Border.all(
-                          color: Colors.purpleAccent,
-                          width: 2.0,
-                        ),
-                        borderRadius: BorderRadius.circular(8.0)
-                    ),
-                    child: ClipRRect(
-
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(5.0)
+                            blurRadius: 4.0)
+                      ],
+                      //                                  color: Colors.indigoAccent,
+                      border: Border.all(
+                        color: Colors.purpleAccent,
+                        width: 2.0,
                       ),
-                      child:
-                      Text(
-                        imageToShowHero.toUpperCase(),
-                        textAlign: TextAlign.center,
-                        style: //Theme.of(context).textTheme.headline,
-                        TextStyle(
-
-                            fontSize: 12.0,
-                            color: Colors.white,
-                            fontFamily: 'K2D-BoldItalic'
-                        ),
-                      ),
+                      borderRadius: BorderRadius.circular(8.0)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    child: Text(
+                      imageToShowHero.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: //Theme.of(context).textTheme.headline,
+                          TextStyle(
+                              fontSize: 12.0,
+                              color: Colors.white,
+                              fontFamily: 'K2D-BoldItalic'),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
             transitionOnUserGestures: true,
           ),
         ),
@@ -1221,16 +1277,12 @@ class DetailScreen extends StatelessWidget {
   }
 }
 
-
-
 class _SafeAreaState extends State<HomeScreen> {
-
   // Bool value to control the behaviour of SafeArea widget
   bool _isEnabled = true;
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
 //      appBar: AppBar(
 //        title: Text('First Routex'),
@@ -1249,7 +1301,7 @@ class _SafeAreaState extends State<HomeScreen> {
               color: Colors.blue,
               child: Text(
                 "This widget is below safe area. If you remove the SafeArea "
-                    "widget then this text will be behind the notch.",
+                "widget then this text will be behind the notch.",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white),
               ),
@@ -1289,8 +1341,6 @@ class _SafeAreaState extends State<HomeScreen> {
 //            ),
           ],
         ),
-
-
       ),
 
 //      body: Center(
