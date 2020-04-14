@@ -13,6 +13,7 @@ import 'package:hobbybase/model/Gunpla.dart';
 import 'package:hobbybase/model/GunplaAction.dart';
 import 'package:hobbybase/model/Owned.dart';
 import 'package:hobbybase/model/User.dart';
+import 'package:hobbybase/popup/popup_menu.dart';
 import 'package:imagebutton/imagebutton.dart';
 import 'placeholder_widget.dart';
 import 'package:hobbybase/transition/scale_transition.dart';
@@ -47,8 +48,9 @@ class _HomeScreenState extends State<HomeScreen>
   String _imagePathToShow = "assets/cardboard01.png"; //"assets/dq/dq01.png";
   String _imageToShowTag = ""; //"demoTag";
   String _imageToShowBoxArt = "";
+  int _imageWheelIndex = 0;
 
-  int _currentFabIndex = 1;
+  int _currentFabIndex = 0;
   bool _wheelListVisibility = false;
   List<Gunpla> gunplas = List<Gunpla>(); // parseJson(snapshot.data.toString());
 
@@ -77,8 +79,8 @@ class _HomeScreenState extends State<HomeScreen>
   ];
 
   final List<Image> _fabImages = [
-    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
-    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
+//    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
+//    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
     Image.asset("assets/gunpla_grade/ic_highgrade_96.png"),
     Image.asset("assets/gunpla_grade/ic_re100_96.png"),
     Image.asset("assets/gunpla_grade/ic_realgrade_96.png"),
@@ -87,14 +89,17 @@ class _HomeScreenState extends State<HomeScreen>
   ];
 
   final List<Grade> _fabGrades = [
-    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
-    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
+//    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
+//    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
     Grade(name: "HG", jsonpath: "assets/json/hg.json"),
     Grade(name: "RE100", jsonpath: "assets/json/re100.json"),
     Grade(name: "RG", jsonpath: "assets/json/rg.json"),
     Grade(name: "MG", jsonpath: "assets/json/mg.json"),
     Grade(name: "PG", jsonpath: "assets/json/pg.json"),
   ];
+
+  PopupMenu _gradeMenu;
+  GlobalKey _gradeMenuKey = GlobalKey();
 
   User user = User();
 
@@ -172,6 +177,34 @@ class _HomeScreenState extends State<HomeScreen>
     getUserData();
     getOwnedDataDB();
 
+    _gradeMenu = PopupMenu(items: [
+      MenuItem(
+        title: 'HG',
+        image: Image.asset("assets/gunpla_grade/ic_highgrade_96.png"),
+      ),
+      MenuItem(
+        title: 'RE100',
+        image: Image.asset("assets/gunpla_grade/ic_re100_96.png"),
+      ),
+      MenuItem(
+        title: 'RG',
+        image: Image.asset("assets/gunpla_grade/ic_realgrade_96.png"),
+      ),
+      MenuItem(
+        title: 'MG',
+        image: Image.asset("assets/gunpla_grade/ic_mastergrade_96.png"),
+      ),
+      MenuItem(
+        title: 'PG',
+        image: Image.asset("assets/gunpla_grade/ic_perfectgrade_96.png"),
+      ),
+
+    ],
+      onClickMenu: onClickMenu,
+      onDismiss: onDismiss,
+      maxColumn: 3
+    );
+
     _isChangeGrade = true;
     _wheelListVisibility = true;
 //    _imageToShow = AssetImage("assets/dq/dq01.png");
@@ -203,6 +236,8 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
   }
 
+
+
   Future<void> getUsersData() async {
     Firestore.instance
         .collection('users')
@@ -213,6 +248,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
+    PopupMenu.context = context;
 
 //    print("Test get cloud firectore data: ");
     // Test get cloud firestore data
@@ -227,145 +263,139 @@ class _HomeScreenState extends State<HomeScreen>
 //      appBar: AppBar(
 //        title: Text('First Routex'),
 //      ),
-        floatingActionButton: Builder(
-          builder: (context) =>
-//              Container(
-//                padding: EdgeInsets.only(top: 32.0, left: 8.0),
-//                child:
-              FabCircularMenu(
-            key: fabKey,
-            // Cannot be `Alignment.center`
-            alignment: Alignment.topLeft,
-            ringColor: Colors.white.withAlpha(25),
-            ringDiameter: 450.0,
-            ringWidth: 70.0,
-            fabSize: 64.0,
-            fabElevation: 1.0,
-
-            // Also can use specific color based on weather
-            // the menu is open or not:
-            // fabOpenColor: Colors.white
-            // fabCloseColor: Colors.white
-            // These properties take precedence over fabColor
-            fabColor: Colors.white,
-
-            fabOpenIcon: Icon(_fabIcons[_currentFabIndex], color: primaryColor),
-            fabCloseIcon: Icon(Icons.close, color: primaryColor),
-            fabMargin: const EdgeInsets.only(top: 16.0, left: 0.0),
-            animationDuration: const Duration(milliseconds: 800),
-//                  animationCurve: Curves.easeInOutCirc,
-            animationCurve: Curves.elasticInOut,
-            onDisplayChange: (isOpen) {
-              //              _showSnackBar(context, "The menu is ${isOpen ? "open" : "closed"}");
-            },
-            children: <Widget>[
-              RaisedButton(
-                onPressed: () {
-                  //                  _showSnackBar(context, "You pressed 1");
-                  setState(() {
-//                    _currentFabIndex = 0;
-                    setCurrentFabSelected(0);
-                  });
-                  _wheelListVisibility = true;
-                  fabKey.currentState.close();
-                },
-                shape: CircleBorder(),
-//                      padding: const EdgeInsets.all(24.0),
-                child: Text('XX'),
-//                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  //                  _showSnackBar(context, "You pressed 1");
-                  setState(() {
-//                    _currentFabIndex = 1;
-                    setCurrentFabSelected(1);
-                    _wheelListVisibility = true;
-                    fabKey.currentState.close();
-                  });
-                },
-                shape: CircleBorder(),
-//                      padding: const EdgeInsets.all(24.0),
-                child: Text('SD'),
-//                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  //                  _showSnackBar(context, "You pressed 2");
-                  setState(() {
-//                    _currentFabIndex = 2;
-                    setCurrentFabSelected(2);
-                    _wheelListVisibility = true;
-                    fabKey.currentState.close();
-                  });
-                },
-                shape: CircleBorder(),
-//                      padding: const EdgeInsets.all(24.0),
-                child: Text('HG'),
-//                      child: Icon(Icons.looks_two, color: Colors.white, size: 48,),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  //                  _showSnackBar(context, "You pressed 1");
-                  setState(() {
-//                    _currentFabIndex = 3;
-                    setCurrentFabSelected(3);
-                    _wheelListVisibility = true;
-                    fabKey.currentState.close();
-                  });
-                },
-                shape: CircleBorder(),
-//                      padding: const EdgeInsets.all(24.0),
-                child: Text('RE'),
-//                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  //                  _showSnackBar(context, "You pressed 3");
-                  setState(() {
-//                    _currentFabIndex = 4;
-                    setCurrentFabSelected(4);
-                    _wheelListVisibility = true;
-                    fabKey.currentState.close();
-                  });
-                },
-                shape: CircleBorder(),
-//                      padding: const EdgeInsets.all(24.0),
-                child: Text('RG'),
-//                      child: Icon(Icons.looks_3, color: Colors.white, size: 48,),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  //                  _showSnackBar(context, "You pressed 4. This one closes the menu on tap");
-                  setState(() {
-//                    _currentFabIndex = 5;
-                    setCurrentFabSelected(5);
-                    _wheelListVisibility = true;
-                    fabKey.currentState.close();
-                  });
-                },
-                shape: CircleBorder(),
-//                      padding: const EdgeInsets.all(24.0),
-                child: Text('MG'),
-//                      child: Icon(Icons.looks_4, color: Colors.white, size: 48,),
-              ),
-              RaisedButton(
-                onPressed: () {
-                  //                  _showSnackBar(context, "You pressed 5");
-                  setState(() {
-//                    _currentFabIndex = 6;
-                    setCurrentFabSelected(6);
-                    _wheelListVisibility = true;
-                    fabKey.currentState.close();
-                  });
-                },
-                shape: CircleBorder(),
-//                      padding: const EdgeInsets.all(24.0),
-                child: Text('PG'),
-              ),
-            ],
-          ),
-        ),
+//        floatingActionButton: Builder(
+//          builder: (context) =>
+////              Container(
+////                padding: EdgeInsets.only(top: 32.0, left: 8.0),
+////                child:
+//              FabCircularMenu(
+//            key: fabKey,
+//            // Cannot be `Alignment.center`
+//            alignment: Alignment.topLeft,
+//            ringColor: Colors.white.withAlpha(25),
+//            ringDiameter: 450.0,
+//            ringWidth: 70.0,
+//            fabSize: 64.0,
+//            fabElevation: 0.0,
+//
+//            // Also can use specific color based on weather
+//            // the menu is open or not:
+//            // fabOpenColor: Colors.white
+//            // fabCloseColor: Colors.white
+//            // These properties take precedence over fabColor
+//            fabColor: Colors.white,
+//
+//            fabOpenIcon: Icon(_fabIcons[_currentFabIndex], color: primaryColor),
+//            fabCloseIcon: Icon(Icons.close, color: primaryColor),
+//            fabMargin: const EdgeInsets.only(top: 48.0, left: 0.0),
+//            animationDuration: const Duration(milliseconds: 800),
+////                  animationCurve: Curves.easeInOutCirc,
+//            animationCurve: Curves.elasticInOut,
+//            onDisplayChange: (isOpen) {
+//              //              _showSnackBar(context, "The menu is ${isOpen ? "open" : "closed"}");
+//            },
+//            children: <Widget>[
+////              RaisedButton(
+////                onPressed: () {
+////                  //                  _showSnackBar(context, "You pressed 1");
+////                  setState(() {
+//////                    _currentFabIndex = 0;
+////                    setCurrentFabSelected(0);
+////                  });
+////                  _wheelListVisibility = true;
+////                  fabKey.currentState.close();
+////                },
+////                shape: CircleBorder(),
+//////                      padding: const EdgeInsets.all(24.0),
+////                child: Text('XX'),
+//////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
+////              ),
+////              RaisedButton(
+////                onPressed: () {
+////                  //                  _showSnackBar(context, "You pressed 1");
+////                  setState(() {
+//////                    _currentFabIndex = 1;
+////                    setCurrentFabSelected(1);
+////                    _wheelListVisibility = true;
+////                    fabKey.currentState.close();
+////                  });
+////                },
+////                shape: CircleBorder(),
+//////                      padding: const EdgeInsets.all(24.0),
+////                child: Text('SD'),
+//////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
+////              ),
+//              RaisedButton(
+//                onPressed: () {
+//                  //                  _showSnackBar(context, "You pressed 0");
+//                  setState(() {
+//                    setCurrentFabSelected(0);
+//                    _wheelListVisibility = true;
+//                    fabKey.currentState.close();
+//                  });
+//                },
+//                shape: CircleBorder(),
+////                      padding: const EdgeInsets.all(24.0),
+//                child: Text('HG'),
+////                      child: Icon(Icons.looks_two, color: Colors.white, size: 48,),
+//              ),
+//              RaisedButton(
+//                onPressed: () {
+//                  //                  _showSnackBar(context, "You pressed 1");
+//                  setState(() {
+//                    setCurrentFabSelected(1);
+//                    _wheelListVisibility = true;
+//                    fabKey.currentState.close();
+//                  });
+//                },
+//                shape: CircleBorder(),
+////                      padding: const EdgeInsets.all(24.0),
+//                child: Text('RE'),
+////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
+//              ),
+//              RaisedButton(
+//                onPressed: () {
+//                  //                  _showSnackBar(context, "You pressed 2");
+//                  setState(() {
+//                    setCurrentFabSelected(2);
+//                    _wheelListVisibility = true;
+//                    fabKey.currentState.close();
+//                  });
+//                },
+//                shape: CircleBorder(),
+////                      padding: const EdgeInsets.all(24.0),
+//                child: Text('RG'),
+////                      child: Icon(Icons.looks_3, color: Colors.white, size: 48,),
+//              ),
+//              RaisedButton(
+//                onPressed: () {
+//                  //                  _showSnackBar(context, "You pressed 4. This one closes the menu on tap");
+//                  setState(() {
+//                    setCurrentFabSelected(3);
+//                    _wheelListVisibility = true;
+//                    fabKey.currentState.close();
+//                  });
+//                },
+//                shape: CircleBorder(),
+////                      padding: const EdgeInsets.all(24.0),
+//                child: Text('MG'),
+////                      child: Icon(Icons.looks_4, color: Colors.white, size: 48,),
+//              ),
+//              RaisedButton(
+//                onPressed: () {
+//                  setState(() {
+//                    setCurrentFabSelected(4);
+//                    _wheelListVisibility = true;
+//                    fabKey.currentState.close();
+//                  });
+//                },
+//                shape: CircleBorder(),
+////                      padding: const EdgeInsets.all(24.0),
+//                child: Text('PG'),
+//              ),
+//            ],
+//          ),
+//        ),
         body: LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth < 600) {
@@ -463,18 +493,21 @@ class _HomeScreenState extends State<HomeScreen>
                           width: 60,
                           height: 36,
                         ),
+                        key: _gradeMenuKey,
                         onTap: () {
-                          setState(() {
-                            _wheelListVisibility = false;
-                          });
+                          showPopupGradeMenu();
 
-                          _currentFabIndex = _currentFabIndex;
+//                          setState(() {
+//                            _wheelListVisibility = false;
+//                          });
 
-                          if (fabKey.currentState.isOpen) {
-                            fabKey.currentState.close();
-                          } else {
-                            fabKey.currentState.open();
-                          }
+//                          _currentFabIndex = _currentFabIndex;
+
+//                          if (fabKey.currentState.isOpen) {
+//                            fabKey.currentState.close();
+//                          } else {
+//                            fabKey.currentState.open();
+//                          }
                         },
                       ),
                     ),
@@ -817,6 +850,7 @@ class _HomeScreenState extends State<HomeScreen>
               if (index > gunplas.length) {
                 index = 0;
               }
+              _imageWheelIndex = index;
               var boxart = "assets/gunpla/${gunplas[index].box_art_path}";
               _imageToShow = new AssetImage("${boxart}");
 //              _imagePathToShow = "assets/dq/dq${(index+1).toString().padLeft(2, '0')}.png";
@@ -856,21 +890,23 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void setCurrentFabSelected(int selectedFabIndex) {
+    print('_currentFabIndex[${_currentFabIndex}] | selectedFabIndex[${selectedFabIndex}]');
     if (_currentFabIndex != selectedFabIndex) {
       _currentFabIndex = selectedFabIndex;
       _isChangeGrade = true;
+
     } else {
       _isChangeGrade = false;
     }
 
     print(
-        "Pressed ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
+        "Pressed _isChangeGrade[${_isChangeGrade}] - ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
   }
 
   Widget buildHeroFrame() {
     return // Hero Image
         Container(
-      margin: EdgeInsets.only(top: 80, right: 50),
+      margin: EdgeInsets.only(top: 60, right: 50),
       child: SizedBox(
         child: GestureDetector(
           child: Hero(
@@ -897,16 +933,18 @@ class _HomeScreenState extends State<HomeScreen>
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(8.0)),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    child: Image.asset(
-                      _imagePathToShow,
-                      //                            scale: 0.8,
-                      height: 170,
-                      width: 170,
-                      fit: BoxFit.scaleDown,
-                    ),
-                  ),
+
+                      // HeroMainHome Image
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        child: Image.asset(
+                          _imagePathToShow,
+                          //                            scale: 0.8,
+                          height: 170,
+                          width: 170,
+                          fit: BoxFit.scaleDown,
+                        ),
+                      ),
                 ),
                 // Hero Caption
                 Container(
@@ -1035,10 +1073,6 @@ class _HomeScreenState extends State<HomeScreen>
       // Set Actions from select gunpla
       if (_imageToShowBoxArt != null &&
           _gunplaActionMap.containsKey(_imageToShowBoxArt)) {
-        print(
-            'Grade[${_fabGrades[_currentFabIndex].name}] | _isChangeGrade=${_isChangeGrade} | _imageToShowBoxArt[${_imageToShowBoxArt}]');
-        print(
-            'refresh - is_liked=${_gunplaActionMap[_imageToShowBoxArt].is_liked} is_owned=${_gunplaActionMap[_imageToShowBoxArt].is_owned} is_shared=${_gunplaActionMap[_imageToShowBoxArt].is_shared} ');
         GunplaAction gunplaAction = _gunplaActionMap[_imageToShowBoxArt];
         _actionSelections[0] = gunplaAction.is_liked;
         _actionSelections[1] = gunplaAction.is_owned;
@@ -1073,11 +1107,30 @@ class _HomeScreenState extends State<HomeScreen>
         _fabGrades[_currentFabIndex].name == gunplas[0].grade) {
       _isChangeGrade = false;
       print('change grade to false!!');
-//      getOwnedDataDB().then((_) => () {
-//      print(
-//      'It xx End of getOwnedDataDB ${_gunplaOwnedMap.length} records');
-//      });
 
+      setState(() {
+        // Reload image hero after change grade wheel list
+        _imageWheelIndex = 0;
+        var boxart = "assets/gunpla/${gunplas[_imageWheelIndex].box_art_path}";
+        _imageToShow = new AssetImage("${boxart}");
+        _imagePathToShow = boxart;
+        var name = gunplas[_imageWheelIndex].name;
+        _imageToShowTag = name;
+        _imageToShowBoxArt = gunplas[_imageWheelIndex].box_art_path;
+      });
+
+
+    } else {
+      // Load hero image first time after load screen.
+      if(gunplas.length > 0) {
+          _imageWheelIndex = 0;
+          var boxart = "assets/gunpla/${gunplas[_imageWheelIndex].box_art_path}";
+          _imageToShow = new AssetImage("${boxart}");
+          _imagePathToShow = boxart;
+          var name = gunplas[_imageWheelIndex].name;
+          _imageToShowTag = name;
+          _imageToShowBoxArt = gunplas[_imageWheelIndex].box_art_path;
+      }
     }
   }
 
@@ -1206,6 +1259,43 @@ class _HomeScreenState extends State<HomeScreen>
       print(
           'End of getOwnedDataDB ${_gunplaOwnedMap.length} records');
     }
+  }
+
+  void stateChanged(bool isShow) {
+    print('menu is ${isShow ? 'showing' : 'closed'}');
+  }
+
+  void onClickMenu(MenuItemProvider item) {
+    print('Click menu -> ${item.menuTitle}');
+    setState(() {
+      int menuIndex = 0;
+      switch(item.menuTitle) {
+        case 'HG':
+          menuIndex = 0;
+          break;
+        case 'RE100':
+          menuIndex = 1;
+          break;
+        case 'RG':
+          menuIndex = 2;
+          break;
+        case 'MG':
+          menuIndex = 3;
+          break;
+        case 'PG':
+          menuIndex = 4;
+          break;
+      }
+      setCurrentFabSelected(menuIndex);
+    });
+  }
+
+  void onDismiss() {
+    print('Menu is dismiss');
+  }
+
+  void showPopupGradeMenu() {
+    _gradeMenu.show(widgetKey: _gradeMenuKey);
   }
 }
 
