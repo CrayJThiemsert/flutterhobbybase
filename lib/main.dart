@@ -10,6 +10,7 @@ import 'model/User.dart';
 
 void main() =>
     runApp( MaterialApp(
+      debugShowCheckedModeBanner: false,
 //      initialRoute: '/',
 //      routes: {
 //        '/': (context) => SplashScreenAnimation(),
@@ -122,6 +123,7 @@ class FadeIn extends State<SplashScreenAnimation> {
 
   @override Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
           child: Container(

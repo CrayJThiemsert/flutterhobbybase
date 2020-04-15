@@ -44,7 +44,12 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.7.3"
 
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/ic_acguy_t_8bit_96x96.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -76,6 +81,7 @@ flutter:
     - assets/gunpla/pg/
     - assets/gunpla/rg/
     - assets/action/
+    - assets/icon/
 
   fonts:
     - family: K2D-BoldItalic
