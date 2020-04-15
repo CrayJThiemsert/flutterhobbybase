@@ -1104,7 +1104,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     }
     if (gunplas.length > 0 &&
-        _fabGrades[_currentFabIndex].name == gunplas[0].grade) {
+        _fabGrades[_currentFabIndex].name == gunplas[0].grade.substring(0,2)) {
       _isChangeGrade = false;
       print('change grade to false!!');
 
@@ -1117,6 +1117,15 @@ class _HomeScreenState extends State<HomeScreen>
         var name = gunplas[_imageWheelIndex].name;
         _imageToShowTag = name;
         _imageToShowBoxArt = gunplas[_imageWheelIndex].box_art_path;
+
+        // Load first item in wheel list's actions liked, owned, shared
+        if (_imageToShowBoxArt != null &&
+            _gunplaActionMap.containsKey(_imageToShowBoxArt)) {
+          GunplaAction gunplaAction = _gunplaActionMap[_imageToShowBoxArt];
+          _actionSelections[0] = gunplaAction.is_liked;
+          _actionSelections[1] = gunplaAction.is_owned;
+          _actionSelections[2] = gunplaAction.is_shared;
+        }
       });
 
 
