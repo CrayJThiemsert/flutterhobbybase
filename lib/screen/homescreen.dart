@@ -492,7 +492,12 @@ class _HomeScreenState extends State<HomeScreen>
                           child: FittedBox(
                             alignment: Alignment.center,
                             fit: BoxFit.fill,
-                            child: _fabImages[_currentFabIndex],
+                            child:
+                              Tooltip(
+                                  message: 'Grade',
+                                  verticalOffset: 28,
+                                  child: _fabImages[_currentFabIndex],
+                              ),
                           ),
                           width: 60,
                           height: 36,
@@ -922,191 +927,194 @@ class _HomeScreenState extends State<HomeScreen>
   Widget buildHeroFrame() {
     return // Hero Image
         Container(
-      margin: EdgeInsets.only(top: 60, right: 50),
-      child: SizedBox(
-        child: GestureDetector(
-          child: Hero(
-            tag: _imageToShowTag,
-            child: Column(
-              children: [
-                // Background & Hero Image
-                Container(
-                  decoration: BoxDecoration(
-                      gradient: new RadialGradient(
-                          colors: [Colors.yellow, Colors.black],
-                          center: Alignment(1.5, 0.2),
-                          radius: 3.3,
-                          stops: [0.0, 0.2]),
-                      boxShadow: [
-                        new BoxShadow(
-                            color: Colors.black54,
-                            offset: new Offset(4.0, 4.0),
-                            blurRadius: 4.0)
-                      ],
-                      //                                  color: Colors.indigoAccent,
-                      border: Border(
-                        left: BorderSide(
-                          color: _borderHeroColor,
-                          width: 2.0,
-                        ),
-                        right: BorderSide(
-                          color: _borderHeroColor,
-                          width: 2.0,
-                        ),
-                        top: BorderSide(
-                          color: _borderHeroColor,
-                          width: 2.0,
-                        ),
+          margin: EdgeInsets.only(top: 60, right: 50),
+          child: SizedBox(
+            child: GestureDetector(
+              child: Hero(
+              tag: _imageToShowTag,
+              child: Column(
+//                mainAxisAlignment: MainAxisAlignment.start,
+//                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Background & Hero Image
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: new RadialGradient(
+                              colors: [Colors.yellow, Colors.black],
+                              center: Alignment(1.5, 0.2),
+                              radius: 3.3,
+                              stops: [0.0, 0.2]),
+                          boxShadow: [
+                            new BoxShadow(
+                                color: Colors.black54,
+                                offset: new Offset(4.0, 4.0),
+                                blurRadius: 4.0)
+                          ],
+                          //                                  color: Colors.indigoAccent,
+                          border: Border(
+                            left: BorderSide(
+                              color: _borderHeroColor,
+                              width: 2.0,
+                            ),
+                            right: BorderSide(
+                              color: _borderHeroColor,
+                              width: 2.0,
+                            ),
+                            top: BorderSide(
+                              color: _borderHeroColor,
+                              width: 2.0,
+                            ),
+                          ),
+    //                      borderRadius: BorderRadius.circular(8.0)
                       ),
-//                      borderRadius: BorderRadius.circular(8.0)
-                  ),
 
-                      // HeroMainHome Image
+                        // HeroMainHome Image
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            child: Image.asset(
+                              _imagePathToShow,
+                              //                            scale: 0.8,
+                              height: 170,
+                              width: 170,
+                              fit: BoxFit.scaleDown,
+                            ),
+                          ),
+                    ),
+
+                  // Hero Caption
+                    Container(
+                      height: 75,
+                      width: 174,
+                      padding: EdgeInsets.all(4.0),
+                      decoration: BoxDecoration(
+                          gradient: new LinearGradient(
+                              colors: [Colors.teal[200], Colors.indigo[900]],
+                              stops: [0.0, 0.3]
+                              ),
+                          boxShadow: [
+                            new BoxShadow(
+                                color: Colors.black54,
+                                offset: new Offset(4.0, 4.0),
+                                blurRadius: 4.0)
+                          ],
+                          border: Border(
+                            left: BorderSide(
+                              color: _borderHeroColor,
+                              width: 2.0,
+                            ),
+                            right: BorderSide(
+                              color: _borderHeroColor,
+                              width: 2.0,
+                            ),
+                          ),
+                      ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        child: Image.asset(
-                          _imagePathToShow,
-                          //                            scale: 0.8,
-                          height: 170,
-                          width: 170,
-                          fit: BoxFit.scaleDown,
+                        child: Text(
+                          _imageToShowTag.toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: //Theme.of(context).textTheme.headline,
+                              TextStyle(
+                                  fontSize: 12.0,
+                                  color: Colors.teal[50],
+                                  fontFamily: 'K2D-BoldItalic'),
                         ),
-                      ),
-                ),
-                // Hero Caption
-                Container(
-                  width: 174,
-                  padding: EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                      gradient: new LinearGradient(
-                          colors: [Colors.teal[200], Colors.indigo[900]],
-//                          center: Alignment(1.5, 0.2),
-//                          radius: 3.3,
-                          stops: [0.0, 0.3]
-                          ),
-                      boxShadow: [
-                        new BoxShadow(
-                            color: Colors.black54,
-                            offset: new Offset(4.0, 4.0),
-                            blurRadius: 4.0)
-                      ],
-                      //                                  color: Colors.indigoAccent,
-                      border: Border(
-                        left: BorderSide(
-                          color: _borderHeroColor,
-                          width: 2.0,
-                        ),
-                        right: BorderSide(
-                          color: _borderHeroColor,
-                          width: 2.0,
-                        ),
-                      ),
-//                      borderRadius: BorderRadius.circular(8.0)
-                      ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    child: Text(
-                      _imageToShowTag.toUpperCase(),
-                      textAlign: TextAlign.center,
-                      style: //Theme.of(context).textTheme.headline,
-                          TextStyle(
-                              fontSize: 12.0,
-                              color: Colors.teal[50],
-                              fontFamily: 'K2D-BoldItalic'),
-                    ),
-                  ),
-                ),
-                // Toggle Action buttons (Liked, Owned, Shared)
-                Container(
-                  width: 174,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                    border: Border(
-                      left: BorderSide(
-                        color: _borderHeroColor,
-                        width: 2.0,
-                      ),
-                      right: BorderSide(
-                        color: _borderHeroColor,
-                        width: 2.0,
-                      ),
-                      bottom: BorderSide(
-                        color: _borderHeroColor,
-                        width: 2.0,
                       ),
                     ),
-//                      borderRadius: BorderRadius.circular(3.0),
-                      boxShadow: [
-                        new BoxShadow(
-                            color: Colors.black54,
-                            offset: new Offset(4.0, 4.0),
-                            blurRadius: 4.0)
-                      ],
-//                          gradient: new RadialGradient(
-//                              colors: [Colors.indigoAccent, Colors.indigo],
-//                              center: Alignment(1.5, 0.2),
-//                              radius: 3.3,
-//                              stops: [0.0, 0.2]
+                  // Toggle Action buttons (Liked, Owned, Shared)
+//            SingleChildScrollView(
+//              child:
+              Container(
+                height: 75,
+                        width: 174,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.all(4.0),
+                        decoration: BoxDecoration(
+//                          gradient: new LinearGradient(
+//                              colors: [Colors.teal[200], Colors.indigo[900]],
+//                              stops: [0.0, 0.3]
 //                          ),
-//                          boxShadow: [new BoxShadow(
-//                              color: Colors.black54,
-//                              offset: new Offset(4.0, 4.0),
-//                              blurRadius: 4.0
-//                          )],
-//                          //                                  color: Colors.indigoAccent,
-//                          border: Border.all(
-//                            color: Colors.purpleAccent,
-//                            width: 2.0,
-//                          ),
-//                          borderRadius: BorderRadius.circular(8.0)
+                          boxShadow: [
+                            new BoxShadow(
+                                color: Colors.black54,
+                                offset: new Offset(4.0, 4.0),
+                                blurRadius: 4.0)
+                          ],
+                            color: Colors.white,
+                            border: Border(
+                              left: BorderSide(
+                                color: _borderHeroColor,
+                                width: 2.0,
+                              ),
+                              right: BorderSide(
+                                color: _borderHeroColor,
+                                width: 2.0,
+                              ),
+                              bottom: BorderSide(
+                                color: _borderHeroColor,
+                                width: 2.0,
+                              ),
+                            ),
+
+                        ),
+                      child:
+                      ClipRRect(
+//                        Card(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        child: ToggleButtons(
+
+                          children: <Widget>[
+                            Tooltip(
+                              message: 'Liked',
+                              verticalOffset: 38,
+                              child: Icon(Icons.thumb_up),
+                            ),
+                            Tooltip(
+                              message: 'Owned',
+                              verticalOffset: 38,
+                              child: Icon(Icons.pets),
+                            ),
+                            Tooltip(
+                                message: 'Shared',
+                                verticalOffset: 38,
+                                child: Icon(Icons.record_voice_over),
+                            ),
+                          ],
+                          color: Colors.black26,
+                          selectedColor: Colors.white,
+                          fillColor: Colors.redAccent,
+                          borderRadius: BorderRadius.circular(15),
+                          borderWidth: 2,
+                          borderColor: Colors.lime,
+                          selectedBorderColor: Colors.lime,
+                          isSelected: _actionSelections,
+                          onPressed: (int index) {
+                            setState(() {
+                              _actionSelections[index] = !_actionSelections[index];
+                              print('${index} - ${_actionSelections[index]}');
+                              if (updateSelectedActionMap(index)) {
+                                updateGunplaActionDB(index);
+                              }
+                            });
+                          },
+                        ),
                       ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    child: ToggleButtons(
-                      children: <Widget>[
-                        Icon(Icons.thumb_up),
-                        Icon(Icons.pets),
-                        Icon(Icons.record_voice_over),
-//                            Image.asset('assets/action/baseline_thumb_up_black_48dp.png' , width: 22,),
-//                            Image.asset('assets/action/baseline_pets_black_48dp.png', width: 22,),
-//                            Image.asset('assets/action/baseline_record_voice_over_black_48dp.png', width: 22,),
-                      ],
-                      color: Colors.black26,
-                      selectedColor: Colors.white,
-                      fillColor: Colors.redAccent,
-                      borderRadius: BorderRadius.circular(15),
-                      borderWidth: 2,
-                      borderColor: Colors.lime,
-                      selectedBorderColor: Colors.lime,
-                      isSelected: _actionSelections,
-                      onPressed: (int index) {
-                        setState(() {
-                          _actionSelections[index] = !_actionSelections[index];
-                          print('${index} - ${_actionSelections[index]}');
-                          if (updateSelectedActionMap(index)) {
-                            updateGunplaActionDB(index);
-                          }
-                        });
-                      },
                     ),
-                  ),
-                ),
-              ],
+//          ),
+                ],
+              ),
+              transitionOnUserGestures: true,
             ),
-            transitionOnUserGestures: true,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) {
+                  return DetailScreen(
+                    imageToShowHero: _imageToShowTag,
+                    imageToShowPath: _imagePathToShow,
+                  );
+                }));
+              },
           ),
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) {
-              return DetailScreen(
-                imageToShowHero: _imageToShowTag,
-                imageToShowPath: _imagePathToShow,
-              );
-            }));
-          },
         ),
-      ),
     );
   }
 
@@ -1368,65 +1376,92 @@ class _HomeScreenState extends State<HomeScreen>
 class DetailScreen extends StatelessWidget {
   final String imageToShowHero;
   final String imageToShowPath;
+  bool _isEnabled = true;
+  Color _borderHeroColor = Colors.lime[800];
 
   DetailScreen({this.imageToShowHero, this.imageToShowPath});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        child: Center(
-          child: Hero(
-            tag: imageToShowHero,
-            child: Column(
-              children: [
-                Image.asset(
-                  imageToShowPath,
-                  scale: 0.5,
-                ),
-                Container(
-                  width: 170,
-                  padding: EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                      gradient: new RadialGradient(
-                          colors: [Colors.indigoAccent, Colors.indigo],
-                          center: Alignment(1.5, 0.2),
-                          radius: 3.3,
-                          stops: [0.0, 0.2]),
-                      boxShadow: [
-                        new BoxShadow(
-                            color: Colors.black54,
-                            offset: new Offset(4.0, 4.0),
-                            blurRadius: 4.0)
-                      ],
-                      //                                  color: Colors.indigoAccent,
-                      border: Border.all(
-                        color: Colors.purpleAccent,
-                        width: 2.0,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0)),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    child: Text(
-                      imageToShowHero.toUpperCase(),
-                      textAlign: TextAlign.center,
-                      style: //Theme.of(context).textTheme.headline,
-                          TextStyle(
-                              fontSize: 12.0,
-                              color: Colors.white,
-                              fontFamily: 'K2D-BoldItalic'),
+      primary: true,
+      body:  SafeArea(
+        top: _isEnabled,
+        bottom: _isEnabled,
+        left: _isEnabled,
+        right: _isEnabled,
+        child:
+          GestureDetector(
+            child: Center(
+              child: Hero(
+                tag: imageToShowHero,
+                child: Column(
+                  children: [
+//                    Expanded(
+//                      flex: 2,
+//                      child:
+                      Image.asset(
+                      imageToShowPath,
+                      height: 200,
+//                      scale: 0.5,
                     ),
-                  ),
-                ),
+//                    ),
+//                    Expanded(
+//                      flex: 1,
+//                      child:
+                      Container(
+                      width: 170,
+                      padding: EdgeInsets.all(4.0),
+                      decoration: BoxDecoration(
+                        gradient: new LinearGradient(
+                            colors: [Colors.teal[200], Colors.indigo[900]],
+                            //                          center: Alignment(1.5, 0.2),
+                            //                          radius: 3.3,
+                            stops: [0.0, 0.3]
+                        ),
+                        boxShadow: [
+                          new BoxShadow(
+                              color: Colors.black54,
+                              offset: new Offset(4.0, 4.0),
+                              blurRadius: 4.0)
+                        ],
+                        //                                  color: Colors.indigoAccent,
+                        border: Border(
+                          left: BorderSide(
+                            color: _borderHeroColor,
+                            width: 2.0,
+                          ),
+                          right: BorderSide(
+                            color: _borderHeroColor,
+                            width: 2.0,
+                          ),
+                        ),
+                        //                      borderRadius: BorderRadius.circular(8.0)
+                      ),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            child: Text(
+                              imageToShowHero.toUpperCase(),
+                              textAlign: TextAlign.center,
+                              style: //Theme.of(context).textTheme.headline,
+                                  TextStyle(
+                                      fontSize: 12.0,
+                                      color: Colors.white,
+                                      fontFamily: 'K2D-BoldItalic'),
+                            ),
+                          ),
+                    ),
+//                    ),
               ],
             ),
-            transitionOnUserGestures: true,
+                transitionOnUserGestures: true,
+              ),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
           ),
         ),
-        onTap: () {
-          Navigator.pop(context);
-        },
-      ),
     );
   }
 }
