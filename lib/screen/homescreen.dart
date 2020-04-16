@@ -50,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen>
   String _imageToShowBoxArt = "";
   int _imageWheelIndex = 0;
 
+  double _fontTileSize = 8;
+
   int _currentFabIndex = 0;
   bool _wheelListVisibility = false;
   List<Gunpla> gunplas = List<Gunpla>(); // parseJson(snapshot.data.toString());
@@ -61,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen>
     PlaceholderWidget(Colors.brown),
 //    PlaceholderWidget(Colors.greenAccent)
   ];
+  
+  Color _borderHeroColor = Colors.lime[800];
 
   final List<IconData> _fabIcons = [
 //    IconData(AssetImage("assets/gunpla_grade/ic_sd_96.png")),
@@ -450,7 +454,7 @@ class _HomeScreenState extends State<HomeScreen>
             decoration: new BoxDecoration(
 //              color: Colors.cyan,
               gradient: new RadialGradient(
-                  colors: [Colors.blueGrey, Colors.white],
+                  colors: [Colors.indigo[900], Colors.teal[50]],
                   center: Alignment(-1.5, -0.2),
                   radius: 3.3,
                   stops: [0.0, 0.2]),
@@ -768,30 +772,40 @@ class _HomeScreenState extends State<HomeScreen>
 //      print("${runner} - ${name} - [${boxart}]");
       listtiles.add(GestureDetector(
           child: ListTile(
-        dense: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 40.0),
-        // leading = Image icon on the left of tile
-//            leading: new Image.asset("assets/dq/dq${runner}.png"), //Icon(Icons.portrait),
-        leading: new Image.asset(boxart),
-        title: Text("${runner} - ${name}"),
-//            GestureDetector(
-//              onTap: () {
-//                print('tap monster $i');
-//              },
-//              child: FlatButton(
-//                  onPressed: () {
-//                    print('pressed monster $i');
-//                  },
-//                  child: Text("Monster-${runner}"),
-//              ),
-//            ),
+          dense: false,
+          contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
+          // leading = Image icon on the left of tile
+  //            leading: new Image.asset("assets/dq/dq${runner}.png"), //Icon(Icons.portrait),
+          leading: new Image.asset(boxart),
+          title: Text(
+              "${runner} - ${name}",
+              style: TextStyle(
+                  fontFamily: "RobotoMedium",
+                  fontSize: _fontTileSize,
+//                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal[50])
+            ),
+  //            GestureDetector(
+  //              onTap: () {
+  //                print('tap monster $i');
+  //              },
+  //              child: FlatButton(
+  //                  onPressed: () {
+  //                    print('pressed monster $i');
+  //                  },
+  //                  child: Text("Monster-${runner}"),
+  //              ),
+  //            ),
 
-        subtitle: Text("Beautiful View..!"),
-        //      trailing: Icon(Icons.arrow_forward_ios),
-//            onTap: () {
-//              print('hello ${runner}');
-//            },
-      )));
+          subtitle:
+            Text(""),
+//          Text("Beautiful View..!"),
+          //      trailing: Icon(Icons.arrow_forward_ios),
+  //            onTap: () {
+  //              print('hello ${runner}');
+  //            },
+        )));
     }
 
     return listtiles;
@@ -804,6 +818,7 @@ class _HomeScreenState extends State<HomeScreen>
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/mg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/rg.json'),
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/pg.json'),
+        // Load JSON of gunpla list
         future: DefaultAssetBundle.of(context)
             .loadString(_fabGrades[_currentFabIndex].jsonpath),
         builder: (context, snapshot) {
@@ -825,7 +840,7 @@ class _HomeScreenState extends State<HomeScreen>
         decoration: new BoxDecoration(
           color: Colors.indigo,
           gradient: new LinearGradient(
-            colors: [Colors.white, Colors.cyan],
+            colors: [Colors.teal[50], Colors.indigo[900]],
           ),
           boxShadow: [
             new BoxShadow(
@@ -850,6 +865,7 @@ class _HomeScreenState extends State<HomeScreen>
               if (index > gunplas.length) {
                 index = 0;
               }
+
               _imageWheelIndex = index;
               var boxart = "assets/gunpla/${gunplas[index].box_art_path}";
               _imageToShow = new AssetImage("${boxart}");
@@ -928,11 +944,22 @@ class _HomeScreenState extends State<HomeScreen>
                             blurRadius: 4.0)
                       ],
                       //                                  color: Colors.indigoAccent,
-                      border: Border.all(
-                        color: Colors.tealAccent,
-                        width: 2.0,
+                      border: Border(
+                        left: BorderSide(
+                          color: _borderHeroColor,
+                          width: 2.0,
+                        ),
+                        right: BorderSide(
+                          color: _borderHeroColor,
+                          width: 2.0,
+                        ),
+                        top: BorderSide(
+                          color: _borderHeroColor,
+                          width: 2.0,
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(8.0)),
+//                      borderRadius: BorderRadius.circular(8.0)
+                  ),
 
                       // HeroMainHome Image
                       child: ClipRRect(
@@ -948,14 +975,15 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 // Hero Caption
                 Container(
-                  width: 170,
+                  width: 174,
                   padding: EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
-                      gradient: new RadialGradient(
-                          colors: [Colors.indigoAccent, Colors.indigo],
-                          center: Alignment(1.5, 0.2),
-                          radius: 3.3,
-                          stops: [0.0, 0.2]),
+                      gradient: new LinearGradient(
+                          colors: [Colors.teal[200], Colors.indigo[900]],
+//                          center: Alignment(1.5, 0.2),
+//                          radius: 3.3,
+                          stops: [0.0, 0.3]
+                          ),
                       boxShadow: [
                         new BoxShadow(
                             color: Colors.black54,
@@ -963,11 +991,18 @@ class _HomeScreenState extends State<HomeScreen>
                             blurRadius: 4.0)
                       ],
                       //                                  color: Colors.indigoAccent,
-                      border: Border.all(
-                        color: Colors.purpleAccent,
-                        width: 2.0,
+                      border: Border(
+                        left: BorderSide(
+                          color: _borderHeroColor,
+                          width: 2.0,
+                        ),
+                        right: BorderSide(
+                          color: _borderHeroColor,
+                          width: 2.0,
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(8.0)),
+//                      borderRadius: BorderRadius.circular(8.0)
+                      ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     child: Text(
@@ -976,19 +1011,39 @@ class _HomeScreenState extends State<HomeScreen>
                       style: //Theme.of(context).textTheme.headline,
                           TextStyle(
                               fontSize: 12.0,
-                              color: Colors.white,
+                              color: Colors.teal[50],
                               fontFamily: 'K2D-BoldItalic'),
                     ),
                   ),
                 ),
                 // Toggle Action buttons (Liked, Owned, Shared)
                 Container(
-                  width: 170,
+                  width: 174,
                   alignment: Alignment.center,
                   padding: EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(3.0)
+                    border: Border(
+                      left: BorderSide(
+                        color: _borderHeroColor,
+                        width: 2.0,
+                      ),
+                      right: BorderSide(
+                        color: _borderHeroColor,
+                        width: 2.0,
+                      ),
+                      bottom: BorderSide(
+                        color: _borderHeroColor,
+                        width: 2.0,
+                      ),
+                    ),
+//                      borderRadius: BorderRadius.circular(3.0),
+                      boxShadow: [
+                        new BoxShadow(
+                            color: Colors.black54,
+                            offset: new Offset(4.0, 4.0),
+                            blurRadius: 4.0)
+                      ],
 //                          gradient: new RadialGradient(
 //                              colors: [Colors.indigoAccent, Colors.indigo],
 //                              center: Alignment(1.5, 0.2),
