@@ -14,6 +14,8 @@ import 'package:hobbybase/model/GunplaAction.dart';
 import 'package:hobbybase/model/Owned.dart';
 import 'package:hobbybase/model/User.dart';
 import 'package:hobbybase/popup/popup_menu.dart';
+import 'package:hobbybase/widget/display_owned_widget.dart';
+import 'package:hobbybase/widget/list_owned.dart';
 import 'package:imagebutton/imagebutton.dart';
 import 'placeholder_widget.dart';
 import 'package:hobbybase/transition/scale_transition.dart';
@@ -50,6 +52,10 @@ class _HomeScreenState extends State<HomeScreen>
   String _imageToShowBoxArt = "";
   int _imageWheelIndex = 0;
 
+  int _totalLiked = 0;
+  int _totalOwned = 0;
+  int _totalShared = 0;
+
   double _fontTileSize = 8;
 
   int _currentFabIndex = 0;
@@ -59,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen>
   int _currentIndex = 0;
   final List<Widget> _children = [
     PlaceholderWidget(Colors.amberAccent),
+//    OwnedDisplayWidget(Colors.black87),
     PlaceholderWidget(Colors.lime),
     PlaceholderWidget(Colors.brown),
 //    PlaceholderWidget(Colors.greenAccent)
@@ -140,9 +147,14 @@ class _HomeScreenState extends State<HomeScreen>
     setState(() {
       _currentIndex = index;
       debugPrint("_currentIndex[${_currentIndex}]");
-      if (_currentIndex == 2) {
-        debugPrint("Do logoff");
-        signOut();
+      switch(_currentIndex) {
+        case 0:
+
+          break;
+        case 2:
+          debugPrint("Do logoff");
+          signOut();
+          break;
       }
     });
   }
@@ -175,11 +187,78 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
+  String getLiked() {
+    return "${_totalLiked}";
+  }
+
+  void addLiked() {
+    setState(() {
+      _totalLiked = _totalLiked + 1;
+      print('add liked - [${_totalLiked}]');
+    });
+  }
+
+  void deleteLiked() {
+    setState(() {
+      if(_totalLiked > 0) {
+        _totalLiked = _totalLiked - 1;
+      }
+      print('delete liked - [${_totalLiked}]');
+    });
+  }
+
+  String getOwned() {
+    return "${_totalOwned}";
+  }
+
+  void addOwned() {
+    setState(() {
+      _totalOwned = _totalOwned + 1;
+      print('add liked - [${_totalOwned}]');
+    });
+  }
+
+  void deleteOwned() {
+    setState(() {
+      if(_totalOwned > 0) {
+        _totalOwned = _totalOwned - 1;
+      }
+      print('delete liked - [${_totalOwned}]');
+    });
+  }
+
+  String getShared() {
+    return "${_totalShared}";
+  }
+
+  void addShared() {
+    setState(() {
+      _totalShared = _totalShared + 1;
+      print('add liked - [${_totalShared}]');
+    });
+  }
+
+  void deleteShared() {
+    setState(() {
+      if(_totalShared > 0) {
+        _totalShared = _totalShared - 1;
+      }
+      print('delete liked - [${_totalShared}]');
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
+    _totalLiked = 0;
+    _totalOwned = 0;
+    _totalShared = 0;
+    
     getUserData();
-    getOwnedDataDB();
+    getOwnedDataDB().then((_) {
+      print(
+          'fnEnd of getOwnedDataDB ${_gunplaOwnedMap.length} records');
+    });
 
     _gradeMenu = PopupMenu(items: [
       MenuItem(
@@ -417,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen>
           items: [
             new BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              title: Text('Home'),
+              title: Text('Owned'),
             ),
             new BottomNavigationBarItem(
               icon: Icon(Icons.mail),
@@ -530,12 +609,20 @@ class _HomeScreenState extends State<HomeScreen>
             child: Container(
 //            height: 200,
               color: Colors.amberAccent,
-              child: _children[_currentIndex],
+              child: getChildPanel(),
             ),
           )
         ],
       ),
     );
+  }
+
+  Widget getChildPanel() {
+    if(_currentIndex == 0) {
+      return OwnedDisplayWidget(Colors.black87, getLiked, getOwned, getShared);
+    } else {
+      return _children[_currentIndex];
+    }
   }
 
   /**
@@ -832,13 +919,15 @@ class _HomeScreenState extends State<HomeScreen>
             initGunplaActionMap(gunplas);
           }
 
-          return !gunplas.isEmpty
+          return (!gunplas.isEmpty && gunplas.length > 0)
               ? wheelList(gunplas)
               : Center(child: CircularProgressIndicator());
         });
   }
 
   Widget wheelList(List<Gunpla> gunplas) {
+    print(
+        'wheelList - getOwnedDataDB ${_gunplaOwnedMap.length} records');
     return Visibility(
       visible: true, //_wheelListVisibility,
       child: Container(
@@ -1269,6 +1358,8 @@ class _HomeScreenState extends State<HomeScreen>
             !gunplaAction.is_shared) {
           // delete
           print('deleting...');
+
+
           await db
               .collection("users/${user.uid}/owned")
               .document(
@@ -1295,6 +1386,7 @@ class _HomeScreenState extends State<HomeScreen>
             'active': true,
           });
         }
+        updateTotalOwnedDisplay(index, gunplaAction);
       }
 
       return gunplaAction;
@@ -1307,10 +1399,39 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
+  void updateTotalOwnedDisplay(int index, GunplaAction gunplaAction) {
+    switch(index) {
+      case 0:
+        // Update Liked display
+        if(gunplaAction.is_liked) {
+          addLiked();
+        } else {
+          deleteLiked();
+        }
+        break;
+      case 1:
+        // Update Owned display
+        if(gunplaAction.is_owned) {
+          addOwned();
+        } else {
+          deleteOwned();
+        }
+        break;
+      case 2:
+        // Update Shared display
+        if(gunplaAction.is_shared) {
+          addShared();
+        } else {
+          deleteShared();
+        }
+        break;
+    }
+  }
+
   Future<void> getOwnedDataDB() async {
     try {
       _gunplaOwnedMap.clear();
-      await Firestore.instance
+       Firestore.instance
           .collection("users/${user.uid}/owned")
           .snapshots()
           .listen((data) => data.documents.forEach((doc) {
@@ -1325,6 +1446,7 @@ class _HomeScreenState extends State<HomeScreen>
                 );
                 _gunplaOwnedMap[own.uid] =  own;
               }));
+
     } on Exception catch (err) {
       print('getOwnedDataDB error: $err');
     } finally {
@@ -1369,7 +1491,11 @@ class _HomeScreenState extends State<HomeScreen>
   void showPopupGradeMenu() {
     _gradeMenu.show(widgetKey: _gradeMenuKey);
   }
+
+
 }
+
+
 
 
 
