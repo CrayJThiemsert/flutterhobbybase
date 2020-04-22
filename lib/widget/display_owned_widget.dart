@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hobbybase/widget/fonts_effect.dart';
+import 'dart:ui' as ui show Gradient, TextBox, lerpDouble, Image;
 
 class OwnedDisplayWidget extends StatelessWidget {
   final Color color;
   final Function getLiked;
   final Function getOwned;
   final Function getShared;
+  final fontUtils = FontsUtils();
 
   OwnedDisplayWidget(
       this.color,
@@ -38,37 +41,57 @@ class OwnedDisplayWidget extends StatelessWidget {
                 children: <Widget>[
                   // Liked Counter
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('Liked',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      fontUtils.drawScoreTitle('Liked'),
                       Text(getLikedValue(),
-                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.center,
+                        style:
+                        TextStyle(
+                            shadows: [
+                              fontUtils.getShadowScore()
+                            ],
+                            fontSize: 48.0,
+                            color: Colors.white,
+                            fontFamily: 'K2D-ExtraBoldItalic'),
                       ),
                     ],
                   ),
                   // Owned Counter
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('Owned',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      fontUtils.drawScoreTitle('Owned'),
                       Text(getOwnedValue(),
-                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.center,
+                        style:
+                        TextStyle(
+                          shadows: [
+                            fontUtils.getShadowScore()
+                          ],
+                            fontSize: 48.0,
+                            color: Colors.white,
+                            fontFamily: 'K2D-ExtraBoldItalic',
+                        ),
+
                       ),
                     ],
                   ),
                   // Shared Counter
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('Shared',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      fontUtils.drawScoreTitle('Shared'),
                       Text(getSharedValue(),
-                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.center,
+                        style:
+                        TextStyle(
+                            shadows: [
+                              fontUtils.getShadowScore()
+                            ],
+                            fontSize: 48.0,
+                            color: Colors.white,
+                            fontFamily: 'K2D-ExtraBoldItalic'),
                       ),
                     ],
                   ),

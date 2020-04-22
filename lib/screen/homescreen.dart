@@ -924,10 +924,27 @@ class _HomeScreenState extends State<HomeScreen>
               : Center(child: CircularProgressIndicator());
         });
   }
+  void initTotalOwnedInfo() {
+    _totalLiked = 0;
+    _totalOwned = 0;
+    _totalShared = 0;
+    for(Owned v in _gunplaOwnedMap.values) {
+      if(v.is_liked) {
+        _totalLiked++;
+      }
+      if(v.is_owned) {
+        _totalOwned++;
+      }
+      if(v.is_shared) {
+        _totalShared++;
+      }
+    }
+  }
 
   Widget wheelList(List<Gunpla> gunplas) {
     print(
         'wheelList - getOwnedDataDB ${_gunplaOwnedMap.length} records');
+    initTotalOwnedInfo();
     return Visibility(
       visible: true, //_wheelListVisibility,
       child: Container(
@@ -1494,6 +1511,8 @@ class _HomeScreenState extends State<HomeScreen>
 
 
 }
+
+
 
 
 

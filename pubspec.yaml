@@ -87,6 +87,9 @@ flutter:
     - family: K2D-BoldItalic
       fonts:
         - asset: assets/fonts/K2D/K2D-BoldItalic.ttf
+    - family: K2D-ExtraBoldItalic
+      fonts:
+        - asset: assets/fonts/K2D/K2D-ExtraBoldItalic.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
