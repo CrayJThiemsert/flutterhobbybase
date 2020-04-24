@@ -17,6 +17,7 @@ import 'package:hobbybase/popup/popup_menu.dart';
 import 'package:hobbybase/widget/display_owned_widget.dart';
 import 'package:hobbybase/widget/list_owned.dart';
 import 'package:imagebutton/imagebutton.dart';
+import 'owned_list_screen.dart';
 import 'placeholder_widget.dart';
 import 'package:hobbybase/transition/scale_transition.dart';
 import 'package:hobbybase/transition/slide_right_transition.dart';
@@ -143,6 +144,14 @@ class _HomeScreenState extends State<HomeScreen>
         false;
   }
 
+  void navigationPage(User user) {
+//    Navigator.of(context).pushNamed('/HomeScreen');
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => OwnedListScreen(user) ));
+  }
+
   void onTabTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -150,6 +159,9 @@ class _HomeScreenState extends State<HomeScreen>
       switch(_currentIndex) {
         case 0:
 
+          break;
+        case 1:
+          navigationPage(user);
           break;
         case 2:
           debugPrint("Do logoff");
