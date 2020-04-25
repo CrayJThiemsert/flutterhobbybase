@@ -103,11 +103,11 @@ class _HomeScreenState extends State<HomeScreen>
   final List<Grade> _fabGrades = [
 //    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
 //    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
-    Grade(name: "HG", jsonpath: "assets/json/hg.json"),
-    Grade(name: "RE100", jsonpath: "assets/json/re100.json"),
-    Grade(name: "RG", jsonpath: "assets/json/rg.json"),
-    Grade(name: "MG", jsonpath: "assets/json/mg.json"),
-    Grade(name: "PG", jsonpath: "assets/json/pg.json"),
+    Grade(name: "HG", jsonpath: "assets/json/hg.json", totalOwned: 0),
+    Grade(name: "RE100", jsonpath: "assets/json/re100.json", totalOwned: 0),
+    Grade(name: "RG", jsonpath: "assets/json/rg.json", totalOwned: 0),
+    Grade(name: "MG", jsonpath: "assets/json/mg.json", totalOwned: 0),
+    Grade(name: "PG", jsonpath: "assets/json/pg.json", totalOwned: 0),
   ];
 
   PopupMenu _gradeMenu;
@@ -144,12 +144,20 @@ class _HomeScreenState extends State<HomeScreen>
         false;
   }
 
-  void navigationPage(User user) {
-//    Navigator.of(context).pushNamed('/HomeScreen');
-    Navigator.push(
+  navigationPage(User user) async {
+    final result = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => OwnedListScreen(user) ));
+
+//    Scaffold.of(context)
+//    ..removeCurrentSnackBar()
+//    ..showSnackBar(SnackBar(content: Text("${result}"),));
+
+    setState(() {
+      _currentIndex = 0;
+      onTabTapped(_currentIndex);
+    });
   }
 
   void onTabTapped(int index) {
@@ -355,142 +363,6 @@ class _HomeScreenState extends State<HomeScreen>
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-//      appBar: AppBar(
-//        title: Text('First Routex'),
-//      ),
-//        floatingActionButton: Builder(
-//          builder: (context) =>
-////              Container(
-////                padding: EdgeInsets.only(top: 32.0, left: 8.0),
-////                child:
-//              FabCircularMenu(
-//            key: fabKey,
-//            // Cannot be `Alignment.center`
-//            alignment: Alignment.topLeft,
-//            ringColor: Colors.white.withAlpha(25),
-//            ringDiameter: 450.0,
-//            ringWidth: 70.0,
-//            fabSize: 64.0,
-//            fabElevation: 0.0,
-//
-//            // Also can use specific color based on weather
-//            // the menu is open or not:
-//            // fabOpenColor: Colors.white
-//            // fabCloseColor: Colors.white
-//            // These properties take precedence over fabColor
-//            fabColor: Colors.white,
-//
-//            fabOpenIcon: Icon(_fabIcons[_currentFabIndex], color: primaryColor),
-//            fabCloseIcon: Icon(Icons.close, color: primaryColor),
-//            fabMargin: const EdgeInsets.only(top: 48.0, left: 0.0),
-//            animationDuration: const Duration(milliseconds: 800),
-////                  animationCurve: Curves.easeInOutCirc,
-//            animationCurve: Curves.elasticInOut,
-//            onDisplayChange: (isOpen) {
-//              //              _showSnackBar(context, "The menu is ${isOpen ? "open" : "closed"}");
-//            },
-//            children: <Widget>[
-////              RaisedButton(
-////                onPressed: () {
-////                  //                  _showSnackBar(context, "You pressed 1");
-////                  setState(() {
-//////                    _currentFabIndex = 0;
-////                    setCurrentFabSelected(0);
-////                  });
-////                  _wheelListVisibility = true;
-////                  fabKey.currentState.close();
-////                },
-////                shape: CircleBorder(),
-//////                      padding: const EdgeInsets.all(24.0),
-////                child: Text('XX'),
-//////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
-////              ),
-////              RaisedButton(
-////                onPressed: () {
-////                  //                  _showSnackBar(context, "You pressed 1");
-////                  setState(() {
-//////                    _currentFabIndex = 1;
-////                    setCurrentFabSelected(1);
-////                    _wheelListVisibility = true;
-////                    fabKey.currentState.close();
-////                  });
-////                },
-////                shape: CircleBorder(),
-//////                      padding: const EdgeInsets.all(24.0),
-////                child: Text('SD'),
-//////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
-////              ),
-//              RaisedButton(
-//                onPressed: () {
-//                  //                  _showSnackBar(context, "You pressed 0");
-//                  setState(() {
-//                    setCurrentFabSelected(0);
-//                    _wheelListVisibility = true;
-//                    fabKey.currentState.close();
-//                  });
-//                },
-//                shape: CircleBorder(),
-////                      padding: const EdgeInsets.all(24.0),
-//                child: Text('HG'),
-////                      child: Icon(Icons.looks_two, color: Colors.white, size: 48,),
-//              ),
-//              RaisedButton(
-//                onPressed: () {
-//                  //                  _showSnackBar(context, "You pressed 1");
-//                  setState(() {
-//                    setCurrentFabSelected(1);
-//                    _wheelListVisibility = true;
-//                    fabKey.currentState.close();
-//                  });
-//                },
-//                shape: CircleBorder(),
-////                      padding: const EdgeInsets.all(24.0),
-//                child: Text('RE'),
-////                      child: Icon(Icons.looks_one, color: Colors.white, size: 48,),
-//              ),
-//              RaisedButton(
-//                onPressed: () {
-//                  //                  _showSnackBar(context, "You pressed 2");
-//                  setState(() {
-//                    setCurrentFabSelected(2);
-//                    _wheelListVisibility = true;
-//                    fabKey.currentState.close();
-//                  });
-//                },
-//                shape: CircleBorder(),
-////                      padding: const EdgeInsets.all(24.0),
-//                child: Text('RG'),
-////                      child: Icon(Icons.looks_3, color: Colors.white, size: 48,),
-//              ),
-//              RaisedButton(
-//                onPressed: () {
-//                  //                  _showSnackBar(context, "You pressed 4. This one closes the menu on tap");
-//                  setState(() {
-//                    setCurrentFabSelected(3);
-//                    _wheelListVisibility = true;
-//                    fabKey.currentState.close();
-//                  });
-//                },
-//                shape: CircleBorder(),
-////                      padding: const EdgeInsets.all(24.0),
-//                child: Text('MG'),
-////                      child: Icon(Icons.looks_4, color: Colors.white, size: 48,),
-//              ),
-//              RaisedButton(
-//                onPressed: () {
-//                  setState(() {
-//                    setCurrentFabSelected(4);
-//                    _wheelListVisibility = true;
-//                    fabKey.currentState.close();
-//                  });
-//                },
-//                shape: CircleBorder(),
-////                      padding: const EdgeInsets.all(24.0),
-//                child: Text('PG'),
-//              ),
-//            ],
-//          ),
-//        ),
         body: LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth < 600) {
@@ -508,11 +380,11 @@ class _HomeScreenState extends State<HomeScreen>
           items: [
             new BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              title: Text('Owned'),
+              title: Text('Home'),
             ),
             new BottomNavigationBarItem(
-              icon: Icon(Icons.mail),
-              title: Text('Messages'),
+              icon: Icon(Icons.pets),
+              title: Text('Owned'),
             ),
 //            new BottomNavigationBarItem(
 //                icon: Icon(Icons.person),
@@ -597,17 +469,6 @@ class _HomeScreenState extends State<HomeScreen>
                         onTap: () {
                           showPopupGradeMenu();
 
-//                          setState(() {
-//                            _wheelListVisibility = false;
-//                          });
-
-//                          _currentFabIndex = _currentFabIndex;
-
-//                          if (fabKey.currentState.isOpen) {
-//                            fabKey.currentState.close();
-//                          } else {
-//                            fabKey.currentState.open();
-//                          }
                         },
                       ),
                     ),
@@ -630,7 +491,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget getChildPanel() {
-    if(_currentIndex == 0) {
+    if(_currentIndex <= 1) {
       return OwnedDisplayWidget(Colors.black87, getLiked, getOwned, getShared);
     } else {
       return _children[_currentIndex];

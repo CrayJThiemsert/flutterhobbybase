@@ -53,6 +53,8 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
   bool _wheelListVisibility = false;
   List<Gunpla> gunplas = List<Gunpla>(); // parseJson(snapshot.data.toString());
 
+
+
   int _currentIndex = 0;
   final List<Widget> _children = [
     PlaceholderWidget(Colors.amberAccent),
@@ -83,6 +85,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
   final List<Image> _fabImages = [
 //    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
 //    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
+    Image.asset("assets/gunpla_grade/baseline_pets_white_24dp.png"),
     Image.asset("assets/gunpla_grade/ic_highgrade_96.png"),
     Image.asset("assets/gunpla_grade/ic_re100_96.png"),
     Image.asset("assets/gunpla_grade/ic_realgrade_96.png"),
@@ -93,11 +96,12 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
   final List<Grade> _fabGrades = [
 //    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
 //    Grade(name: "SD", jsonpath: "assets/json/sd.json"),
-    Grade(name: "HG", jsonpath: "assets/json/hg.json"),
-    Grade(name: "RE100", jsonpath: "assets/json/re100.json"),
-    Grade(name: "RG", jsonpath: "assets/json/rg.json"),
-    Grade(name: "MG", jsonpath: "assets/json/mg.json"),
-    Grade(name: "PG", jsonpath: "assets/json/pg.json"),
+    Grade(name: "ALL", jsonpath: "assets/json/hg.json", totalOwned: 0),
+    Grade(name: "HG", jsonpath: "assets/json/hg.json", totalOwned: 0),
+    Grade(name: "RE100", jsonpath: "assets/json/re100.json", totalOwned: 0),
+    Grade(name: "RG", jsonpath: "assets/json/rg.json", totalOwned: 0),
+    Grade(name: "MG", jsonpath: "assets/json/mg.json", totalOwned: 0),
+    Grade(name: "PG", jsonpath: "assets/json/pg.json", totalOwned: 0),
   ];
 
   PopupMenu _gradeMenu;
@@ -141,33 +145,11 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
       debugPrint("_currentIndex[${_currentIndex}]");
       switch(_currentIndex) {
         case 0:
-
+          debugPrint("Back to Home screen");
+          Navigator.pop(context, 'back');
           break;
-        case 2:
-          debugPrint("Do logoff");
-          signOut();
-          break;
-      }
-    });
-  }
-
-  IconData displayFabOpenIcon() {
-    setState(() {
-      switch (_currentFabIndex) {
-        case 0:
-          return Icons.airplanemode_active;
-        case 1:
-          return Icons.audiotrack;
-        case 2:
-          return Icons.wb_sunny;
-        case 3:
-          return Icons.wb_cloudy;
-        case 4:
-          return Icons.visibility;
-        case 5:
-          return Icons.video_call;
-        default:
-          return Icons.menu;
+//        case 2:
+//          break;
       }
     });
   }
@@ -188,11 +170,113 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
           'fnEnd of getOwnedDataDB ${_gunplaOwnedMap.length} records');
     });
 
+    _initPopupGradeFilterMenu();
 
     super.initState();
   }
 
+  _getTotalOwnedByGrade() {
+    for(int i=0;i < _fabGrades.length; i++) {
+      String gradeLowerCase = _fabGrades[i].name.substring(0, 2).toLowerCase();
+      int totalOwnedGrade = 0;
+      for(int j=0;j < _gunplaOwnedList.length;j++) {
+        String ownedGradeLowerCase = _gunplaOwnedList[j].box_art_path.substring(0, 2).toLowerCase();
+        if(i == 0) {
+          totalOwnedGrade++;
+        } else {
+          if (gradeLowerCase == ownedGradeLowerCase) {
+            totalOwnedGrade++;
+          }
+        }
+      }
+      _fabGrades[i].totalOwned = totalOwnedGrade;
+    }
+  }
 
+  _initPopupGradeFilterMenu() {
+    _getTotalOwnedByGrade();
+    _gradeMenu = PopupMenu(items: [
+      MenuItem(
+        title: 'ALL',
+        userInfo: _fabGrades[0].totalOwned,
+        image: Image.asset("assets/gunpla_grade/baseline_pets_white_24dp.png"),
+
+      ),
+      MenuItem(
+        title: 'HG',
+        userInfo: _fabGrades[1].totalOwned,
+        image: Image.asset("assets/gunpla_grade/ic_highgrade_96.png"),
+
+      ),
+      MenuItem(
+        title: 'RE100',
+        userInfo: _fabGrades[2].totalOwned,
+        image: Image.asset("assets/gunpla_grade/ic_re100_96.png"),
+      ),
+      MenuItem(
+        title: 'RG',
+        userInfo: _fabGrades[3].totalOwned,
+        image: Image.asset("assets/gunpla_grade/ic_realgrade_96.png"),
+      ),
+      MenuItem(
+        title: 'MG',
+        userInfo: _fabGrades[4].totalOwned,
+        image: Image.asset("assets/gunpla_grade/ic_mastergrade_96.png"),
+      ),
+      MenuItem(
+        title: 'PG',
+        userInfo: _fabGrades[5].totalOwned,
+        image: Image.asset("assets/gunpla_grade/ic_perfectgrade_96.png"),
+      ),
+
+    ],
+        onClickMenu: onClickMenu,
+        onDismiss: onDismiss,
+        maxColumn: 3
+    );
+  }
+
+  void onClickMenu(MenuItemProvider item) {
+    print('Click menu -> ${item.menuTitle}');
+    setState(() {
+      int menuIndex = 0;
+      switch(item.menuTitle) {
+        case 'ALL':
+          menuIndex = 0;
+          break;
+        case 'HG':
+          menuIndex = 1;
+          break;
+        case 'RE100':
+          menuIndex = 2;
+          break;
+        case 'RG':
+          menuIndex = 3;
+          break;
+        case 'MG':
+          menuIndex = 4;
+          break;
+        case 'PG':
+          menuIndex = 5;
+          break;
+      }
+      setCurrentFabSelected(menuIndex);
+    });
+  }
+
+  void setCurrentFabSelected(int selectedFabIndex) {
+    print('_currentFabIndex[${_currentFabIndex}] | selectedFabIndex[${selectedFabIndex}]');
+    if (_currentFabIndex != selectedFabIndex) {
+      _currentFabIndex = selectedFabIndex;
+      _isChangeGrade = true;
+
+    } else {
+      _isChangeGrade = false;
+    }
+
+    print(
+        "Pressed _isChangeGrade[${_isChangeGrade}] - ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
+  }
 
   Future<void> getUsersData() async {
     Firestore.instance
@@ -248,75 +332,49 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
           builder: (context, constraints) {
 //            if (constraints.maxWidth < 600) {
               // Mobile/Vertical
-              return _gridListOwned();
-//                _homePhoneView();
+              return _mainBody();
 //            } else {
 //              // Tablet/Horizontal
 //              return _homeTabletView();
 //            }
           },
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          onTap: onTabTapped, // new
-          currentIndex: _currentIndex, // new
-          items: [
-            new BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text('Owned'),
-            ),
-            new BottomNavigationBarItem(
-              icon: Icon(Icons.mail),
-              title: Text('Messages'),
-            ),
-//            new BottomNavigationBarItem(
-//                icon: Icon(Icons.person),
-//                title: Text('Profile')
-//            ),
-            new BottomNavigationBarItem(
-                icon: Icon(Icons.settings_power), title: Text('Logoff'))
-          ],
-        ),
+        bottomNavigationBar:
+          _useCustomBottomNavigationBar(),
+
       ),
     );
   }
 
-  /**
-   * create Mobile/Vertical View
-   */
-  Widget _homePhoneView() {
-    print('call _homePhoneView');
-    return SafeArea(
-      top: _isEnabled,
-      bottom: _isEnabled,
-      left: _isEnabled,
-      right: _isEnabled,
-      minimum: const EdgeInsets.all(2.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          // Top area for Hero & Wheel List
-          Container(
-            decoration: new BoxDecoration(
-//              color: Colors.cyan,
-              gradient: new RadialGradient(
-                  colors: [Colors.indigo[900], Colors.teal[50]],
-                  center: Alignment(-1.5, -0.2),
-                  radius: 3.3,
-                  stops: [0.0, 0.2]),
-              boxShadow: [
-                new BoxShadow(
-                    color: Colors.black54,
-                    offset: new Offset(4.0, 4.0),
-                    blurRadius: 4.0)
-              ],
-            ),
-            child: Container(
-                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 6.0),
-                child: _gridListOwned(),
+  _tapBack() {
+    print('tap on back');
+    Navigator.pop(context, 'back');
+  }
+
+  Widget _useCustomBottomNavigationBar() {
+    return Container(
+      height: 60,
+//      color: Colors.black87,
+      child: InkWell(
+        onTap: () => {
+          _tapBack()
+        },
+        child: Padding(
+          padding: EdgeInsets.only( top: 8.0),
+          child: Column(
+            children: <Widget>[
+              Icon(
+                Icons.arrow_back,
+                color: Theme.of(context).accentColor,
               ),
-            ),
-            // Body area for contents
-          ],
+              Text('Back',
+                style: TextStyle(
+                  fontFamily: 'K2D-Regular',
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -335,63 +393,116 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
     print('Menu is dismiss');
   }
 
+
   Widget _gridListOwned() {
     return GridView.count(
       crossAxisCount: 2,
-
       children:
       List.generate(_gunplaOwnedMap.length, (index) {
         Owned owned = _gunplaOwnedList[index];
         var boxart = "assets/gunpla/${owned.box_art_path}";
         return
           Center(
-          child:
+            child:
             GestureDetector(
               onTap: () {_openImage(context, index); },
-            child:
-          Container(
+              child:
+              Container(
 
-            margin: EdgeInsets.all(4),
-            height: 200,
-            child: Card(
+                margin: EdgeInsets.all(4),
+                height: 200,
+                child: Card(
 
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  ClipRRect(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      ClipRRect(
 
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    child: Image.asset(
-                      boxart,
-                      height: 120,
-//                      width: 130,
-                      fit: BoxFit.scaleDown,
-                    ),
-                  ),
-//                  ListTile(
-//                    title:
-                    Text(
-                      '${owned.name}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'K2D-BoldItalic'
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        child: Image.asset(
+                          boxart,
+                          height: 120,
+                          //                      width: 130,
+                          fit: BoxFit.scaleDown,
+                        ),
                       ),
-                    ),
-//                  ),
+                      //                  ListTile(
+                      //                    title:
+                      Text(
+                        '${owned.name}',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'K2D-BoldItalic'
+                        ),
+                      ),
+                      //                  ),
 
-                ],
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-            ),
-//          Text(
-//            'Item ${owned.box_art_path}',
-//              style: Theme.of(context).textTheme.headline,
-//          ),
-        );
+            //          Text(
+            //            'Item ${owned.box_art_path}',
+            //              style: Theme.of(context).textTheme.headline,
+            //          ),
+          );
       }),
+    );
+  }
 
+  Widget _gradeFilter() {
+    return Container(
+
+      margin: EdgeInsets.only(top: 8.0, left: 8.0),
+      child: Card(
+        color: Colors.black87,
+        elevation: 15.0,
+        child: GestureDetector(
+          child: SizedBox(
+            child: FittedBox(
+              alignment: Alignment.center,
+              fit: BoxFit.fitHeight,
+              child:
+              Tooltip(
+                message: 'Grade',
+                verticalOffset: 28,
+                child: _fabImages[_currentFabIndex],
+              ),
+            ),
+            width: 60,
+            height: 36,
+          ),
+          key: _gradeMenuKey,
+          onTap: () {
+            showPopupGradeMenu();
+
+          },
+        ),
+      ),
+    );
+  }
+
+  void showPopupGradeMenu() {
+    _initPopupGradeFilterMenu();
+    _gradeMenu.show(widgetKey: _gradeMenuKey);
+  }
+
+  Widget _mainBody() {
+    return SafeArea(
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: _gradeFilter(),
+          ),
+          Container(
+            child: Expanded(
+                child: _gridListOwned(),
+            )
+          )
+        ],
+      )
     );
   }
 

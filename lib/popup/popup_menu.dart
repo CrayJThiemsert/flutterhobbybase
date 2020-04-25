@@ -9,6 +9,7 @@ import 'triangle_painter.dart';
 
 abstract class MenuItemProvider {
   String get menuTitle;
+  String get menuUserInfo;
   Widget get menuImage;
   TextStyle get menuTextStyle;
   TextAlign get menuTextAlign;
@@ -28,6 +29,9 @@ class MenuItem extends MenuItemProvider {
 
   @override
   String get menuTitle => title;
+
+  @override
+  String get menuUserInfo => '${userInfo}';
 
   @override
   TextStyle get menuTextStyle =>
@@ -432,7 +436,7 @@ class _MenuItemWidgetState extends State<_MenuItemWidget> {
       },
       child: Container(
           width: PopupMenu.itemWidth,
-          height: PopupMenu.itemHeight,
+          height: PopupMenu.itemHeight + 25,
           decoration: BoxDecoration(
               color: color,
               border: Border(
@@ -456,11 +460,21 @@ class _MenuItemWidgetState extends State<_MenuItemWidget> {
             child: widget.item.menuImage,
           ),
           Container(
-            height: 22.0,
+            height: 15.0,
             child: Material(
               color: Colors.transparent,
               child: Text(
                 widget.item.menuTitle,
+                style: widget.item.menuTextStyle,
+              ),
+            ),
+          ),
+          Container(
+            height: 15.0,
+            child: Material(
+              color: Colors.transparent,
+              child: Text(
+                widget.item.menuUserInfo,
                 style: widget.item.menuTextStyle,
               ),
             ),

@@ -84,6 +84,15 @@ flutter:
     - assets/icon/
 
   fonts:
+    - family: K2D-Regular
+      fonts:
+        - asset: assets/fonts/K2D/K2D-Regular.ttf
+    - family: K2D-Light
+      fonts:
+          - asset: assets/fonts/K2D/K2D-Light.ttf
+    - family: K2D-SemiBold
+      fonts:
+          - asset: assets/fonts/K2D/K2D-SemiBold.ttf
     - family: K2D-BoldItalic
       fonts:
         - asset: assets/fonts/K2D/K2D-BoldItalic.ttf
