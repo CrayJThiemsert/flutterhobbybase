@@ -269,7 +269,7 @@ class PopupMenu {
     return rows;
   }
 
-  // 创建一行的item,  row 从0开始算
+  // Create a row of items, row starts from 0
   List<Widget> _createRowItems(int row) {
     List<MenuItemProvider> subItems =
         items.sublist(row * _col, min(row * _col + _col, items.length));

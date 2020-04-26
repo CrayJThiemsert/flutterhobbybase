@@ -8,7 +8,10 @@ class Owned {
   bool is_liked = false;
   bool is_owned = false;
   bool is_shared = false;
+  String priceYen;
+  String priceThb;
 
+  Timestamp released_when = Timestamp.now();
   Timestamp created_when = Timestamp.now();
   String created_by = "";
   Timestamp updated_when = Timestamp.now();
@@ -22,6 +25,9 @@ class Owned {
     this.is_liked,
     this.is_owned,
     this.is_shared,
+    this.priceYen,
+    this.priceThb,
+    this.released_when,
     this.created_when,
     this.created_by,
     this.updated_when,
@@ -40,6 +46,9 @@ class Owned {
         is_liked: data['is_liked'] ?? false,
         is_owned: data['is_owned'] ?? false,
         is_shared: data['is_shared'] ?? false,
+        priceYen: data['priceYen'] ?? '0',
+        priceThb: data['priceThb'] ?? '0',
+        released_when: data['released_when'] ?? Timestamp.now(),
         created_when: data['created_when'] ?? Timestamp.now(),
         created_by: data['created_by'] ?? '',
         updated_when: data['updated_when'] ?? Timestamp.now(),

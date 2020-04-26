@@ -49,7 +49,8 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
 
   double _fontTileSize = 8;
 
-  int _currentFabIndex = 0;
+  int _currentGradeIndex = 0;
+  int _currentSortingIndex = 0;
   bool _wheelListVisibility = false;
   List<Gunpla> gunplas = List<Gunpla>(); // parseJson(snapshot.data.toString());
 
@@ -82,7 +83,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
     Icons.mood,
   ];
 
-  final List<Image> _fabImages = [
+  final List<Image> _gradeFilterImages = [
 //    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
 //    Image.asset("assets/gunpla_grade/ic_sd_96.png"),
     Image.asset("assets/gunpla_grade/baseline_pets_white_24dp.png"),
@@ -106,6 +107,8 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
 
   PopupMenu _gradeMenu;
   GlobalKey _gradeMenuKey = GlobalKey();
+  PopupMenu _sortingMenu;
+  GlobalKey _sortingMenuKey = GlobalKey();
 
   User user = User();
 
@@ -114,6 +117,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
   HashMap _gunplaOwnedMap = HashMap<String, Owned>();
   List<Owned> _gunplaOwnedList = List<Owned>();
   bool _isChangeGrade = false;
+  bool _isChangeSorting = false;
 
   _OwnedListScreenState(this.user);
 
@@ -171,8 +175,22 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
     });
 
     _initPopupGradeFilterMenu();
+    _initPopupSortingMenu();
+
+
 
     super.initState();
+
+
+  }
+
+  Future<void> executeAfterBuild() async {
+    setCurrentSortingSelected(_currentSortingIndex);
+//    WidgetsBinding.instance.addPostFrameCallback((_) =>
+//        setCurrentSortingSelected(_currentSortingIndex)
+//    );
+
+    print('call executeAfterBuild()');
   }
 
   _getTotalOwnedByGrade() {
@@ -230,14 +248,38 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
       ),
 
     ],
-        onClickMenu: onClickMenu,
+        onClickMenu: onClickGradeFilterMenu,
         onDismiss: onDismiss,
         maxColumn: 3
     );
   }
 
-  void onClickMenu(MenuItemProvider item) {
-    print('Click menu -> ${item.menuTitle}');
+  _initPopupSortingMenu() {
+    _sortingMenu = PopupMenu(items: [
+      MenuItem(
+        title: 'Name',
+      ),
+      MenuItem(
+        title: 'Grade',
+      ),
+      MenuItem(
+        title: 'Price',
+      ),
+      MenuItem(
+        title: 'Released',
+      ),
+      MenuItem(
+        title: 'Owned',
+      ),
+    ],
+        onClickMenu: onClickSortingMenu,
+        onDismiss: onDismiss,
+        maxColumn: 3
+    );
+  }
+
+  void onClickGradeFilterMenu(MenuItemProvider item) {
+    print('Click Grade Filter menu -> ${item.menuTitle}');
     setState(() {
       int menuIndex = 0;
       switch(item.menuTitle) {
@@ -260,14 +302,39 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
           menuIndex = 5;
           break;
       }
-      setCurrentFabSelected(menuIndex);
+      setCurrentGradeSelected(menuIndex);
     });
   }
 
-  void setCurrentFabSelected(int selectedFabIndex) {
-    print('_currentFabIndex[${_currentFabIndex}] | selectedFabIndex[${selectedFabIndex}]');
-    if (_currentFabIndex != selectedFabIndex) {
-      _currentFabIndex = selectedFabIndex;
+  void onClickSortingMenu(MenuItemProvider item) {
+    print('Click Sorting menu -> ${item.menuTitle}');
+    setState(() {
+      int menuIndex = 0;
+      switch(item.menuTitle) {
+        case 'Name':
+          menuIndex = 0;
+          break;
+        case 'Grade':
+          menuIndex = 1;
+          break;
+        case 'Price':
+          menuIndex = 2;
+          break;
+        case 'Released':
+          menuIndex = 3;
+          break;
+        case 'Owned':
+          menuIndex = 4;
+          break;
+      }
+      setCurrentSortingSelected(menuIndex);
+    });
+  }
+
+  void setCurrentGradeSelected(int selectedIndex) {
+    print('_currentFabIndex[${_currentGradeIndex}] | selectedFabIndex[${selectedIndex}]');
+    if (_currentGradeIndex != selectedIndex) {
+      _currentGradeIndex = selectedIndex;
       _isChangeGrade = true;
 
     } else {
@@ -275,7 +342,44 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
     }
 
     print(
-        "Pressed _isChangeGrade[${_isChangeGrade}] - ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
+        "Pressed _isChangeGrade[${_isChangeGrade}] - ${_currentGradeIndex} - ${_fabGrades[_currentGradeIndex].name} - ${_fabGrades[_currentGradeIndex].jsonpath}");
+  }
+
+  void setCurrentSortingSelected(int selectedIndex) {
+    print('call setCurrentSortingSelected(${selectedIndex}) _currentSortingIndex[${_currentSortingIndex}] | selectedFabIndex[${selectedIndex}]');
+    if (_currentSortingIndex != selectedIndex) {
+      _currentSortingIndex = selectedIndex;
+      _isChangeSorting = true;
+
+    } else {
+      _isChangeSorting = false;
+    }
+
+    print(
+        "Pressed _isChangeSorting[${_isChangeSorting}] - ${_currentSortingIndex} - ${_sortingMenu.items[_currentSortingIndex].menuTitle} - ${_sortingMenu.items[_currentSortingIndex].menuUserInfo}");
+
+    setState(() {
+
+        print('sorting[${_sortingMenu.items[_currentSortingIndex].menuTitle}]'); //name[${a.name}] grade[${a.box_art_path.substring(0, 2).toLowerCase()}] box_art_path[${a.box_art_path}]' );
+        switch (_sortingMenu.items[_currentSortingIndex].menuTitle) {
+          case 'Name':
+            _gunplaOwnedList.sort((Owned a, Owned b) => a.name.compareTo(b.name));
+            break;
+          case 'Grade':
+            _gunplaOwnedList.sort((Owned a, Owned b) => a.box_art_path.substring(0, 2).toLowerCase().compareTo(
+                b.box_art_path.substring(0, 2).toLowerCase()));
+            break;
+          case 'Price':
+            _gunplaOwnedList.sort((Owned a, Owned b) => a.priceYen.compareTo(b.priceYen));
+            break;
+          case 'Released':
+            _gunplaOwnedList.sort((Owned a, Owned b) => a.released_when.compareTo(b.released_when));
+            break;
+          case 'Owned':
+            _gunplaOwnedList.sort((Owned a, Owned b) => a.created_when.compareTo(b.created_when));
+            break;
+        }
+      });
   }
 
   Future<void> getUsersData() async {
@@ -324,6 +428,8 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
 
 //    WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+    executeAfterBuild();
 
     return WillPopScope(
 //      onWillPop: _onWillPop,
@@ -395,10 +501,12 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
 
 
   Widget _gridListOwned() {
+    print('call _gridListOwned() - _gunplaOwnedList.length[${_gunplaOwnedList.length}]');
+
     return GridView.count(
       crossAxisCount: 2,
       children:
-      List.generate(_gunplaOwnedMap.length, (index) {
+      List.generate(_gunplaOwnedList.length, (index) {
         Owned owned = _gunplaOwnedList[index];
         var boxart = "assets/gunpla/${owned.box_art_path}";
         return
@@ -454,10 +562,9 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
 
   Widget _gradeFilter() {
     return Container(
-
       margin: EdgeInsets.only(top: 8.0, left: 8.0),
       child: Card(
-        color: Colors.black87,
+        color: Colors.black26,
         elevation: 15.0,
         child: GestureDetector(
           child: SizedBox(
@@ -468,7 +575,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
               Tooltip(
                 message: 'Grade',
                 verticalOffset: 28,
-                child: _fabImages[_currentFabIndex],
+                child: _gradeFilterImages[_currentGradeIndex],
               ),
             ),
             width: 60,
@@ -484,9 +591,52 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
     );
   }
 
+  Widget _sortingFilter() {
+    return Container(
+      margin: EdgeInsets.only(top: 8.0, left: 8.0),
+      child: Card(
+        color: Colors.black26,
+        elevation: 15.0,
+        child: GestureDetector(
+          child: SizedBox(
+            child: FittedBox(
+              alignment: Alignment.center,
+              fit: BoxFit.scaleDown,
+              child:
+              Tooltip(
+                message: 'Sorting',
+                verticalOffset: 28,
+                child: Text(
+                  _sortingMenu.items[_currentSortingIndex].menuTitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white,
+//                    fontFamily: "K2D-Light"
+                  ),
+                ),
+              ),
+            ),
+            width: 60,
+            height: 36,
+          ),
+          key: _sortingMenuKey,
+          onTap: () {
+            showPopupSortingMenu();
+
+          },
+        ),
+      ),
+    );
+  }
+
   void showPopupGradeMenu() {
     _initPopupGradeFilterMenu();
     _gradeMenu.show(widgetKey: _gradeMenuKey);
+  }
+
+  void showPopupSortingMenu() {
+    _initPopupSortingMenu();
+    _sortingMenu.show(widgetKey: _sortingMenuKey);
   }
 
   Widget _mainBody() {
@@ -494,7 +644,13 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
       child: Column(
         children: <Widget>[
           Container(
-            child: _gradeFilter(),
+            child: Row(
+              children: <Widget>[
+                _gradeFilter(),
+                _sortingFilter(),
+              ],
+            ), 
+            
           ),
           Container(
             child: Expanded(
