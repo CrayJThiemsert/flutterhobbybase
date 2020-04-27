@@ -6,13 +6,13 @@ class Gunpla {
   String name;
   String grade;
   String box_art_path;
-  String priceYen;
-  String priceThb;
+  String price_yen;
+  String price_thb;
   String series;
   String desc;
   String scale;
   String isPBandai;
-  bool releasedWhen;
+  String releasedWhen;
   String createdWhen;
   String updatedWhen;
   String janCode;
@@ -21,8 +21,8 @@ class Gunpla {
       {this.name,
         this.grade,
         this.box_art_path,
-        this.priceYen,
-        this.priceThb,
+        this.price_yen,
+        this.price_thb,
         this.series,
         this.desc,
         this.scale,
@@ -36,8 +36,8 @@ class Gunpla {
     name = json['name'];
     grade = json['grade'];
     box_art_path = json['box_art_path'];
-    priceYen = json['price_yen'];
-    priceThb = json['price_thb'];
+    price_yen = json['price_yen'];
+    price_thb = json['price_thb'];
     series = json['series'];
     desc = json['desc'];
     scale = json['scale'];
@@ -53,8 +53,8 @@ class Gunpla {
     data['name'] = this.name;
     data['grade'] = this.grade;
     data['box_art_path'] = this.box_art_path;
-    data['price_yen'] = this.priceYen;
-    data['price_thb'] = this.priceThb;
+    data['price_yen'] = this.price_yen;
+    data['price_thb'] = this.price_thb;
     data['series'] = this.series;
     data['desc'] = this.desc;
     data['scale'] = this.scale;

@@ -17,6 +17,7 @@ import 'package:hobbybase/popup/popup_menu.dart';
 import 'package:hobbybase/widget/display_owned_widget.dart';
 import 'package:hobbybase/widget/list_owned.dart';
 import 'package:imagebutton/imagebutton.dart';
+import 'package:intl/intl.dart';
 import 'owned_list_screen.dart';
 import 'placeholder_widget.dart';
 import 'package:hobbybase/transition/scale_transition.dart';
@@ -119,6 +120,8 @@ class _HomeScreenState extends State<HomeScreen>
   HashMap _gunplaActionMap = HashMap<String, GunplaAction>();
   HashMap _gunplaOwnedMap = HashMap<String, Owned>();
   bool _isChangeGrade = false;
+
+  DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 
   _HomeScreenState(this.user);
 
@@ -1266,6 +1269,9 @@ class _HomeScreenState extends State<HomeScreen>
             'uid': uid,
             'name': gunplaAction.gunpla.name,
             'box_art_path': gunplaAction.gunpla.box_art_path,
+            'price_yen': double.parse(gunplaAction.gunpla.price_yen),
+            'price_thb': double.parse(gunplaAction.gunpla.price_thb),
+            'released_when': dateFormat.parse(gunplaAction.gunpla.releasedWhen),
             'is_liked': gunplaAction.is_liked,
             'is_owned': gunplaAction.is_owned,
             'is_shared': gunplaAction.is_shared,

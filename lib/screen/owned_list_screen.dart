@@ -176,12 +176,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
 
     _initPopupGradeFilterMenu();
     _initPopupSortingMenu();
-
-
-
     super.initState();
-
-
   }
 
   Future<void> executeAfterBuild() async {
@@ -337,6 +332,10 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
       _currentGradeIndex = selectedIndex;
       _isChangeGrade = true;
 
+      setState(() {
+        reloadOwnedDataList();
+      });
+
     } else {
       _isChangeGrade = false;
     }
@@ -370,7 +369,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
                 b.box_art_path.substring(0, 2).toLowerCase()));
             break;
           case 'Price':
-            _gunplaOwnedList.sort((Owned a, Owned b) => a.priceYen.compareTo(b.priceYen));
+            _gunplaOwnedList.sort((Owned a, Owned b) => a.price_yen.compareTo(b.price_yen));
             break;
           case 'Released':
             _gunplaOwnedList.sort((Owned a, Owned b) => a.released_when.compareTo(b.released_when));
@@ -392,6 +391,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
   Future<void> getOwnedDataDB() async {
     try {
       _gunplaOwnedMap.clear();
+      _gunplaOwnedList.clear();
       Firestore.instance
           .collection("users/${user.uid}/owned")
           .snapshots()
@@ -401,12 +401,22 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
             uid: doc['uid'],
             name: doc['name'],
             box_art_path: doc['box_art_path'],
+            price_yen: (doc['price_yen'] == null) ? 0 : doc['price_yen'],
+            price_thb: (doc['price_thb'] == null) ? 0 : doc['price_thb'],
+            created_when: doc['created_when'],
+            released_when: doc['released_when'],
             is_liked: doc['is_liked'],
             is_owned: doc['is_owned'],
             is_shared: doc['is_shared']
         );
-        _gunplaOwnedMap[own.uid] =  own;
-        _gunplaOwnedList.add(own);
+
+        String ownedGradeLowerCase = own.box_art_path.substring(0, 2).toLowerCase();
+        String currentGrade = _fabGrades[_currentGradeIndex].name;
+
+        if(currentGrade.toLowerCase() == ownedGradeLowerCase || currentGrade.toLowerCase() == 'all') {
+          _gunplaOwnedMap[own.uid] = own;
+          _gunplaOwnedList.add(own);
+        }
       }));
 
     } on Exception catch (err) {
@@ -414,6 +424,27 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
     } finally {
       print(
           'End of getOwnedDataDB ${_gunplaOwnedMap.length} records');
+    }
+  }
+
+  void reloadOwnedDataList() async {
+    try {
+      _gunplaOwnedList.clear();
+      _gunplaOwnedMap.forEach((k, v) {
+        Owned own = v;
+        print('=>${own.uid}');
+        String ownedGradeLowerCase = own.box_art_path.substring(0, 2).toLowerCase();
+        String currentGrade = _fabGrades[_currentGradeIndex].name;
+
+        if(currentGrade.toLowerCase() == ownedGradeLowerCase || currentGrade.toLowerCase() == 'all') {
+          _gunplaOwnedList.add(own);
+        }
+      });
+    } on Exception catch (err) {
+      print('reloadOwnedDataList error: $err');
+    } finally {
+      print(
+          'End of reloadOwnedDataList ${_gunplaOwnedList.length} records');
     }
   }
 
@@ -500,7 +531,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
   }
 
 
-  Widget _gridListOwned() {
+  Widget _drawGridListOwned() {
     print('call _gridListOwned() - _gunplaOwnedList.length[${_gunplaOwnedList.length}]');
 
     return GridView.count(
@@ -508,54 +539,59 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
       children:
       List.generate(_gunplaOwnedList.length, (index) {
         Owned owned = _gunplaOwnedList[index];
-        var boxart = "assets/gunpla/${owned.box_art_path}";
-        return
-          Center(
-            child:
-            GestureDetector(
-              onTap: () {_openImage(context, index); },
+        String ownedGradeLowerCase = owned.box_art_path.substring(0, 2).toLowerCase();
+        String currentGrade = _fabGrades[_currentGradeIndex].name;
+        if(currentGrade.toLowerCase() == ownedGradeLowerCase || currentGrade.toLowerCase() == 'all' ) {
+          var boxart = "assets/gunpla/${owned.box_art_path}";
+          return
+            Center(
               child:
-              Container(
+              GestureDetector(
+                onTap: () {_openImage(context, index); },
+                child:
+                Container(
 
-                margin: EdgeInsets.all(4),
-                height: 200,
-                child: Card(
+                  margin: EdgeInsets.all(4),
+                  height: 200,
+                  child: Card(
 
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      ClipRRect(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        ClipRRect(
 
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        child: Image.asset(
-                          boxart,
-                          height: 120,
-                          //                      width: 130,
-                          fit: BoxFit.scaleDown,
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          child: Image.asset(
+                            boxart,
+                            height: 120,
+                            //                      width: 130,
+                            fit: BoxFit.scaleDown,
+                          ),
                         ),
-                      ),
-                      //                  ListTile(
-                      //                    title:
-                      Text(
-                        '${owned.name}',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'K2D-BoldItalic'
+                        //                  ListTile(
+                        //                    title:
+                        Text(
+                          '${owned.name}',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              fontFamily: 'K2D-Light'
+                          ),
                         ),
-                      ),
-                      //                  ),
+                        //                  ),
 
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            //          Text(
-            //            'Item ${owned.box_art_path}',
-            //              style: Theme.of(context).textTheme.headline,
-            //          ),
-          );
+              //          Text(
+              //            'Item ${owned.box_art_path}',
+              //              style: Theme.of(context).textTheme.headline,
+              //          ),
+            );
+        }
+
       }),
     );
   }
@@ -654,7 +690,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
           ),
           Container(
             child: Expanded(
-                child: _gridListOwned(),
+                child: _drawGridListOwned(),
             )
           )
         ],
