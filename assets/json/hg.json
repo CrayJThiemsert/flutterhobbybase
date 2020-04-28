@@ -1,9 +1,9 @@
 [
   {
-    "name": "gundam ver.g30th-mitsui sumitomo visa card_rx-78-2",
+    "name": "RX-78-2 Gundam G30th (Mitsui Sumitomo Visa Card Ver.)",
     "grade": "HG30",
     "box_art_path": "hg30/gundam_ver.g30th-mitsui_sumitomo_visa_card_rx-78-2.jpg",
-    "price_yen": "0",
+    "price_yen": "8689",
     "price_thb": "0",
     "series": "",
     "desc": "",
@@ -15,10 +15,10 @@
     "jan_code": ""
   },
   {
-    "name": "gundam ver.g30th-premium gold_rx-78-2",
+    "name": "RX-78-2 Gundam Ver.G30th Premium Gold Ver.",
     "grade": "HG30",
     "box_art_path": "hg30/gundam_ver.g30th-premium_gold_rx-78-2.jpg",
-    "price_yen": "0",
+    "price_yen": "3000",
     "price_thb": "0",
     "series": "",
     "desc": "",
@@ -30,10 +30,10 @@
     "jan_code": ""
   },
   {
-    "name": "gundam ver.g30th-real grade project_rx-78-2",
+    "name": "RX-78-2 Gundam Ver.G30th Real Grade 1/1 Gundam Project",
     "grade": "HG30",
     "box_art_path": "hg30/gundam_ver.g30th-real_grade_project_rx-78-2.jpg",
-    "price_yen": "0",
+    "price_yen": "3500",
     "price_thb": "0",
     "series": "",
     "desc": "",
@@ -45,11 +45,11 @@
     "jan_code": ""
   },
   {
-    "name": "gundam ver.sg50_rx-78-2",
+    "name": "RX-78-2 GUNDAM Ver. SG50",
     "grade": "HG30",
     "box_art_path": "hg30/gundam_ver.sg50_rx-78-2.jpg",
-    "price_yen": "0",
-    "price_thb": "0",
+    "price_yen": "8140",
+    "price_thb": "2270",
     "series": "",
     "desc": "",
     "scale": "1/144",
