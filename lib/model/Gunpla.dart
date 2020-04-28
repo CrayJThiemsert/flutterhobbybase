@@ -11,7 +11,7 @@ class Gunpla {
   String series;
   String desc;
   String scale;
-  String isPBandai;
+  bool isPBandai;
   String releasedWhen;
   String createdWhen;
   String updatedWhen;
