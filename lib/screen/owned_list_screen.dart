@@ -570,13 +570,16 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
                         ),
                         //                  ListTile(
                         //                    title:
-                        Text(
-                          '${owned.name}',
+                        Tooltip(
+                          message: owned.name,
+                          child: Text(
+                          '${shrinkText(owned.name, 48)}',
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,
                               fontFamily: 'K2D-Light'
                           ),
+                        ),
                         ),
                         //                  ),
 
@@ -594,6 +597,9 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
 
       }),
     );
+  }
+  String shrinkText(String text, int len) {
+    return (text.length > len) ? '${text.substring(0, len)}...' : text;
   }
 
   Widget _gradeFilter() {
