@@ -11,6 +11,7 @@ import 'package:hobbybase/model/User.dart';
 import 'package:hobbybase/widget/masked_text.dart';
 import 'signin_button.dart';
 import 'teddy_controller.dart';
+import 'test_firebase_messaging.dart';
 import 'tracking_text_input.dart';
 
 import 'homescreen.dart';
@@ -97,6 +98,8 @@ class _SignInTeddyScreenState extends State<SignInTeddyScreen> with SingleTicker
         context,
         MaterialPageRoute(
             builder: (context) => HomeScreen(user) ));
+//            builder: (context) => DetailPage('1') ));
+
   }
 
   Widget _showSelectedContainer() {

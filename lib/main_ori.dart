@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hobbybase/painting/app_logo.dart';
 import 'package:hobbybase/screen/homescreen.dart';
@@ -40,8 +38,8 @@ void main() =>
 
 //              User.getUserDB(user.email).then((userdb) {
                   User userdb = User(uid: user.email, email: user.email, name: displayNameTemp, active: true);
-                return new HomeScreen(userdb);
-//                  return DetailPage(userdb.name);
+//                return new HomeScreen(userdb);
+                  return DetailPage(userdb.name);
 //              });
 
                 } else {
@@ -137,6 +135,7 @@ class FadeIn extends State<SplashScreenAnimation> {
     );
   }
 }
+
 
 
 

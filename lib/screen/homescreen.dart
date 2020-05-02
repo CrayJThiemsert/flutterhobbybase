@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +15,7 @@ import 'package:hobbybase/model/GunplaAction.dart';
 import 'package:hobbybase/model/Owned.dart';
 import 'package:hobbybase/model/User.dart';
 import 'package:hobbybase/popup/popup_menu.dart';
+import 'package:hobbybase/widget/dialog_widget.dart';
 import 'package:hobbybase/widget/display_owned_widget.dart';
 import 'package:hobbybase/widget/list_owned.dart';
 import 'package:imagebutton/imagebutton.dart';
@@ -40,6 +42,9 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
 
+  final Firestore _db = Firestore.instance;
+  final FirebaseMessaging _fcm = FirebaseMessaging();
+
   final FixedExtentScrollController _controller = FixedExtentScrollController();
 
   //Uses a Ticker Mixin for Animations
@@ -64,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen>
   bool _wheelListVisibility = false;
   List<Gunpla> gunplas = List<Gunpla>(); // parseJson(snapshot.data.toString());
 
-  int _currentIndex = 0;
+  int _currentBottomNavIndex = 0;
   final List<Widget> _children = [
     PlaceholderWidget(Colors.amberAccent),
 //    OwnedDisplayWidget(Colors.black87),
@@ -125,26 +130,20 @@ class _HomeScreenState extends State<HomeScreen>
 
   _HomeScreenState(this.user);
 
+
+
+
   Future<bool> _onWillPop() {
-    return showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Are you sure?'),
-            content: Text('Do you want to exit an App'),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
-              ),
-              FlatButton(
-                onPressed: () => exit(0),
-                /*Navigator.of(context).pop(true)*/
-                child: Text('Yes'),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    return
+      DialogUtils().showConfirmationDialog(context,
+          'Are you sure?',
+          'Do you want to exit an App?',
+          'Yes',
+          'No',
+          'close_app',
+          'close_dialog'
+      ) ??
+      false;
   }
 
   navigationPage(User user) async {
@@ -158,18 +157,18 @@ class _HomeScreenState extends State<HomeScreen>
 //    ..showSnackBar(SnackBar(content: Text("${result}"),));
 
     setState(() {
-      _currentIndex = 0;
-      onTabTapped(_currentIndex);
+      _currentBottomNavIndex = 0;
+      onTabTapped(_currentBottomNavIndex);
     });
   }
 
   void onTabTapped(int index) {
     setState(() {
-      _currentIndex = index;
-      debugPrint("_currentIndex[${_currentIndex}]");
-      switch(_currentIndex) {
+      _currentBottomNavIndex = index;
+      debugPrint("_currentBottomNavIndex[${_currentBottomNavIndex}]");
+      switch(_currentBottomNavIndex) {
         case 0:
-
+          _fcm.subscribeToTopic('puppies');
           break;
         case 1:
           navigationPage(user);
@@ -340,6 +339,33 @@ class _HomeScreenState extends State<HomeScreen>
 //      }
 //    });
     super.initState();
+
+    _fcm.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print('onMessage: ${message}');
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              content: ListTile(
+                title: Text(message['notification']['title']),
+                subtitle: Text(message['notification']['body']),
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Ok'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            )
+        );
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print('onLaunch: ${message}');
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print('onResume: ${message}');
+      },
+    );
   }
 
 
@@ -379,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         bottomNavigationBar: BottomNavigationBar(
           onTap: onTabTapped, // new
-          currentIndex: _currentIndex, // new
+          currentIndex: _currentBottomNavIndex, // new
           items: [
             new BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -494,10 +520,10 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget getChildPanel() {
-    if(_currentIndex <= 1) {
+    if(_currentBottomNavIndex <= 1) {
       return OwnedDisplayWidget(Colors.black87, getLiked, getOwned, getShared);
     } else {
-      return _children[_currentIndex];
+      return _children[_currentBottomNavIndex];
     }
   }
 
