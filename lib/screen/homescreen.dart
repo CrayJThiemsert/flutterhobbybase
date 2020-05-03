@@ -175,7 +175,14 @@ class _HomeScreenState extends State<HomeScreen>
           break;
         case 2:
           debugPrint("Do logoff");
-          signOut();
+          DialogUtils().showConfirmationDialog(context,
+              'Sign Out',
+              'Are you sure you would like to sign out?',
+              'Sign out',
+              'Cancel',
+              'sign_out',
+              'close_dialog'
+          );
           break;
       }
     });
@@ -199,13 +206,6 @@ class _HomeScreenState extends State<HomeScreen>
         default:
           return Icons.menu;
       }
-    });
-  }
-
-  Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut().then((_) {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          "/SignInScreen", ModalRoute.withName("/HomeScreen"));
     });
   }
 

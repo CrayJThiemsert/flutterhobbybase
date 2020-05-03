@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui' as ui show Gradient, TextBox, lerpDouble, Image;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DialogUtils {
@@ -107,9 +108,19 @@ class DialogUtils {
       case 'close_dialog':
         Navigator.of(context).pop(false);
         break;
+      case 'sign_out':
+        signOut(context);
+        break;
     }
   }
 
   exitApp() =>
       exit(0);
+
+  Future<void> signOut(BuildContext context) async {
+    await FirebaseAuth.instance.signOut().then((_) {
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          "/SignInScreen", ModalRoute.withName("/HomeScreen"));
+    });
+  }
 }
