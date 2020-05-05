@@ -21,6 +21,8 @@ dependencies:
     sdk: flutter
   flare_flutter: ^2.0.1
   intl: ^0.16.1
+  simple_animations: ^2.1.1
+  supercharged: ^1.5.1
 
   firebase_messaging: ^6.0.13
 
