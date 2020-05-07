@@ -1131,9 +1131,9 @@ class _HomeScreenState extends State<HomeScreen>
     User.getUserDB(user.email).then((userdb) {
       user = userdb;
       print('--- Current user is ${user.toString()} ---');
-      setState(() {
-        _imageToShowTag = user.name;
-      });
+//      setState(() {
+//        _imageToShowTag = user.name;
+//      });
     });
   }
 
