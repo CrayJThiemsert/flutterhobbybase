@@ -20,6 +20,7 @@ import 'package:hobbybase/widget/display_owned_widget.dart';
 import 'package:hobbybase/widget/list_owned.dart';
 import 'package:imagebutton/imagebutton.dart';
 import 'package:intl/intl.dart';
+import 'hero_gunpla_detail_screen.dart';
 import 'owned_list_screen.dart';
 import 'placeholder_widget.dart';
 import 'package:hobbybase/transition/scale_transition.dart';
@@ -939,116 +940,26 @@ class _HomeScreenState extends State<HomeScreen>
           child: SizedBox(
             child: GestureDetector(
               child: Hero(
-              tag: _imageToShowTag,
-              child: Column(
-//                mainAxisAlignment: MainAxisAlignment.start,
-//                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Background & Hero Image
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: new RadialGradient(
-                              colors: [Colors.yellow, Colors.black],
-                              center: Alignment(1.5, 0.2),
-                              radius: 3.3,
-                              stops: [0.0, 0.2]),
-                          boxShadow: [
-                            new BoxShadow(
-                                color: Colors.black54,
-                                offset: new Offset(4.0, 4.0),
-                                blurRadius: 4.0)
-                          ],
-                          //                                  color: Colors.indigoAccent,
-                          border: Border(
-                            left: BorderSide(
-                              color: _borderHeroColor,
-                              width: 2.0,
-                            ),
-                            right: BorderSide(
-                              color: _borderHeroColor,
-                              width: 2.0,
-                            ),
-                            top: BorderSide(
-                              color: _borderHeroColor,
-                              width: 2.0,
-                            ),
-                          ),
-    //                      borderRadius: BorderRadius.circular(8.0)
-                      ),
-
-                        // HeroMainHome Image
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            child: Image.asset(
-                              _imagePathToShow,
-                              //                            scale: 0.8,
-                              height: 170,
-                              width: 170,
-                              fit: BoxFit.scaleDown,
-                            ),
-                          ),
-                    ),
-
-                  // Hero Caption
+                tag: _imageToShowTag,
+                child: Column(
+  //                mainAxisAlignment: MainAxisAlignment.start,
+  //                crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Background & Hero Image
                     Container(
-                      height: 75,
-                      width: 174,
-                      padding: EdgeInsets.all(4.0),
-                      decoration: BoxDecoration(
-                          gradient: new LinearGradient(
-                              colors: [Colors.teal[200], Colors.indigo[900]],
-                              stops: [0.0, 0.3]
-                              ),
-                          boxShadow: [
-                            new BoxShadow(
-                                color: Colors.black54,
-                                offset: new Offset(4.0, 4.0),
-                                blurRadius: 4.0)
-                          ],
-                          border: Border(
-                            left: BorderSide(
-                              color: _borderHeroColor,
-                              width: 2.0,
-                            ),
-                            right: BorderSide(
-                              color: _borderHeroColor,
-                              width: 2.0,
-                            ),
-                          ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        child: Text(
-                          _imageToShowTag.toUpperCase(),
-                          textAlign: TextAlign.center,
-                          style: //Theme.of(context).textTheme.headline,
-                              TextStyle(
-                                  fontSize: 12.0,
-                                  color: Colors.teal[50],
-                                  fontFamily: 'K2D-BoldItalic'),
-                        ),
-                      ),
-                    ),
-                  // Toggle Action buttons (Liked, Owned, Shared)
-//            SingleChildScrollView(
-//              child:
-              Container(
-                height: 75,
-                        width: 174,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(4.0),
-                        decoration: BoxDecoration(
-//                          gradient: new LinearGradient(
-//                              colors: [Colors.teal[200], Colors.indigo[900]],
-//                              stops: [0.0, 0.3]
-//                          ),
-                          boxShadow: [
-                            new BoxShadow(
-                                color: Colors.black54,
-                                offset: new Offset(4.0, 4.0),
-                                blurRadius: 4.0)
-                          ],
-                            color: Colors.white,
+                          decoration: BoxDecoration(
+                            gradient: new RadialGradient(
+                                colors: [Colors.yellow, Colors.black],
+                                center: Alignment(1.5, 0.2),
+                                radius: 3.3,
+                                stops: [0.0, 0.2]),
+                            boxShadow: [
+                              new BoxShadow(
+                                  color: Colors.black54,
+                                  offset: new Offset(4.0, 4.0),
+                                  blurRadius: 4.0)
+                            ],
+                            //                                  color: Colors.indigoAccent,
                             border: Border(
                               left: BorderSide(
                                 color: _borderHeroColor,
@@ -1058,64 +969,154 @@ class _HomeScreenState extends State<HomeScreen>
                                 color: _borderHeroColor,
                                 width: 2.0,
                               ),
-                              bottom: BorderSide(
+                              top: BorderSide(
                                 color: _borderHeroColor,
                                 width: 2.0,
                               ),
                             ),
-
+      //                      borderRadius: BorderRadius.circular(8.0)
                         ),
-                      child:
-                      ClipRRect(
-//                        Card(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        child: ToggleButtons(
-
-                          children: <Widget>[
-                            Tooltip(
-                              message: 'Liked',
-                              verticalOffset: 38,
-                              child: Icon(Icons.thumb_up),
+  
+                        // HeroMainHome Image
+                        child: ClipRRect(
+                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                              child: Image.asset(
+                                _imagePathToShow,
+                                //                            scale: 0.8,
+                                height: 170,
+                                width: 170,
+                                fit: BoxFit.scaleDown,
+                              ),
                             ),
-                            Tooltip(
-                              message: 'Owned',
-                              verticalOffset: 38,
-                              child: Icon(Icons.pets),
+                      ),
+  
+                    // Hero Caption
+                    Container(
+                        height: 75,
+                        width: 174,
+                        padding: EdgeInsets.all(4.0),
+                        decoration: BoxDecoration(
+                            gradient: new LinearGradient(
+                                colors: [Colors.teal[200], Colors.indigo[900]],
+                                stops: [0.0, 0.3]
+                                ),
+                            boxShadow: [
+                              new BoxShadow(
+                                  color: Colors.black54,
+                                  offset: new Offset(4.0, 4.0),
+                                  blurRadius: 4.0)
+                            ],
+                            border: Border(
+                              left: BorderSide(
+                                color: _borderHeroColor,
+                                width: 2.0,
+                              ),
+                              right: BorderSide(
+                                color: _borderHeroColor,
+                                width: 2.0,
+                              ),
                             ),
-                            Tooltip(
-                                message: 'Shared',
-                                verticalOffset: 38,
-                                child: Icon(Icons.record_voice_over),
-                            ),
-                          ],
-                          color: Colors.black26,
-                          selectedColor: Colors.white,
-                          fillColor: Colors.redAccent,
-                          borderRadius: BorderRadius.circular(15),
-                          borderWidth: 2,
-                          borderColor: Colors.lime,
-                          selectedBorderColor: Colors.lime,
-                          isSelected: _actionSelections,
-                          onPressed: (int index) {
-                            setState(() {
-                              _actionSelections[index] = !_actionSelections[index];
-                              print('${index} - ${_actionSelections[index]}');
-                              if (updateSelectedActionMap(index)) {
-                                updateGunplaActionDB(index);
-                              }
-                            });
-                          },
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          child: Text(
+                            _imageToShowTag.toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: //Theme.of(context).textTheme.headline,
+                                TextStyle(
+                                    fontSize: 12.0,
+                                    color: Colors.teal[50],
+                                    fontFamily: 'K2D-BoldItalic'),
+                          ),
                         ),
                       ),
+                    
+                    // Toggle Action buttons (Liked, Owned, Shared)
+  //            SingleChildScrollView(
+  //              child:
+                    Container(
+                      height: 75,
+                      width: 174,
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.all(4.0),
+                      decoration: BoxDecoration(
+  //                          gradient: new LinearGradient(
+  //                              colors: [Colors.teal[200], Colors.indigo[900]],
+  //                              stops: [0.0, 0.3]
+  //                          ),
+                            boxShadow: [
+                              new BoxShadow(
+                                  color: Colors.black54,
+                                  offset: new Offset(4.0, 4.0),
+                                  blurRadius: 4.0)
+                            ],
+                              color: Colors.white,
+                              border: Border(
+                                left: BorderSide(
+                                  color: _borderHeroColor,
+                                  width: 2.0,
+                                ),
+                                right: BorderSide(
+                                  color: _borderHeroColor,
+                                  width: 2.0,
+                                ),
+                                bottom: BorderSide(
+                                  color: _borderHeroColor,
+                                  width: 2.0,
+                                ),
+                              ),
+  
+                          ),
+                      child:
+                        ClipRRect(
+  //                        Card(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          child: ToggleButtons(
+                              children: <Widget>[
+                                Tooltip(
+                                  message: 'Liked',
+                                  verticalOffset: 38,
+                                  child: Icon(Icons.thumb_up),
+                                ),
+                                Tooltip(
+                                  message: 'Owned',
+                                  verticalOffset: 38,
+                                  child: Icon(Icons.pets),
+                                ),
+                                Tooltip(
+                                    message: 'Shared',
+                                    verticalOffset: 38,
+                                    child: Icon(Icons.record_voice_over),
+                                ),
+                              ],
+                              color: Colors.black26,
+                              selectedColor: Colors.white,
+                              fillColor: Colors.redAccent,
+                              borderRadius: BorderRadius.circular(15),
+                              borderWidth: 2,
+                              borderColor: Colors.lime,
+                              selectedBorderColor: Colors.lime,
+                              isSelected: _actionSelections,
+                              onPressed: (int index) {
+                                setState(() {
+                                  _actionSelections[index] = !_actionSelections[index];
+                                  print('${index} - ${_actionSelections[index]}');
+                                  if (updateSelectedActionMap(index)) {
+                                    updateGunplaActionDB(index);
+                                  }
+                                });
+                              },
+                          ),
+                        ),
                     ),
-//          ),
-                ],
+  //          ),
+                  ],
+                ),
+                transitionOnUserGestures: true,
               ),
-              transitionOnUserGestures: true,
-            ),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return DetailScreen(
+                  return HeroGunplaDetailScreen(
                     imageToShowHero: _imageToShowTag,
                     imageToShowPath: _imagePathToShow,
                   );
@@ -1123,7 +1124,7 @@ class _HomeScreenState extends State<HomeScreen>
               },
           ),
         ),
-    );
+      );
   }
 
   Future<void> getUserData() {
@@ -1423,98 +1424,7 @@ class _HomeScreenState extends State<HomeScreen>
 
 
 
-class DetailScreen extends StatelessWidget {
-  final String imageToShowHero;
-  final String imageToShowPath;
-  bool _isEnabled = true;
-  Color _borderHeroColor = Colors.lime[800];
 
-  DetailScreen({this.imageToShowHero, this.imageToShowPath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      primary: true,
-      body:  SafeArea(
-        top: _isEnabled,
-        bottom: _isEnabled,
-        left: _isEnabled,
-        right: _isEnabled,
-        child:
-          GestureDetector(
-            child: Center(
-              child: Hero(
-                tag: imageToShowHero,
-                child: Column(
-                  children: [
-//                    Expanded(
-//                      flex: 2,
-//                      child:
-                      Image.asset(
-                      imageToShowPath,
-                      height: 200,
-//                      scale: 0.5,
-                    ),
-//                    ),
-//                    Expanded(
-//                      flex: 1,
-//                      child:
-                      Container(
-                      width: 170,
-                      padding: EdgeInsets.all(4.0),
-                      decoration: BoxDecoration(
-                        gradient: new LinearGradient(
-                            colors: [Colors.teal[200], Colors.indigo[900]],
-                            //                          center: Alignment(1.5, 0.2),
-                            //                          radius: 3.3,
-                            stops: [0.0, 0.3]
-                        ),
-                        boxShadow: [
-                          new BoxShadow(
-                              color: Colors.black54,
-                              offset: new Offset(4.0, 4.0),
-                              blurRadius: 4.0)
-                        ],
-                        //                                  color: Colors.indigoAccent,
-                        border: Border(
-                          left: BorderSide(
-                            color: _borderHeroColor,
-                            width: 2.0,
-                          ),
-                          right: BorderSide(
-                            color: _borderHeroColor,
-                            width: 2.0,
-                          ),
-                        ),
-                        //                      borderRadius: BorderRadius.circular(8.0)
-                      ),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            child: Text(
-                              imageToShowHero.toUpperCase(),
-                              textAlign: TextAlign.center,
-                              style: //Theme.of(context).textTheme.headline,
-                                  TextStyle(
-                                      fontSize: 12.0,
-                                      color: Colors.white,
-                                      fontFamily: 'K2D-BoldItalic'),
-                            ),
-                          ),
-                    ),
-//                    ),
-              ],
-            ),
-                transitionOnUserGestures: true,
-              ),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-    );
-  }
-}
 
 class _SafeAreaState extends State<HomeScreen> {
   // Bool value to control the behaviour of SafeArea widget
