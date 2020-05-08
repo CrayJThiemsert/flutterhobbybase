@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hobbybase/model/User.dart';
+import 'package:hobbybase/screen/owned_list_screen.dart';
 import 'package:hobbybase/widget/fonts_effect.dart';
 import 'dart:ui' as ui show Gradient, TextBox, lerpDouble, Image;
 
@@ -8,12 +10,14 @@ class OwnedDisplayWidget extends StatelessWidget {
   final Function getOwned;
   final Function getShared;
   final fontUtils = FontsUtils();
+  final User user;
 
   OwnedDisplayWidget(
       this.color,
       this.getLiked,
       this.getOwned,
-      this.getShared);
+      this.getShared,
+      this.user);
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +26,12 @@ class OwnedDisplayWidget extends StatelessWidget {
       decoration: new BoxDecoration(
 //              color: Colors.cyan,
         gradient: new LinearGradient(
-            colors: [Colors.white, color ],
+            colors: [Colors.brown[100], Colors.grey[400], Colors.grey[700], Colors.brown[900] ],
 //            center: Alignment(-1.5, -0.2),
 //            radius: 3.3,
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            stops: [0.0, 0.9]
+            stops: [0.0, 0.2, 0.4, 0.9]
         ),
         boxShadow: [new BoxShadow(
             color: Colors.black54,
@@ -43,7 +47,7 @@ class OwnedDisplayWidget extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      fontUtils.drawScoreTitle('Liked'),
+                      fontUtils.drawScoreTitleButton('Liked'),
                       Text(getLikedValue(),
                         textAlign: TextAlign.center,
                         style:
@@ -61,7 +65,22 @@ class OwnedDisplayWidget extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      fontUtils.drawScoreTitle('Owned'),
+                      FlatButton(
+                      color: Colors.grey[800],
+                        shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                                color: Colors.white,
+                                width: 1
+                            )
+                        ),
+                        onPressed: () => navigationPage(context, user),
+                        child: Text('Owned',
+                          style: TextStyle(
+                            fontFamily: 'K2D-Medium',
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                       Text(getOwnedValue(),
                         textAlign: TextAlign.center,
                         style:
@@ -81,7 +100,7 @@ class OwnedDisplayWidget extends StatelessWidget {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      fontUtils.drawScoreTitle('Shared'),
+                      fontUtils.drawScoreTitleButton('Shared'),
                       Text(getSharedValue(),
                         textAlign: TextAlign.center,
                         style:
@@ -98,6 +117,15 @@ class OwnedDisplayWidget extends StatelessWidget {
               ],
             ),
     );
+
+
+  }
+
+  navigationPage(BuildContext context, User user) async {
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => OwnedListScreen(user) ));
   }
 
   String getLikedValue() {

@@ -15,6 +15,7 @@ import 'package:hobbybase/model/GunplaAction.dart';
 import 'package:hobbybase/model/Owned.dart';
 import 'package:hobbybase/model/User.dart';
 import 'package:hobbybase/popup/popup_menu.dart';
+import 'package:hobbybase/screen/screen_profile.dart';
 import 'package:hobbybase/widget/dialog_widget.dart';
 import 'package:hobbybase/widget/display_owned_widget.dart';
 import 'package:hobbybase/widget/list_owned.dart';
@@ -73,13 +74,12 @@ class _HomeScreenState extends State<HomeScreen>
   int _currentBottomNavIndex = 0;
   final List<Widget> _children = [
     PlaceholderWidget(Colors.amberAccent),
-//    OwnedDisplayWidget(Colors.black87),
     PlaceholderWidget(Colors.lime),
     PlaceholderWidget(Colors.brown),
 //    PlaceholderWidget(Colors.greenAccent)
   ];
   
-  Color _borderHeroColor = Colors.lime[800];
+  Color _borderHeroColor = Colors.limeAccent;
 
   final List<IconData> _fabIcons = [
 //    IconData(AssetImage("assets/gunpla_grade/ic_sd_96.png")),
@@ -131,9 +131,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   _HomeScreenState(this.user);
 
-
-
-
   Future<bool> _onWillPop() {
     return
       DialogUtils().showConfirmationDialog(context,
@@ -147,7 +144,8 @@ class _HomeScreenState extends State<HomeScreen>
       false;
   }
 
-  navigationPage(User user) async {
+  gotoOwnedScreen(User user) async {
+    PageController p;
     final result = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -163,6 +161,13 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
+  gotoProfileScreen(User user) async {
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Profile(user) ));
+  }
+
   void onTabTapped(int index) {
     setState(() {
       _currentBottomNavIndex = index;
@@ -172,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen>
           _fcm.subscribeToTopic('puppies');
           break;
         case 1:
-          navigationPage(user);
+          gotoProfileScreen(user);
           break;
         case 2:
           debugPrint("Do logoff");
@@ -413,8 +418,8 @@ class _HomeScreenState extends State<HomeScreen>
               title: Text('Home'),
             ),
             new BottomNavigationBarItem(
-              icon: Icon(Icons.pets),
-              title: Text('Owned'),
+              icon: Icon(Icons.person),
+              title: Text('Profile'),
             ),
 //            new BottomNavigationBarItem(
 //                icon: Icon(Icons.person),
@@ -469,6 +474,7 @@ class _HomeScreenState extends State<HomeScreen>
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       buildWheelList(),
+//                      buildWheelListNoFutureBuild(),
                     ],
                   ),
 
@@ -508,6 +514,13 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ),
           // Body area for contents
+          Divider(
+            thickness: 2,
+            indent: 4,
+            endIndent: 4,
+            height: 2.0,
+            color: Colors.orange[700],
+          ),
           Expanded(
             child: Container(
 //            height: 200,
@@ -522,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget getChildPanel() {
     if(_currentBottomNavIndex <= 1) {
-      return OwnedDisplayWidget(Colors.black87, getLiked, getOwned, getShared);
+      return OwnedDisplayWidget(Colors.black87, getLiked, getOwned, getShared, user);
     } else {
       return _children[_currentBottomNavIndex];
     }
@@ -827,6 +840,39 @@ class _HomeScreenState extends State<HomeScreen>
               : Center(child: CircularProgressIndicator());
         });
   }
+
+  Future<void> _loadJSONAsset() async {
+    return await DefaultAssetBundle.of(context)
+            .loadString(_fabGrades[_currentFabIndex].jsonpath);
+  }
+
+  Future parseJSONAsset() async {
+    gunplas = parseJson(await _loadJSONAsset().toString());
+    initGunplaActionMap(gunplas);
+  }
+
+  Widget buildWheelListNoFutureBuild() {
+    parseJSONAsset();
+    return (!gunplas.isEmpty && gunplas.length > 0)
+        ? wheelList(gunplas)
+        : Center(child: CircularProgressIndicator());
+
+    return FutureBuilder(
+      // Load JSON of gunpla list
+//        future: DefaultAssetBundle.of(context)
+//            .loadString(_fabGrades[_currentFabIndex].jsonpath),
+        builder: (context, snapshot) {
+          if (_isChangeGrade) {
+            gunplas = parseJson(snapshot.data.toString());
+            initGunplaActionMap(gunplas);
+          }
+
+          return (!gunplas.isEmpty && gunplas.length > 0)
+              ? wheelList(gunplas)
+              : Center(child: CircularProgressIndicator());
+        });
+  }
+
   void initTotalOwnedInfo() {
     _totalLiked = 0;
     _totalOwned = 0;
@@ -989,7 +1035,18 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
                       ),
-  
+                    // Divider
+                    Container(
+                      width: 174,
+                      height: 2,
+                      child: Divider(
+                        thickness: 1,
+                        indent: 2,
+                        endIndent: 2,
+                        height: 2.0,
+                        color: Colors.limeAccent,
+                      ),
+                    ),
                     // Hero Caption
                     Container(
                         height: 75,
@@ -1030,6 +1087,18 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                         ),
                       ),
+                    // Divider
+                    Container(
+                      width: 174,
+                      height: 2,
+                      child: Divider(
+                        thickness: 1,
+                        indent: 2,
+                        endIndent: 2,
+                        height: 2.0,
+                        color: Colors.limeAccent,
+                      ),
+                    ),
                     
                     // Toggle Action buttons (Liked, Owned, Shared)
   //            SingleChildScrollView(
@@ -1068,10 +1137,11 @@ class _HomeScreenState extends State<HomeScreen>
   
                           ),
                       child:
-                        ClipRRect(
-  //                        Card(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          child: ToggleButtons(
+//                        ClipRRect(
+//                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+//                          child:
+                          Material(
+                            child: ToggleButtons(
                               children: <Widget>[
                                 Tooltip(
                                   message: 'Liked',
@@ -1106,6 +1176,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   }
                                 });
                               },
+//                          ),
                           ),
                         ),
                     ),

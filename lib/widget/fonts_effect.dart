@@ -1,5 +1,7 @@
 import 'dart:ui' as ui show Gradient, TextBox, lerpDouble, Image;
 import 'package:flutter/material.dart';
+import 'package:hobbybase/model/User.dart';
+import 'package:hobbybase/screen/owned_list_screen.dart';
 
 class FontsUtils {
 
@@ -8,6 +10,27 @@ class FontsUtils {
       blurRadius: 5.0,
       color: Colors.indigo,
       offset: Offset(5.0, 5.0),
+    );
+  }
+
+
+
+  Widget drawScoreTitleButton(String caption) {
+    return FlatButton(
+      color: Colors.grey[800],
+      shape: RoundedRectangleBorder(
+          side: BorderSide(
+              color: Colors.white,
+              width: 1
+          )
+      ),
+//      onPressed: () => doFunction(context, noFunc),
+      child: Text(caption,
+        style: TextStyle(
+          fontFamily: 'K2D-Medium',
+          color: Colors.white,
+        ),
+      ),
     );
   }
 
