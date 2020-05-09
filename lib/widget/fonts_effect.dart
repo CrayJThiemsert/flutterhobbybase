@@ -13,6 +13,14 @@ class FontsUtils {
     );
   }
 
+  Shadow getShadowUserName() {
+    return Shadow(
+      blurRadius: 8.0,
+      color: Colors.purpleAccent[400],
+      offset: Offset(2.0, 4.0),
+    );
+  }
+
 
 
   Widget drawScoreTitleButton(String caption) {

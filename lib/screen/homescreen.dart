@@ -18,6 +18,7 @@ import 'package:hobbybase/popup/popup_menu.dart';
 import 'package:hobbybase/screen/screen_profile.dart';
 import 'package:hobbybase/widget/dialog_widget.dart';
 import 'package:hobbybase/widget/display_owned_widget.dart';
+import 'package:hobbybase/widget/fonts_effect.dart';
 import 'package:hobbybase/widget/list_owned.dart';
 import 'package:imagebutton/imagebutton.dart';
 import 'package:intl/intl.dart';
@@ -43,6 +44,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
+  
+  final double _dWheelHeight = 320;
+  final double _dHeroWidth = 174;
+
+  final fontUtils = FontsUtils();
 
   final Firestore _db = Firestore.instance;
   final FirebaseMessaging _fcm = FirebaseMessaging();
@@ -59,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen>
   String _imagePathToShow = "assets/cardboard01.png"; //"assets/dq/dq01.png";
   String _imageToShowTag = ""; //"demoTag";
   String _imageToShowBoxArt = "";
+  String _userName = "";
   int _imageWheelIndex = 0;
 
   int _totalLiked = 0;
@@ -482,33 +489,11 @@ class _HomeScreenState extends State<HomeScreen>
                   buildHeroFrame(),
 
                   // Grade Image
-                  Container(
-                    margin: EdgeInsets.only(top: 8.0, left: 8.0),
-                    child: Card(
-                      elevation: 15.0,
-                      child: GestureDetector(
-                        child: SizedBox(
-                          child: FittedBox(
-                            alignment: Alignment.center,
-                            fit: BoxFit.fill,
-                            child:
-                              Tooltip(
-                                  message: 'Grade',
-                                  verticalOffset: 28,
-                                  child: _fabImages[_currentFabIndex],
-                              ),
-                          ),
-                          width: 60,
-                          height: 36,
-                        ),
-                        key: _gradeMenuKey,
-                        onTap: () {
-                          showPopupGradeMenu();
+                  buildGradeFilter(),
 
-                        },
-                      ),
-                    ),
-                  ),
+                  // User Info Badge
+                  buildUserInfoFrame(),
+
                 ],
               ),
             ),
@@ -912,7 +897,7 @@ class _HomeScreenState extends State<HomeScreen>
 
         //            alignment: Alignment.center,
         //            color: Colors.amber,
-        height: MediaQuery.of(context).size.height / 2,
+        height: _dWheelHeight, // MediaQuery.of(context).size.height / 2,
         width: 225, //MediaQuery.of(context).size.width - 120,
         child: ListWheelScrollView(
           onSelectedItemChanged: (index) {
@@ -979,6 +964,116 @@ class _HomeScreenState extends State<HomeScreen>
         "Pressed _isChangeGrade[${_isChangeGrade}] - ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
   }
 
+  Widget buildUserInfoFrame() {
+    return Positioned(
+      left: 180, //MediaQuery.of(context).size.width *.5,
+      right: 4,//MediaQuery.of(context).size.width *.5,
+      top: _dWheelHeight + 7,
+      child:
+//      Container(
+//        padding: EdgeInsets.only(
+//          left: 24,
+//          top: 24,
+//        ),
+//        height: 60,
+//        decoration: BoxDecoration(
+//          color: Colors.brown[200].withOpacity(.45),
+//          borderRadius: BorderRadius.circular(8),
+//        ),
+//        child:
+        Stack(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.only(
+                left: MediaQuery.of(context).size.width * .2,
+//                top: 20,
+                right: 4,
+              ),
+              width: double.infinity,
+              height: 60,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.deepPurple[100],
+                    Colors.deepPurple[600]
+                  ],
+                ),
+              ),
+              child: Center(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: _userName.substring(0, 1),
+                        style: Theme.of(context)
+                          .textTheme
+                          .caption
+                          .copyWith(
+                            fontSize: 14,
+                            color: Colors.orange,
+                            shadows: [fontUtils.getShadowUserName()],
+                            fontFamily: 'K2D-SemiBold')
+
+                      ),
+                      TextSpan(
+                          text: _userName.substring(1),
+                          style: Theme.of(context)
+                              .textTheme
+                              .caption
+                              .copyWith(
+                              fontSize: 14,
+                              color: Colors.white,
+                              shadows: [fontUtils.getShadowUserName()],
+                              fontFamily: 'K2D-SemiBold')
+
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Image.asset('assets/rank/rank_01.jpg', height:  60,),
+            ),
+          ],
+//        ),
+      ),
+    );
+  }
+
+  Widget buildGradeFilter() {
+    return Container(
+      margin: EdgeInsets.only(top: 8.0, left: 8.0),
+      child: Card(
+        elevation: 15.0,
+        child: GestureDetector(
+          child: SizedBox(
+            child: FittedBox(
+              alignment: Alignment.center,
+              fit: BoxFit.fill,
+              child:
+              Tooltip(
+                message: 'Grade',
+                verticalOffset: 28,
+                child: _fabImages[_currentFabIndex],
+              ),
+            ),
+            width: 60,
+            height: 36,
+          ),
+          key: _gradeMenuKey,
+          onTap: () {
+            showPopupGradeMenu();
+
+          },
+        ),
+      ),
+    );
+  }
+
   Widget buildHeroFrame() {
     return // Hero Image
         Container(
@@ -993,51 +1088,51 @@ class _HomeScreenState extends State<HomeScreen>
                   children: [
                     // Background & Hero Image
                     Container(
-                          decoration: BoxDecoration(
-                            gradient: new RadialGradient(
-                                colors: [Colors.yellow, Colors.black],
-                                center: Alignment(1.5, 0.2),
-                                radius: 3.3,
-                                stops: [0.0, 0.2]),
-                            boxShadow: [
-                              new BoxShadow(
-                                  color: Colors.black54,
-                                  offset: new Offset(4.0, 4.0),
-                                  blurRadius: 4.0)
-                            ],
-                            //                                  color: Colors.indigoAccent,
-                            border: Border(
-                              left: BorderSide(
-                                color: _borderHeroColor,
-                                width: 2.0,
-                              ),
-                              right: BorderSide(
-                                color: _borderHeroColor,
-                                width: 2.0,
-                              ),
-                              top: BorderSide(
-                                color: _borderHeroColor,
-                                width: 2.0,
-                              ),
-                            ),
-      //                      borderRadius: BorderRadius.circular(8.0)
+                      decoration: BoxDecoration(
+                        gradient: new RadialGradient(
+                            colors: [Colors.yellow, Colors.black],
+                            center: Alignment(1.5, 0.2),
+                            radius: 3.3,
+                            stops: [0.0, 0.2]),
+                        boxShadow: [
+                          new BoxShadow(
+                              color: Colors.black54,
+                              offset: new Offset(4.0, 4.0),
+                              blurRadius: 4.0)
+                        ],
+                        //                                  color: Colors.indigoAccent,
+                        border: Border(
+                          left: BorderSide(
+                            color: _borderHeroColor,
+                            width: 2.0,
+                          ),
+                          right: BorderSide(
+                            color: _borderHeroColor,
+                            width: 2.0,
+                          ),
+                          top: BorderSide(
+                            color: _borderHeroColor,
+                            width: 2.0,
+                          ),
                         ),
-  
-                        // HeroMainHome Image
-                        child: ClipRRect(
-                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                              child: Image.asset(
-                                _imagePathToShow,
-                                //                            scale: 0.8,
-                                height: 170,
-                                width: 170,
-                                fit: BoxFit.scaleDown,
-                              ),
+  //                      borderRadius: BorderRadius.circular(8.0)
+                    ),
+
+                      // HeroMainHome Image
+                      child: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            child: Image.asset(
+                              _imagePathToShow,
+                              //                            scale: 0.8,
+                              height: 170,
+                              width: 170,
+                              fit: BoxFit.scaleDown,
                             ),
-                      ),
+                          ),
+                    ),
                     // Divider
                     Container(
-                      width: 174,
+                      width: _dHeroWidth,
                       height: 2,
                       child: Divider(
                         thickness: 1,
@@ -1050,7 +1145,7 @@ class _HomeScreenState extends State<HomeScreen>
                     // Hero Caption
                     Container(
                         height: 75,
-                        width: 174,
+                        width: _dHeroWidth,
                         padding: EdgeInsets.all(4.0),
                         decoration: BoxDecoration(
                             gradient: new LinearGradient(
@@ -1089,7 +1184,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     // Divider
                     Container(
-                      width: 174,
+                      width: _dHeroWidth,
                       height: 2,
                       child: Divider(
                         thickness: 1,
@@ -1105,7 +1200,7 @@ class _HomeScreenState extends State<HomeScreen>
   //              child:
                     Container(
                       height: 75,
-                      width: 174,
+                      width: _dHeroWidth,
                       alignment: Alignment.center,
                       padding: EdgeInsets.all(4.0),
                       decoration: BoxDecoration(
@@ -1202,9 +1297,9 @@ class _HomeScreenState extends State<HomeScreen>
     User.getUserDB(user.email).then((userdb) {
       user = userdb;
       print('--- Current user is ${user.toString()} ---');
-//      setState(() {
-//        _imageToShowTag = user.name;
-//      });
+      setState(() {
+        _userName = user.name;
+      });
     });
   }
 
