@@ -43,11 +43,11 @@ class HeroGunplaDetailScreen extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: new LinearGradient(
-                      colors: [Colors.teal[100], Colors.blueGrey[200], Colors.blueGrey[600], Colors.teal[900]],
+                      colors: [Colors.blueGrey[600], Colors.blueGrey[200], Colors.blueGrey[600], Colors.grey[900]],
                           //                          center: Alignment(1.5, 0.2),
                           //                          radius: 3.3,
-                          begin: Alignment.topRight,
-                          end: Alignment.bottomLeft,
+//                          begin: Alignment.topRight,
+//                          end: Alignment.bottomLeft,
                           stops: [0.1, 0.3, 0.6, 0.9]
                       ),
                       boxShadow: [

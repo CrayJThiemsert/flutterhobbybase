@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen>
     final result = await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => Profile(user) ));
+            builder: (context) => Profile(user) )).then((value) => getUserData());
   }
 
   void onTabTapped(int index) {
@@ -500,17 +500,24 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           // Body area for contents
           Divider(
-            thickness: 2,
-            indent: 4,
-            endIndent: 4,
+            thickness: 4,
+            indent: 0,
+            endIndent: 0,
             height: 2.0,
             color: Colors.orange[700],
+          ),
+          Divider(
+            thickness: 4,
+            indent: 0,
+            endIndent: 0,
+            height: 4.0,
+            color: Colors.red[700],
           ),
           Expanded(
             child: Container(
 //            height: 200,
               color: Colors.amberAccent,
-              child: getChildPanel(),
+              child: buildBodyDownFrame(),
             ),
           )
         ],
@@ -518,7 +525,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget getChildPanel() {
+  Widget buildBodyDownFrame() {
     if(_currentBottomNavIndex <= 1) {
       return OwnedDisplayWidget(Colors.black87, getLiked, getOwned, getShared, user);
     } else {
@@ -1005,7 +1012,7 @@ class _HomeScreenState extends State<HomeScreen>
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: _userName.substring(0, 1),
+                        text: (_userName != null && _userName.length > 0) ? _userName.substring(0, 1) : '',
                         style: Theme.of(context)
                           .textTheme
                           .caption
@@ -1017,7 +1024,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                       ),
                       TextSpan(
-                          text: _userName.substring(1),
+                          text: (_userName != null && _userName.length > 2) ? _userName.substring(1) : '',
                           style: Theme.of(context)
                               .textTheme
                               .caption
@@ -1294,10 +1301,10 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> getUserData() {
-    User.getUserDB(user.email).then((userdb) {
-      user = userdb;
+    User.getUserDB(user.uid).then((userdb) {
       print('--- Current user is ${user.toString()} ---');
       setState(() {
+        user = userdb;
         _userName = user.name;
       });
     });

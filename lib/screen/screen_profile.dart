@@ -1,8 +1,13 @@
+import 'package:country_pickers/country.dart';
+import 'package:country_pickers/country_picker_cupertino.dart';
+import 'package:country_pickers/utils/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hobbybase/model/User.dart';
 import 'package:hobbybase/providers/app_provider.dart';
 import 'package:hobbybase/screen/homescreen.dart';
 import 'package:hobbybase/utils/const.dart';
+import 'package:hobbybase/widget/dialog_widget.dart';
 import 'package:provider/provider.dart';
 //import 'package:provider/provider.dart';
 //import 'package:restaurant_ui_kit/providers/app_provider.dart';
@@ -21,8 +26,12 @@ class _ProfileState extends State<Profile> {
   User user = User();
   _ProfileState(this.user);
 
+  Country _selectedFilteredCupertinoCountry = CountryPickerUtils.getCountryByIsoCode('TH');
+
+
   @override
   Widget build(BuildContext context) {
+    Locale myLocale = Localizations.localeOf(context);
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.fromLTRB(10.0,0,10.0,0),
@@ -35,7 +44,7 @@ class _ProfileState extends State<Profile> {
                 Padding(
                   padding: EdgeInsets.only(left: 10.0, right: 10.0),
                   child: Image.asset(
-                    "assets/cm4.jpeg",
+                    "assets/rank/rank_01.jpg",
                     fit: BoxFit.cover,
                     width: 100.0,
                     height: 100.0,
@@ -50,7 +59,7 @@ class _ProfileState extends State<Profile> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "Jane Doe",
+                            user.name,
                             style: TextStyle(
                               fontSize: 20.0,
                               fontWeight: FontWeight.bold,
@@ -65,7 +74,7 @@ class _ProfileState extends State<Profile> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "jane@doefamily.com",
+                            user.email,
                             style: TextStyle(
                               fontSize: 14.0,
                               fontWeight: FontWeight.bold,
@@ -80,12 +89,14 @@ class _ProfileState extends State<Profile> {
                         children: <Widget>[
                           InkWell(
                             onTap: (){
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (BuildContext context){
-                                    return HomeScreen(user);
-                                  },
-                                ),
+                              debugPrint("Do logoff");
+                              DialogUtils().showConfirmationDialog(context,
+                                  'Sign Out',
+                                  'Are you sure you would like to sign out?',
+                                  'Sign out',
+                                  'Cancel',
+                                  'sign_out',
+                                  'close_dialog'
                               );
                             },
                             child: Text("Logout",
@@ -121,130 +132,230 @@ class _ProfileState extends State<Profile> {
               ),
             ),
 
-            ListTile(
-              title: Text(
-                "Full Name",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+            // User Display Name
+            Card(
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(left: 15.0, top: 10.0),
+                          child: Text(
+                            'User Display Name',
+                            style: TextStyle(
+                              fontFamily: 'K2D-Bold',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 15.0, top: 10.0, bottom: 10.0),
+                          child: Text(
+                            user.name,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontFamily: 'K2D-Light',
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
 
-              subtitle: Text(
-                "Jane Mary Doe",
-              ),
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 15.0),
+                        child:  IconButton(
+                          icon: Opacity(
+                            opacity: 0.5,
+                            child:  Icon(
+                              Icons.edit,
+                              size: 20.0,
+                            ),
+                          ),
+                          onPressed: (){
+                            debugPrint("Edit User Display Name");
+                            DialogUtils().showEditTextDialog(context,
+                                'Edit User Display Name',
+                                user.name,
+                                'OK',
+                                'Cancel',
+                                'save_user_display_name',
+                                user.uid).then((value) => getUserData());
 
-              trailing: IconButton(
-                icon: Icon(
-                  Icons.edit,
-                  size: 20.0,
-                ),
-                onPressed: (){
-                },
-                tooltip: "Edit",
-              ),
-            ),
-
-            ListTile(
-              title: Text(
-                "Email",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-
-              subtitle: Text(
-                "jane@doefamily.com",
-              ),
-            ),
-
-            ListTile(
-              title: Text(
-                "Phone",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-
-              subtitle: Text(
-                "+1 816-926-6241",
-              ),
-            ),
-
-            ListTile(
-              title: Text(
-                "Address",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-
-              subtitle: Text(
-                "1278 Loving Acres RoadKansas City, MO 64110",
+                          },
+                          tooltip: "Edit",
+                        ),
+                      ),
+                    ),
+                  ]
               ),
             ),
 
-            ListTile(
-              title: Text(
-                "Gender",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+            // Email
+            Card(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(left: 15.0, top: 10.0),
+                        child: Text(
+                          'Email',
+                          style: TextStyle(
+                            fontFamily: 'K2D-Bold',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 15.0, top: 10.0, bottom: 10.0),
+                        child: Text(
+                          user.email,
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontFamily: 'K2D-Light',
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
 
-              subtitle: Text(
-                "Female",
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 15.0),
+                      child:  IconButton(
+                        icon: Opacity(
+                          opacity: 0.5,
+                          child:  Icon(
+                              Icons.edit,
+                              size: 20.0,
+                            ),
+                        ),
+                        onPressed: (){
+                          print('edit email!');
+                          DialogUtils().showEditTextDialog(context,
+                              'Edit Email',
+                              user.email,
+                              'OK',
+                              'Cancel',
+                              'save_user_email',
+                              user.uid).then((value) => getUserData());
+                        },
+                        tooltip: "Edit",
+                      ),
+                    ),
+                  ),
+                ]
               ),
             ),
 
-            ListTile(
-              title: Text(
-                "Date of Birth",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
+            // Country Area
+            Card(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(left: 15.0, top: 10.0),
+                    child:
+                    Text('Area',
+                      style: TextStyle(
+                        fontFamily: 'K2D-Bold',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    title: _buildCupertinoSelectedItem(
+                        _selectedFilteredCupertinoCountry),
+                    onTap: _openFilteredCupertinoCountryPicker,
+                  ),
+                ],
               ),
-
-              subtitle: Text(
-                "April 9, 1995",
-              ),
-            ),
-
-            MediaQuery.of(context).platformBrightness == Brightness.dark
-                ? SizedBox()
-                : ListTile(
-              title: Text(
-                "Dark Theme",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-
-//              trailing: Switch(
-//                value: Provider.of<AppProvider>(context).theme == Constants.lightTheme
-//                    ? false
-//                    : true,
-//                onChanged: (v) async{
-//                  if (v) {
-//                    Provider.of<AppProvider>(context, listen: false)
-//                        .setTheme(Constants.darkTheme, "dark");
-//                  } else {
-//                    Provider.of<AppProvider>(context, listen: false)
-//                        .setTheme(Constants.lightTheme, "light");
-//                  }
-//                },
-//                activeColor: Theme.of(context).accentColor,
-//              ),
             ),
           ],
         ),
       ),
+      bottomNavigationBar:
+      _useCustomBottomNavigationBar(),
     );
+  }
+
+  Widget _buildCupertinoSelectedItem(Country country) {
+    return Row(
+      children: <Widget>[
+        CountryPickerUtils.getDefaultFlagImage(country),
+//        SizedBox(width: 8.0),
+//        Text("+${country.phoneCode}"),
+        SizedBox(width: 8.0),
+        Flexible(child: Text(country.name))
+      ],
+    );
+  }
+
+  void _openFilteredCupertinoCountryPicker() => showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return CountryPickerCupertino(
+          backgroundColor: Colors.white,
+          pickerSheetHeight: 200.0,
+          initialCountry: _selectedFilteredCupertinoCountry,
+          onValuePicked: (Country country) =>
+              setState(() => _selectedFilteredCupertinoCountry = country),
+//          itemFilter: (c) => ['AR', 'DE', 'GB', 'CN', 'TH'].contains(c.isoCode),
+        );
+      }
+      );
+  _tapBack() {
+    print('tap on back');
+    Navigator.pop(context, 'back');
+  }
+
+  Widget _useCustomBottomNavigationBar() {
+    return Container(
+      height: 60,
+//      color: Colors.black87,
+      child: InkWell(
+        onTap: () => {
+          _tapBack()
+        },
+        child: Padding(
+          padding: EdgeInsets.only( top: 8.0),
+          child: Column(
+            children: <Widget>[
+              Icon(
+                Icons.arrow_back,
+                color: Theme.of(context).accentColor,
+              ),
+              Text('Back',
+                style: TextStyle(
+                  fontFamily: 'K2D-Regular',
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> getUserData() {
+    User.getUserDB(user.uid).then((userdb) {
+      print('--- Current user is ${user.toString()} ---');
+      setState(() {
+        user = userdb;
+//        _userName = user.name;
+      });
+    });
   }
 }

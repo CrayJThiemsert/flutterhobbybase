@@ -29,8 +29,8 @@ class OwnedDisplayWidget extends StatelessWidget {
             colors: [Colors.brown[100], Colors.grey[400], Colors.grey[700], Colors.brown[900] ],
 //            center: Alignment(-1.5, -0.2),
 //            radius: 3.3,
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
             stops: [0.0, 0.2, 0.4, 0.9]
         ),
         boxShadow: [new BoxShadow(
@@ -56,7 +56,7 @@ class OwnedDisplayWidget extends StatelessWidget {
                               fontUtils.getShadowScore()
                             ],
                             fontSize: 48.0,
-                            color: Colors.white,
+                            color: Colors.yellowAccent,
                             fontFamily: 'K2D-ExtraBoldItalic'),
                       ),
                     ],
@@ -89,7 +89,7 @@ class OwnedDisplayWidget extends StatelessWidget {
                             fontUtils.getShadowScore()
                           ],
                             fontSize: 48.0,
-                            color: Colors.white,
+                            color: Colors.yellowAccent,
                             fontFamily: 'K2D-ExtraBoldItalic',
                         ),
 
@@ -109,7 +109,7 @@ class OwnedDisplayWidget extends StatelessWidget {
                               fontUtils.getShadowScore()
                             ],
                             fontSize: 48.0,
-                            color: Colors.white,
+                            color: Colors.yellowAccent,
                             fontFamily: 'K2D-ExtraBoldItalic'),
                       ),
                     ],

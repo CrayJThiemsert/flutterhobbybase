@@ -7,17 +7,17 @@ class FontsUtils {
 
   Shadow getShadowScore() {
     return Shadow(
-      blurRadius: 5.0,
-      color: Colors.indigo,
-      offset: Offset(5.0, 5.0),
+      blurRadius: 10.0,
+      color: Colors.purpleAccent[400],
+      offset: Offset(1.0, 1.0),
     );
   }
 
   Shadow getShadowUserName() {
     return Shadow(
-      blurRadius: 8.0,
-      color: Colors.purpleAccent[400],
-      offset: Offset(2.0, 4.0),
+      blurRadius: 10.0,
+      color: Colors.deepOrange[600],
+      offset: Offset(1.0, 1.0),
     );
   }
 

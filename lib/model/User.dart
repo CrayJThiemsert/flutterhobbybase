@@ -76,7 +76,7 @@ class User {
     );
   }
 
-  static Future<User> getUserDB(String email) async {
+  static Future<User> getUserDB(String uid) async {
     try {
 //      String username = email.substring(0, email.indexOf('@'));
 //      User user = new User(
@@ -86,13 +86,13 @@ class User {
       var db = Firestore.instance;
 
       var snap = await db.collection("users")
-          .document(email)
+          .document(uid)
           .get();
       final User user = User.fromMap(snap.data);
 
       return user;
     } on Exception catch(err) {
-      print('Add new user error: $err');
+      print('Get user error: $err');
       return User();
     } finally {
 

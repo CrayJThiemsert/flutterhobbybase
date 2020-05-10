@@ -519,7 +519,7 @@ class _OwnedListScreenState extends State<OwnedListScreen> {
   }
 
   Future<void> getUserData() {
-    User.getUserDB(user.email).then((userdb) {
+    User.getUserDB(user.uid).then((userdb) {
       user = userdb;
       print('--- Current user is ${user.toString()} ---');
       setState(() {
