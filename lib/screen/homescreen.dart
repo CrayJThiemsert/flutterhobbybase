@@ -1045,6 +1045,10 @@ class _HomeScreenState extends State<HomeScreen>
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Image.asset('assets/rank/rank_01.jpg', height:  60,),
             ),
+            Positioned(
+              right: 10,
+              child: Image.asset('assets/${user.area.toLowerCase()}.png', height:  15,),
+            ),
           ],
 //        ),
       ),

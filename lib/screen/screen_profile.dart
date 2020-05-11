@@ -1,18 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_pickers/country.dart';
-import 'package:country_pickers/country_picker_cupertino.dart';
 import 'package:country_pickers/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hobbybase/model/User.dart';
-import 'package:hobbybase/providers/app_provider.dart';
-import 'package:hobbybase/screen/homescreen.dart';
-import 'package:hobbybase/utils/const.dart';
 import 'package:hobbybase/widget/dialog_widget.dart';
-import 'package:provider/provider.dart';
-//import 'package:provider/provider.dart';
-//import 'package:restaurant_ui_kit/providers/app_provider.dart';
-//import 'package:restaurant_ui_kit/screens/splash.dart';
-//import 'package:restaurant_ui_kit/util/const.dart';
+
+import 'package:country_pickers/country_pickers.dart';
 
 class Profile extends StatefulWidget {
   User user = User();
@@ -26,12 +20,20 @@ class _ProfileState extends State<Profile> {
   User user = User();
   _ProfileState(this.user);
 
-  Country _selectedFilteredCupertinoCountry = CountryPickerUtils.getCountryByIsoCode('TH');
+  Country _selectedCupertinoCountry = CountryPickerUtils.getCountryByIsoCode('TH'); // Default area(country)
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(user.area != '') {
+      _selectedCupertinoCountry = CountryPickerUtils.getCountryByIsoCode(user.area);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Locale myLocale = Localizations.localeOf(context);
+
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.fromLTRB(10.0,0,10.0,0),
@@ -276,9 +278,8 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                   ListTile(
-                    title: _buildCupertinoSelectedItem(
-                        _selectedFilteredCupertinoCountry),
-                    onTap: _openFilteredCupertinoCountryPicker,
+                    title: _buildCupertinoSelectedItem(_selectedCupertinoCountry),
+                    onTap: _openCupertinoCountryPicker,
                   ),
                 ],
               ),
@@ -303,22 +304,51 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  void _openFilteredCupertinoCountryPicker() => showCupertinoModalPopup<void>(
+  Widget _buildCupertinoItem(Country country) {
+    return DefaultTextStyle(
+      style: const TextStyle(
+        color: CupertinoColors.white,
+        fontSize: 16.0,
+      ),
+      child: Row(
+        children: <Widget>[
+          SizedBox(width: 8.0),
+          CountryPickerUtils.getDefaultFlagImage(country),
+          SizedBox(width: 8.0),
+          Text("+${country.phoneCode}"),
+          SizedBox(width: 8.0),
+          Flexible(child: Text(country.name))
+        ],
+      ),
+    );
+  }
+
+  void _openCupertinoCountryPicker() => showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) {
         return CountryPickerCupertino(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.black,
+          itemBuilder: _buildCupertinoItem,
           pickerSheetHeight: 200.0,
-          initialCountry: _selectedFilteredCupertinoCountry,
-          onValuePicked: (Country country) =>
-              setState(() => _selectedFilteredCupertinoCountry = country),
-//          itemFilter: (c) => ['AR', 'DE', 'GB', 'CN', 'TH'].contains(c.isoCode),
+          pickerItemHeight: 75,
+          initialCountry: _selectedCupertinoCountry,
+          onValuePicked: (Country country) =>  {
+//
+            setState(() {
+              _selectedCupertinoCountry = country;
+            }),
+          },
+          priorityList: [
+            CountryPickerUtils.getCountryByIsoCode('TH'),
+            CountryPickerUtils.getCountryByIsoCode('DE'),
+          ],
         );
-      }
-      );
+      });
+
   _tapBack() {
     print('tap on back');
-    Navigator.pop(context, 'back');
+    updateUserAreaDB(user.uid, _selectedCupertinoCountry.isoCode).then((value) => Navigator.pop(context, 'back'));
+
   }
 
   Widget _useCustomBottomNavigationBar() {
@@ -358,4 +388,43 @@ class _ProfileState extends State<Profile> {
       });
     });
   }
+
+  Future<User> updateUserAreaDB(String uid, String area) async {
+    print('call updateUserAreaDB(uid[${uid}], area[${area}])');
+    try {
+      User user = new User(
+        uid: uid,
+        area: area,
+      );
+      var db = Firestore.instance;
+
+      await db.collection("users")
+          .document(uid)
+          .setData({
+        'area': user.area,
+
+        'updated_when': Timestamp.now(),
+        'updated_by': user.uid,
+      }, merge: true).then((_) {
+//        Navigator.of(context).pop(false);
+        print('success');
+//        showMessageDialog(
+//          context,
+//          'Updated Data',
+//          'Updated user display name is success.',
+//          'OK',
+//        );
+
+      });
+
+      return user;
+    } on Exception catch(err) {
+      print('Update user area error: $err');
+      return User();
+    } finally {
+
+      print('End of updateUserAreaDB()');
+    }
+  }
+
 }

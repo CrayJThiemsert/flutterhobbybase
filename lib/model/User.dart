@@ -9,6 +9,9 @@ class User {
 
   String uid = "";
   String name = "";
+  String rank = "";
+  String area = "";
+
   Timestamp created_when = Timestamp.now();
   String created_by = "";
   Timestamp updated_when = Timestamp.now();
@@ -29,7 +32,7 @@ class User {
 //      this.active);
 
 
-  User( { this.email, this.name, this.active, this.uid, } ); //  User.fromSnapshot(
+  User( { this.email, this.name, this.active, this.uid, this.area, this.rank } ); //  User.fromSnapshot(
 //      DataSnapshot snapshot) :
 //      this.key = snapshot.key,
 //      this.email = snapshot.email,
@@ -58,7 +61,7 @@ class User {
 //      this.fromMap(snapshot.data, reference: snapshot.reference);
 
   @override
-  String toString() => "User[uid:${this.uid} email:${this.email} name:${this.name}]";
+  String toString() => "User[uid:${this.uid} email:${this.email} name:${this.name} rank:${this.rank} area:${this.area}]";
 
   factory User.fromMap(Map data) {
     return User(
@@ -68,6 +71,8 @@ class User {
 
         uid: data['uid'] ?? '',
         name: data['username'] ?? '',
+        area: data['area'] ?? '',
+        rank: data['rank'] ?? '',
 //    Timestamp created_when = Timestamp.now();
 //    String created_by = "";
 //    Timestamp updated_when = Timestamp.now();
