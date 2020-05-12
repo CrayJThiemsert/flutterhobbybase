@@ -1270,7 +1270,9 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) {
+                  GunplaAction gunplaAction = _gunplaActionMap[_imageToShowBoxArt];
                   return HeroGunplaDetailScreen(
+                    uidHero: "${gunplaAction.gunpla.box_art_path.replaceAll('/', '_')}",
                     imageToShowHero: _imageToShowTag,
                     imageToShowPath: _imagePathToShow,
                     user: user,

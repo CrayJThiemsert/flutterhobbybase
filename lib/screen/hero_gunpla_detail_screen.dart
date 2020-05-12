@@ -1,5 +1,9 @@
+import 'dart:collection';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hobbybase/model/GunplaComment.dart';
 import 'package:hobbybase/model/User.dart';
 import 'package:hobbybase/utils/comments.dart';
 import 'package:hobbybase/utils/const.dart';
@@ -8,27 +12,25 @@ import 'package:intl/intl.dart';
 import 'package:money2/money2.dart';
 
 class HeroGunplaDetailScreen extends StatefulWidget {
+  final String uidHero;
   final String imageToShowHero;
   final String imageToShowPath;
   final User user;
 
 
-  HeroGunplaDetailScreen({this.imageToShowHero, this.imageToShowPath, this.user});
-
-
-
-
+  HeroGunplaDetailScreen({this.uidHero, this.imageToShowHero, this.imageToShowPath, this.user});
 
   @override
-  _HeroGunplaDetailScreenState createState() => _HeroGunplaDetailScreenState(this.imageToShowHero, this.imageToShowPath, this.user);
+  _HeroGunplaDetailScreenState createState() => _HeroGunplaDetailScreenState(this.uidHero, this.imageToShowHero, this.imageToShowPath, this.user);
 
 }
 
 class _HeroGunplaDetailScreenState extends State<HeroGunplaDetailScreen> {
+  final String uidHero;
   final String imageToShowHero;
   final String imageToShowPath;
   User user = User();
-  _HeroGunplaDetailScreenState(this.imageToShowHero, this.imageToShowPath, this.user);
+  _HeroGunplaDetailScreenState(this.uidHero, this.imageToShowHero, this.imageToShowPath, this.user);
 
   bool _isEnabled = true;
   Color _borderHeroColor = Colors.limeAccent;
@@ -44,12 +46,15 @@ class _HeroGunplaDetailScreenState extends State<HeroGunplaDetailScreen> {
   final CrossAxisAlignment statusCrossAxisAlign =  CrossAxisAlignment.start;
   final double statusValueSize = 20.0;
 
+  List<GunplaComment> _gunplaCommentMap = List<GunplaComment>();
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
     print('loading... comments');
+    getGunplaCommentsDB().then((value) => print('then comment ${_gunplaCommentMap.length} comments'));
   }
 
   @override
@@ -429,7 +434,6 @@ class _HeroGunplaDetailScreenState extends State<HeroGunplaDetailScreen> {
   }
 
   Widget drawTestReviews(BuildContext context) {
-    String descSectionText = "${descTestString}";
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget> [
@@ -462,18 +466,18 @@ class _HeroGunplaDetailScreenState extends State<HeroGunplaDetailScreen> {
           shrinkWrap: true,
           primary: false,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: comments == null?0:comments.length,
+          itemCount: _gunplaCommentMap == null?0:_gunplaCommentMap.length,
           itemBuilder: (BuildContext context, int index) {
-            Map comment = comments[index];
+            GunplaComment comment = _gunplaCommentMap[index];
             return ListTile(
               leading: CircleAvatar(
                 radius: 25.0,
                 backgroundImage: AssetImage(
-                  "${comment['img']}",
+                  "assets/dq/dq01.png",
                 ),
               ),
 
-              title: Text("${comment['name']}"),
+              title: Text("${comment.updated_by}"),
               subtitle: Column(
                 children: <Widget>[
                   Row(
@@ -487,7 +491,7 @@ class _HeroGunplaDetailScreenState extends State<HeroGunplaDetailScreen> {
                       ),
                       SizedBox(width: 6.0),
                       Text(
-                        "February 14, 2020",
+                        DateFormat.yMMMd().format(comment.updated_when.toDate()),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w300,
@@ -497,8 +501,14 @@ class _HeroGunplaDetailScreenState extends State<HeroGunplaDetailScreen> {
                   ),
 
                   SizedBox(height: 7.0),
-                  Text(
-                    "${comment["comment"]}",
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "${comment.comment}",
+                      style: TextStyle(
+
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -598,6 +608,71 @@ class _HeroGunplaDetailScreenState extends State<HeroGunplaDetailScreen> {
         ),
       ],
     );
+  }
+
+  Future<void> getGunplaCommentsDB() async {
+    print('imageToShowHero[${imageToShowPath}]');
+    print('uidHero[${uidHero}]');
+    try {
+      _gunplaCommentMap.clear();
+      await Firestore.instance
+          .collection("gunpla/${uidHero}/comments")
+          .getDocuments().then((snapshot) {
+             snapshot.documents.forEach((doc) {
+               print(doc.data);
+               GunplaComment own = GunplaComment(
+                 uid: doc['uid'],
+                 comment: doc['comment'],
+                 updated_when: doc['updated_when'],
+                 updated_by: doc['updated_by'],
+               );
+               _gunplaCommentMap.add(own);
+             });
+             print('onDone - Get comment ${_gunplaCommentMap.length} comments');
+             setState(() {
+               _gunplaCommentMap;
+             });
+      });
+
+    } on Exception catch (err) {
+      print('getGunplaCommentsDB error: $err');
+    } finally {
+      print(
+          'End of getGunplaCommentsDB ${_gunplaCommentMap.length} records');
+    }
+  }
+
+  Future<void> get_notused_GunplaCommentsDBListen() async {
+    print('imageToShowHero[${imageToShowPath}]');
+    print('uidHero[${uidHero}]');
+    try {
+      _gunplaCommentMap.clear();
+      await Firestore.instance
+          .collection("gunpla/${uidHero}/comments")
+          .snapshots()
+          .listen((data) => data.documents.forEach((doc) {
+        print('=>${doc["uid"]}');
+        GunplaComment own = GunplaComment(
+          uid: doc['uid'],
+          comment: doc['comment'],
+          updated_when: doc['updated_when'],
+          updated_by: doc['updated_by'],
+        );
+        _gunplaCommentMap.add(own);
+      }
+      ), onDone: () {
+        print('Get comment ${_gunplaCommentMap.length} comments');
+      }
+      ).onDone(() {
+        print('onDone - Get comment ${_gunplaCommentMap.length} comments');
+      });
+
+    } on Exception catch (err) {
+      print('getGunplaCommentsDB error: $err');
+    } finally {
+      print(
+          'End of getGunplaCommentsDB ${_gunplaCommentMap.length} records');
+    }
   }
 
 }
