@@ -1,14 +1,35 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hobbybase/model/User.dart';
 import 'package:hobbybase/utils/comments.dart';
 import 'package:hobbybase/utils/const.dart';
 import 'package:hobbybase/widget/smooth_star_rating.dart';
 import 'package:intl/intl.dart';
 import 'package:money2/money2.dart';
 
-class HeroGunplaDetailScreen extends StatelessWidget {
+class HeroGunplaDetailScreen extends StatefulWidget {
   final String imageToShowHero;
   final String imageToShowPath;
+  final User user;
+
+
+  HeroGunplaDetailScreen({this.imageToShowHero, this.imageToShowPath, this.user});
+
+
+
+
+
+  @override
+  _HeroGunplaDetailScreenState createState() => _HeroGunplaDetailScreenState(this.imageToShowHero, this.imageToShowPath, this.user);
+
+}
+
+class _HeroGunplaDetailScreenState extends State<HeroGunplaDetailScreen> {
+  final String imageToShowHero;
+  final String imageToShowPath;
+  User user = User();
+  _HeroGunplaDetailScreenState(this.imageToShowHero, this.imageToShowPath, this.user);
+
   bool _isEnabled = true;
   Color _borderHeroColor = Colors.limeAccent;
   // Japanese Yen
@@ -23,7 +44,13 @@ class HeroGunplaDetailScreen extends StatelessWidget {
   final CrossAxisAlignment statusCrossAxisAlign =  CrossAxisAlignment.start;
   final double statusValueSize = 20.0;
 
-  HeroGunplaDetailScreen({this.imageToShowHero, this.imageToShowPath});
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    print('loading... comments');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,71 +67,71 @@ class HeroGunplaDetailScreen extends StatelessWidget {
             child: Hero(
               tag: imageToShowHero,
               child: SingleChildScrollView(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: new LinearGradient(
-                      colors: [Colors.blueGrey[600], Colors.blueGrey[200], Colors.blueGrey[600], Colors.grey[900]],
-                          //                          center: Alignment(1.5, 0.2),
-                          //                          radius: 3.3,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: new LinearGradient(
+                        colors: [Colors.blueGrey[600], Colors.blueGrey[200], Colors.blueGrey[600], Colors.grey[900]],
+                        //                          center: Alignment(1.5, 0.2),
+                        //                          radius: 3.3,
 //                          begin: Alignment.topRight,
 //                          end: Alignment.bottomLeft,
-                          stops: [0.1, 0.3, 0.6, 0.9]
-                      ),
-                      boxShadow: [
-                        new BoxShadow(
-                            color: Colors.black54,
-                            offset: new Offset(4.0, 4.0),
-                            blurRadius: 4.0)
-                      ],
-                      //                                  color: Colors.indigoAccent,
-                      border: Border(
-                        left: BorderSide(
-                          color: _borderHeroColor,
-                          width: 2.0,
-                        ),
-                        right: BorderSide(
-                          color: _borderHeroColor,
-                          width: 2.0,
-                        ),
-                      ),
-                      //                      borderRadius: BorderRadius.circular(8.0)
+                        stops: [0.1, 0.3, 0.6, 0.9]
                     ),
-                    child: Column(
-                      children: [
-                        // Hero Image
-                        Image.asset(
-                          imageToShowPath,
-                          height: 200,
-                        ),
-                        // Hero Title
-                        drawHeroTitle(context),
-                        Divider(
-                          thickness: 2,
-                          indent: 4,
-                          endIndent: 4,
-                          height: 2.0,
-                          color: Colors.orange[700],
-                        ),
-                        drawHeroStatus(context),
-                        Divider(
-                          thickness: 2,
-                          indent: 4,
-                          endIndent: 4,
-                          height: 2.0,
-                          color: Colors.orange[700],
-                        ),
-                        drawHeroDescription(context),
-                        Divider(
-                          thickness: 2,
-                          indent: 4,
-                          endIndent: 4,
-                          height: 2.0,
-                          color: Colors.orange[700],
-                        ),
-                        drawHeroReviews(context),
-                      ],
+                    boxShadow: [
+                      new BoxShadow(
+                          color: Colors.black54,
+                          offset: new Offset(4.0, 4.0),
+                          blurRadius: 4.0)
+                    ],
+                    //                                  color: Colors.indigoAccent,
+                    border: Border(
+                      left: BorderSide(
+                        color: _borderHeroColor,
+                        width: 2.0,
+                      ),
+                      right: BorderSide(
+                        color: _borderHeroColor,
+                        width: 2.0,
+                      ),
                     ),
+                    //                      borderRadius: BorderRadius.circular(8.0)
                   ),
+                  child: Column(
+                    children: [
+                      // Hero Image
+                      Image.asset(
+                        imageToShowPath,
+                        height: 200,
+                      ),
+                      // Hero Title
+                      drawHeroTitle(context),
+                      Divider(
+                        thickness: 2,
+                        indent: 4,
+                        endIndent: 4,
+                        height: 2.0,
+                        color: Colors.orange[700],
+                      ),
+                      drawHeroStatus(context),
+                      Divider(
+                        thickness: 2,
+                        indent: 4,
+                        endIndent: 4,
+                        height: 2.0,
+                        color: Colors.orange[700],
+                      ),
+                      drawHeroDescription(context),
+                      Divider(
+                        thickness: 2,
+                        indent: 4,
+                        endIndent: 4,
+                        height: 2.0,
+                        color: Colors.orange[700],
+                      ),
+                      drawHeroReviews(context),
+                    ],
+                  ),
+                ),
               ),
               transitionOnUserGestures: true,
             ),
@@ -217,8 +244,8 @@ class HeroGunplaDetailScreen extends StatelessWidget {
                         children: <Widget>[
                           Container(
                             alignment: Alignment.center,
-  //                          color: Colors.blue,
-  //                          height: 40,
+                            //                          color: Colors.blue,
+                            //                          height: 40,
                             padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 4.0, bottom: 0.0),
                             child: Text(
                               'Scale:',
@@ -231,18 +258,18 @@ class HeroGunplaDetailScreen extends StatelessWidget {
                           ),
                           Container(
                             alignment: Alignment.center,
-  //                          color: Colors.yellow,
-  //                        height: 40,
+                            //                          color: Colors.yellow,
+                            //                        height: 40,
                             padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 0.0, bottom: 4.0),
                             child:  Text(
-                            '1/144',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                fontSize: statusValueSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700],
-                                fontFamily: 'K2D-ExtraBold'),
-                          ),
+                              '1/144',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: statusValueSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[700],
+                                  fontFamily: 'K2D-ExtraBold'),
+                            ),
                           ),
                         ],
                       ),
@@ -286,8 +313,8 @@ class HeroGunplaDetailScreen extends StatelessWidget {
                         children: <Widget>[
                           Container(
                             alignment: Alignment.center,
-  //                          color: Colors.blue,
-  //                          height: 40,
+                            //                          color: Colors.blue,
+                            //                          height: 40,
                             padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 0.0, bottom: 0.0),
                             child: Text(
                               'Released Date:',
@@ -300,8 +327,8 @@ class HeroGunplaDetailScreen extends StatelessWidget {
                           ),
                           Container(
                             alignment: Alignment.center,
-  //                          color: Colors.yellow,
-  //                        height: 40,
+                            //                          color: Colors.yellow,
+                            //                        height: 40,
                             padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 0.0, bottom: 4.0),
                             child:  Text(
                               'May 7, 2020',
@@ -521,7 +548,7 @@ class HeroGunplaDetailScreen extends StatelessWidget {
             ),
             child: SingleChildScrollView(
               child:
-                drawTestDesc(context),
+              drawTestDesc(context),
             ),
           ),
         ),
@@ -572,5 +599,6 @@ class HeroGunplaDetailScreen extends StatelessWidget {
       ],
     );
   }
+
 }
 

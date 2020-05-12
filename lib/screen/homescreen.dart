@@ -293,6 +293,7 @@ class _HomeScreenState extends State<HomeScreen>
     getOwnedDataDB().then((_) {
       print(
           'fnEnd of getOwnedDataDB ${_gunplaOwnedMap.length} records');
+//      parseJSONAsset();
     });
 
     _gradeMenu = PopupMenu(items: [
@@ -444,7 +445,8 @@ class _HomeScreenState extends State<HomeScreen>
    * create Mobile/Vertical View
    */
   Widget _homePhoneView() {
-    print('call _homePhoneView');
+    print(
+        'call _homePhoneView - gunplas.length ${gunplas.length} records');
     return SafeArea(
       top: _isEnabled,
       bottom: _isEnabled,
@@ -481,7 +483,6 @@ class _HomeScreenState extends State<HomeScreen>
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
                       buildWheelList(),
-//                      buildWheelListNoFutureBuild(),
                     ],
                   ),
 
@@ -843,28 +844,6 @@ class _HomeScreenState extends State<HomeScreen>
     initGunplaActionMap(gunplas);
   }
 
-  Widget buildWheelListNoFutureBuild() {
-    parseJSONAsset();
-    return (!gunplas.isEmpty && gunplas.length > 0)
-        ? wheelList(gunplas)
-        : Center(child: CircularProgressIndicator());
-
-    return FutureBuilder(
-      // Load JSON of gunpla list
-//        future: DefaultAssetBundle.of(context)
-//            .loadString(_fabGrades[_currentFabIndex].jsonpath),
-        builder: (context, snapshot) {
-          if (_isChangeGrade) {
-            gunplas = parseJson(snapshot.data.toString());
-            initGunplaActionMap(gunplas);
-          }
-
-          return (!gunplas.isEmpty && gunplas.length > 0)
-              ? wheelList(gunplas)
-              : Center(child: CircularProgressIndicator());
-        });
-  }
-
   void initTotalOwnedInfo() {
     _totalLiked = 0;
     _totalOwned = 0;
@@ -1059,7 +1038,7 @@ class _HomeScreenState extends State<HomeScreen>
     if(user.area != null) {
       return Image.asset('assets/${user.area.toLowerCase()}.png', height:  15,);
     }
-    return null;
+    return Container(width: 0.0, height: 0.0);
   }
 
   Widget buildGradeFilter() {
@@ -1294,6 +1273,7 @@ class _HomeScreenState extends State<HomeScreen>
                   return HeroGunplaDetailScreen(
                     imageToShowHero: _imageToShowTag,
                     imageToShowPath: _imagePathToShow,
+                    user: user,
                   );
                 }));
               },
@@ -1333,14 +1313,6 @@ class _HomeScreenState extends State<HomeScreen>
     _gunplaActionMap.clear();
 
     for (var i = 0; i < gunplas.length; i++) {
-//      if(i == 5) { // For test only, can deleted after done
-//        _gunplaActions[gunplas[i].box_art_path] = GunplaAction(
-//          gunpla: gunplas[i],
-//          is_liked: false,
-//          is_owned: true,
-//          is_shared: false,
-//        );
-//      } else {
       _gunplaActionMap[gunplas[i].box_art_path] = GunplaAction(
         gunpla: gunplas[i],
         is_liked: getActionValue(gunplas[i].box_art_path, 0),
@@ -1355,7 +1327,7 @@ class _HomeScreenState extends State<HomeScreen>
       _isChangeGrade = false;
       print('change grade to false!!');
 
-      setState(() {
+//      setState(() {
         // Reload image hero after change grade wheel list
         _imageWheelIndex = 0;
         var boxart = "assets/gunpla/${gunplas[_imageWheelIndex].box_art_path}";
@@ -1373,7 +1345,7 @@ class _HomeScreenState extends State<HomeScreen>
           _actionSelections[1] = gunplaAction.is_owned;
           _actionSelections[2] = gunplaAction.is_shared;
         }
-      });
+//      });
 
 
     } else {
