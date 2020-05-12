@@ -1047,12 +1047,19 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             Positioned(
               right: 10,
-              child: Image.asset('assets/${user.area.toLowerCase()}.png', height:  15,),
+              child: getUserArea(user),
             ),
           ],
 //        ),
       ),
     );
+  }
+
+  Widget getUserArea(User user) {
+    if(user.area != null) {
+      return Image.asset('assets/${user.area.toLowerCase()}.png', height:  15,);
+    }
+    return null;
   }
 
   Widget buildGradeFilter() {
@@ -1207,18 +1214,12 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                     
                     // Toggle Action buttons (Liked, Owned, Shared)
-  //            SingleChildScrollView(
-  //              child:
                     Container(
                       height: 75,
                       width: _dHeroWidth,
                       alignment: Alignment.center,
                       padding: EdgeInsets.all(4.0),
                       decoration: BoxDecoration(
-  //                          gradient: new LinearGradient(
-  //                              colors: [Colors.teal[200], Colors.indigo[900]],
-  //                              stops: [0.0, 0.3]
-  //                          ),
                             boxShadow: [
                               new BoxShadow(
                                   color: Colors.black54,
@@ -1243,9 +1244,6 @@ class _HomeScreenState extends State<HomeScreen>
   
                           ),
                       child:
-//                        ClipRRect(
-//                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-//                          child:
                           Material(
                             child: ToggleButtons(
                               children: <Widget>[
@@ -1274,13 +1272,13 @@ class _HomeScreenState extends State<HomeScreen>
                               selectedBorderColor: Colors.lime,
                               isSelected: _actionSelections,
                               onPressed: (int index) {
-                                setState(() {
-                                  _actionSelections[index] = !_actionSelections[index];
-                                  print('${index} - ${_actionSelections[index]}');
+//                                setState(() {
+
                                   if (updateSelectedActionMap(index)) {
+                                    print('call to update owned db.');
                                     updateGunplaActionDB(index);
                                   }
-                                });
+//                                });
                               },
 //                          ),
                           ),
@@ -1424,27 +1422,70 @@ class _HomeScreenState extends State<HomeScreen>
         _gunplaActionMap.containsKey(_imageToShowBoxArt)) {
       GunplaAction gunplaAction = _gunplaActionMap[_imageToShowBoxArt];
       switch (index) {
-        case 0:
+        case 0: // Liked
+          setState(() {
+            _actionSelections[index] = !_actionSelections[index];
+          });
+          print('${index} - ${_actionSelections[index]}');
           gunplaAction.is_liked = _actionSelections[index];
           _gunplaActionMap[_imageToShowBoxArt] = gunplaAction;
+          is_done = true;
           break;
-        case 1:
+        case 1: // Owned
+          setState(() {
+            _actionSelections[index] = !_actionSelections[index];
+          });
+          print('${index} - ${_actionSelections[index]}');
           gunplaAction.is_owned = _actionSelections[index];
           _gunplaActionMap[_imageToShowBoxArt] = gunplaAction;
+          is_done = true;
           break;
-        case 2:
-          gunplaAction.is_shared = _actionSelections[index];
-          _gunplaActionMap[_imageToShowBoxArt] = gunplaAction;
+        case 2: // Shared
+          String uid = "${gunplaAction.gunpla.box_art_path.replaceAll('/', '_')}";
+          DialogUtils().showEditTextDialog(context,
+              'Shared Comment',
+              'Write a comment.',
+              'Post',
+              'Cancel',
+              'shared_gunpla_comment',
+              uid,
+              user
+          ).then((value) => is_done = saveComment(value, index, gunplaAction));
+
+//          gunplaAction.is_shared = _actionSelections[index];
+//          _gunplaActionMap[_imageToShowBoxArt] = gunplaAction;
           break;
       }
-      is_done = true;
     }
     print(
         'after updated - ANA is_shared=${_gunplaActionMap[_imageToShowBoxArt].is_shared}');
     return is_done;
   }
+  bool saveComment(bool isPost, int index, GunplaAction gunplaAction) {
+    bool result = false;
+    if(isPost == null) {
+      isPost = false;
+    }
+    print('isPost[${isPost}]');
+    print('1_actionSelections[index] = ${_actionSelections[index]}');
+    if(isPost) {
+      setState(() {
+        _actionSelections[index] = true;
+      });
+
+      print('${index} - ${_actionSelections[index]}');
+      gunplaAction.is_shared = _actionSelections[index];
+      _gunplaActionMap[_imageToShowBoxArt] = gunplaAction;
+      result = true;
+      updateGunplaActionDB(index);
+    }
+    print('2_actionSelections[index] = ${_actionSelections[index]}');
+
+    return result;
+  }
 
   Future<GunplaAction> updateGunplaActionDB(int index) async {
+    print('call to update owned collection - updateGunplaActionDB index[${index}]');
     GunplaAction gunplaAction = GunplaAction();
     try {
       if (_gunplaActionMap.containsKey(_imageToShowBoxArt)) {
@@ -1455,8 +1496,6 @@ class _HomeScreenState extends State<HomeScreen>
             !gunplaAction.is_shared) {
           // delete
           print('deleting...');
-
-
           await db
               .collection("users/${user.uid}/owned")
               .document(
@@ -1531,7 +1570,7 @@ class _HomeScreenState extends State<HomeScreen>
   Future<void> getOwnedDataDB() async {
     try {
       _gunplaOwnedMap.clear();
-       Firestore.instance
+       await Firestore.instance
           .collection("users/${user.uid}/owned")
           .snapshots()
           .listen((data) => data.documents.forEach((doc) {

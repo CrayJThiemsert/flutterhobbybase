@@ -3,7 +3,9 @@ import 'dart:ui' as ui show Gradient, TextBox, lerpDouble, Image;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hobbybase/model/GunplaComment.dart';
 import 'package:hobbybase/model/User.dart';
+import 'package:intl/intl.dart';
 
 class DialogUtils {
 
@@ -188,7 +190,8 @@ class DialogUtils {
       String yesText,
       String noText,
       String yesFunc,
-      String key
+      String key,
+      User byUser
       ) {
     String _value = content;
     _context = context;
@@ -221,7 +224,7 @@ class DialogUtils {
 
                       initialValue: content,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person),
+                        prefixIcon: prefixIconByFunction(yesFunc),
 //                        border: OutlineInputBorder(),
                         fillColor: Colors.white,
                         filled: true,
@@ -235,9 +238,10 @@ class DialogUtils {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                       ),
-                      maxLength: 12,
+                      maxLength: maxLengthByFunction(yesFunc),
+                      maxLines: maxLinesByFunction(yesFunc),
                       autofocus: false,
-                      keyboardType: TextInputType.text,
+                      keyboardType: keyboardTypeByFunction(yesFunc),
                       onFieldSubmitted: (value) {
                         print('onFieldSubmitted value[${value}]');
                         _value = value;
@@ -280,7 +284,7 @@ class DialogUtils {
                                   width: 1
                               )
                           ),
-                          onPressed: () => doFunctionWithValue(context, yesFunc, key, _value),
+                          onPressed: () => doFunctionWithValue(context, yesFunc, key, _value, byUser),
                           child: Text(yesText,
                             style: TextStyle(
                               fontFamily: 'K2D-Medium',
@@ -306,6 +310,50 @@ class DialogUtils {
         ;
   }
 
+  Icon prefixIconByFunction(String funcType) {
+    Icon result = null;
+    switch(funcType) {
+      case 'shared_gunpla_comment':
+        result = Icon(Icons.comment);
+        break;
+      case 'save_user_display_name':
+      case 'save_user_email':
+        result = Icon(Icons.person);
+        break;
+    }
+    return result;
+  }
+
+  int maxLinesByFunction(String funcType) {
+    int result = 1;
+    switch(funcType) {
+      case 'shared_gunpla_comment':
+        result = 4;
+        break;
+    }
+    return result;
+  }
+
+  TextInputType keyboardTypeByFunction(String funcType) {
+    TextInputType result = TextInputType.text;
+    switch(funcType) {
+      case 'shared_gunpla_comment':
+        result = TextInputType.multiline;
+        break;
+    }
+    return result;
+  }
+
+  int maxLengthByFunction(String funcType) {
+    int result = 12;
+    switch(funcType) {
+      case 'shared_gunpla_comment':
+        result = null;// TextField.noMaxLength;
+        break;
+    }
+    return result;
+  }
+
   doFunction(BuildContext context, String command) {
     switch(command) {
       case 'close_app':
@@ -320,14 +368,19 @@ class DialogUtils {
     }
   }
 
-  doFunctionWithValue(BuildContext context, String command, String key, String value) {
+  doFunctionWithValue(BuildContext context, String command, String key, String value, User byUser) {
     switch(command) {
       case 'save_user_display_name':
-        updateUserDisplayNameDB(key, value);
+        updateUserDisplayNameDB(key, value, byUser);
         break;
       case 'save_user_email':
-        updateUserEmailDB(key, value);
+        updateUserEmailDB(key, value, byUser);
         break;
+      case 'shared_gunpla_comment':
+        updateGunplaCommentDB(key, value, byUser);
+//        Navigator.of(_context).pop(true);
+        break;
+
     }
   }
 
@@ -341,7 +394,7 @@ class DialogUtils {
     });
   }
 
-  Future<User> updateUserDisplayNameDB(String uid, String name) async {
+  Future<User> updateUserDisplayNameDB(String uid, String name, byUser) async {
     print('call updateUserDisplayNameDB(uid[${uid}], name[${name}])');
     try {
       User user = new User(
@@ -356,9 +409,9 @@ class DialogUtils {
         'username': user.name,
 
         'updated_when': Timestamp.now(),
-        'updated_by': user.uid,
+        'updated_by': byUser.uid,
       }, merge: true).then((_) {
-        Navigator.of(_context).pop(false);
+        Navigator.of(_context).pop(true);
         print('success');
         showMessageDialog(
             _context,
@@ -379,7 +432,7 @@ class DialogUtils {
     }
   }
 
-  Future<User> updateUserEmailDB(String uid, String email) async {
+  Future<User> updateUserEmailDB(String uid, String email, User byUser) async {
     print('call updateUserEmailDB(uid[${uid}], email[${email}])');
     try {
       User user = new User(
@@ -394,9 +447,9 @@ class DialogUtils {
         'email': user.email,
 
         'updated_when': Timestamp.now(),
-        'updated_by': user.uid,
+        'updated_by': byUser.uid,
       }, merge: true).then((_) {
-        Navigator.of(_context).pop(false);
+        Navigator.of(_context).pop(true);
         print('success');
         showMessageDialog(
           _context,
@@ -414,6 +467,46 @@ class DialogUtils {
     } finally {
 
       print('End of updateUserDisplayNameDB()');
+    }
+  }
+
+  Future<GunplaComment> updateGunplaCommentDB(String uid, String comment, User byUser) async {
+    print('call updateGunplaCommentDB(uid[${uid}], comment[${comment}] byUser[${byUser}])');
+    var result;
+    try {
+      String commentWhenUID = DateFormat('yyyy.MM.dd HH:mm:ss').format(DateTime.now());
+      var db = Firestore.instance;
+
+      result = await db.collection("gunpla")
+          .document(uid)
+          .collection('comments')
+          .document(commentWhenUID)
+          .setData({
+        'uid': commentWhenUID,
+        'comment': comment,
+        'updated_when': Timestamp.now(),
+        'updated_by': byUser.uid,
+        'created_when': Timestamp.now(),
+        'created_by': byUser.uid,
+        'active': true,
+      }, merge: true).then((_) {
+        Navigator.of(_context).pop(true);
+//        print('success -> ${result}');
+        showMessageDialog(
+          _context,
+          'Post Comment',
+          'Post comment is success.',
+          'OK',
+        );
+
+      });
+
+      return result;
+    } on Exception catch(err) {
+      print('Post comment error: $err');
+      return GunplaComment();
+    } finally {
+      print('End of updateGunplaCommentDB()');
     }
   }
 }

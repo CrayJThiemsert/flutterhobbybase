@@ -187,7 +187,9 @@ class _ProfileState extends State<Profile> {
                                 'OK',
                                 'Cancel',
                                 'save_user_display_name',
-                                user.uid).then((value) => getUserData());
+                                user.uid,
+                                user
+                            ).then((value) => getUserData());
 
                           },
                           tooltip: "Edit",
@@ -251,7 +253,9 @@ class _ProfileState extends State<Profile> {
                               'OK',
                               'Cancel',
                               'save_user_email',
-                              user.uid).then((value) => getUserData());
+                              user.uid,
+                              user
+                          ).then((value) => getUserData());
                         },
                         tooltip: "Edit",
                       ),
@@ -406,14 +410,7 @@ class _ProfileState extends State<Profile> {
         'updated_when': Timestamp.now(),
         'updated_by': user.uid,
       }, merge: true).then((_) {
-//        Navigator.of(context).pop(false);
         print('success');
-//        showMessageDialog(
-//          context,
-//          'Updated Data',
-//          'Updated user display name is success.',
-//          'OK',
-//        );
 
       });
 

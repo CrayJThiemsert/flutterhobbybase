@@ -40,7 +40,7 @@ void main() =>
 
 //              User.getUserDB(user.email).then((userdb) {
                   User userdb = User(uid: user.email, email: user.email, name: displayNameTemp, active: true);
-                return new HomeScreen(userdb);
+                  return new HomeScreen(userdb);
 //                  return DetailPage(userdb.name);
 //              });
 
