@@ -74,8 +74,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   double _fontTileSize = 8;
 
-  int _currentFabIndex = 0;
-  bool _wheelListVisibility = false;
+  int _currentGradeIndex = 0;
   List<Gunpla> gunplas = List<Gunpla>(); // parseJson(snapshot.data.toString());
 
   int _currentBottomNavIndex = 0;
@@ -201,27 +200,6 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  IconData displayFabOpenIcon() {
-    setState(() {
-      switch (_currentFabIndex) {
-        case 0:
-          return Icons.airplanemode_active;
-        case 1:
-          return Icons.audiotrack;
-        case 2:
-          return Icons.wb_sunny;
-        case 3:
-          return Icons.wb_cloudy;
-        case 4:
-          return Icons.visibility;
-        case 5:
-          return Icons.video_call;
-        default:
-          return Icons.menu;
-      }
-    });
-  }
-
   String getLiked() {
     return "${_totalLiked}";
   }
@@ -319,13 +297,12 @@ class _HomeScreenState extends State<HomeScreen>
       ),
 
     ],
-      onClickMenu: onClickMenu,
+      onClickMenu: onClickGradeMenu,
       onDismiss: onDismiss,
       maxColumn: 3
     );
 
     _isChangeGrade = true;
-    _wheelListVisibility = true;
 //    _imageToShow = AssetImage("assets/dq/dq01.png");
 //    _imagePathToShow = "assets/dq/dq01.png";
 //    _imageToShowTag = "dq01";
@@ -353,33 +330,34 @@ class _HomeScreenState extends State<HomeScreen>
 //      }
 //    });
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => { print('finish initState!!') });
 
-    _fcm.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print('onMessage: ${message}');
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              content: ListTile(
-                title: Text(message['notification']['title']),
-                subtitle: Text(message['notification']['body']),
-              ),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('Ok'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            )
-        );
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print('onLaunch: ${message}');
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print('onResume: ${message}');
-      },
-    );
+//    _fcm.configure(
+//      onMessage: (Map<String, dynamic> message) async {
+//        print('onMessage: ${message}');
+//        showDialog(
+//            context: context,
+//            builder: (context) => AlertDialog(
+//              content: ListTile(
+//                title: Text(message['notification']['title']),
+//                subtitle: Text(message['notification']['body']),
+//              ),
+//              actions: <Widget>[
+//                FlatButton(
+//                  child: Text('Ok'),
+//                  onPressed: () => Navigator.of(context).pop(),
+//                ),
+//              ],
+//            )
+//        );
+//      },
+//      onLaunch: (Map<String, dynamic> message) async {
+//        print('onLaunch: ${message}');
+//      },
+//      onResume: (Map<String, dynamic> message) async {
+//        print('onResume: ${message}');
+//      },
+//    );
   }
 
 
@@ -393,14 +371,10 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
+//    final primaryColor = Theme.of(context).primaryColor;
     PopupMenu.context = context;
 
-//    print("Test get cloud firectore data: ");
-    // Test get cloud firestore data
-//    getUsersData();
-
-//    WidgetsFlutterBinding.ensureInitialized();
+    WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     return WillPopScope(
@@ -821,7 +795,7 @@ class _HomeScreenState extends State<HomeScreen>
 //        future: DefaultAssetBundle.of(context).loadString('assets/json/pg.json'),
         // Load JSON of gunpla list
         future: DefaultAssetBundle.of(context)
-            .loadString(_fabGrades[_currentFabIndex].jsonpath),
+            .loadString(_fabGrades[_currentGradeIndex].jsonpath),
         builder: (context, snapshot) {
           if (_isChangeGrade) {
             gunplas = parseJson(snapshot.data.toString());
@@ -836,7 +810,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Future<void> _loadJSONAsset() async {
     return await DefaultAssetBundle.of(context)
-            .loadString(_fabGrades[_currentFabIndex].jsonpath);
+            .loadString(_fabGrades[_currentGradeIndex].jsonpath);
   }
 
   Future parseJSONAsset() async {
@@ -866,7 +840,7 @@ class _HomeScreenState extends State<HomeScreen>
         'wheelList - getOwnedDataDB ${_gunplaOwnedMap.length} records');
     initTotalOwnedInfo();
     return Visibility(
-      visible: true, //_wheelListVisibility,
+      visible: true, 
       child: Container(
         decoration: new BoxDecoration(
           color: Colors.indigo,
@@ -936,10 +910,10 @@ class _HomeScreenState extends State<HomeScreen>
         [];
   }
 
-  void setCurrentFabSelected(int selectedFabIndex) {
-    print('_currentFabIndex[${_currentFabIndex}] | selectedFabIndex[${selectedFabIndex}]');
-    if (_currentFabIndex != selectedFabIndex) {
-      _currentFabIndex = selectedFabIndex;
+  void setCurrentGradeSelected(int selectedIndex) {
+    print('_currentFabIndex[${_currentGradeIndex}] | selectedIndex[${selectedIndex}]');
+    if (_currentGradeIndex != selectedIndex) {
+      _currentGradeIndex = selectedIndex;
       _isChangeGrade = true;
 
     } else {
@@ -947,7 +921,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     print(
-        "Pressed _isChangeGrade[${_isChangeGrade}] - ${_currentFabIndex} - ${_fabGrades[_currentFabIndex].name} - ${_fabGrades[_currentFabIndex].jsonpath}");
+        "Pressed _isChangeGrade[${_isChangeGrade}] - ${_currentGradeIndex} - ${_fabGrades[_currentGradeIndex].name} - ${_fabGrades[_currentGradeIndex].jsonpath}");
   }
 
   Widget buildUserInfoFrame() {
@@ -1055,7 +1029,7 @@ class _HomeScreenState extends State<HomeScreen>
               Tooltip(
                 message: 'Grade',
                 verticalOffset: 28,
-                child: _fabImages[_currentFabIndex],
+                child: _fabImages[_currentGradeIndex],
               ),
             ),
             width: 60,
@@ -1325,11 +1299,11 @@ class _HomeScreenState extends State<HomeScreen>
 
     }
     if (gunplas.length > 0 &&
-        _fabGrades[_currentFabIndex].name == gunplas[0].grade.substring(0,2)) {
+        _fabGrades[_currentGradeIndex].name == gunplas[0].grade.substring(0,2)) {
       _isChangeGrade = false;
       print('change grade to false!!');
 
-//      setState(() {
+      setState(() {
         // Reload image hero after change grade wheel list
         _imageWheelIndex = 0;
         var boxart = "assets/gunpla/${gunplas[_imageWheelIndex].box_art_path}";
@@ -1347,7 +1321,7 @@ class _HomeScreenState extends State<HomeScreen>
           _actionSelections[1] = gunplaAction.is_owned;
           _actionSelections[2] = gunplaAction.is_shared;
         }
-//      });
+      });
 
 
     } else {
@@ -1572,7 +1546,7 @@ class _HomeScreenState extends State<HomeScreen>
     print('menu is ${isShow ? 'showing' : 'closed'}');
   }
 
-  void onClickMenu(MenuItemProvider item) {
+  void onClickGradeMenu(MenuItemProvider item) {
     print('Click menu -> ${item.menuTitle}');
     setState(() {
       int menuIndex = 0;
@@ -1593,7 +1567,7 @@ class _HomeScreenState extends State<HomeScreen>
           menuIndex = 4;
           break;
       }
-      setCurrentFabSelected(menuIndex);
+      setCurrentGradeSelected(menuIndex);
     });
   }
 
